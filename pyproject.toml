@@ -6,12 +6,16 @@ build-backend = "hatchling.build"
 name = "duetector"
 description = "duetector"
 keywords = ["duetector"]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
 ]
 dynamic = ["version", ]
 classifiers = [
     "Programming Language :: Python :: 3",
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
 ]
 [project.optional-dependencies]
 test = [
@@ -21,7 +25,6 @@ test = [
 
 [[project.authors]]
 name = "hitsz-ids"
-email = "wakedhitsz-ids@gmail.com"
 
 [project.readme]
 file = "README.md"
