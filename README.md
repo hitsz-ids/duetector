@@ -1,7 +1,7 @@
-![](https://img.shields.io/github/license/wh1isper/duetector)
-![](https://img.shields.io/github/v/release/wh1isper/duetector)
+![](https://img.shields.io/github/license/hitsz-ids/duetector)
+![](https://img.shields.io/github/v/release/hitsz-ids/duetector)
 ![](https://img.shields.io/pypi/dm/duetector)
-![](https://img.shields.io/github/last-commit/wh1isper/duetector)
+![](https://img.shields.io/github/last-commit/hitsz-ids/duetector)
 ![](https://img.shields.io/pypi/pyversions/duetector)
 
 # duetector

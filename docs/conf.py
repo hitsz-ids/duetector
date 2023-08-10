@@ -48,8 +48,8 @@ master_doc = "index"
 
 # General information about the project.
 project = "duetector"
-copyright = "2023, wunder957"
-author = "wunder957"
+copyright = "2023, hitsz-ids"
+author = "hitsz-ids"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -125,7 +125,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "duetector.tex", "duetector Documentation", "wunder957", "manual"),
+    (master_doc, "duetector.tex", "duetector Documentation", "hitsz-ids", "manual"),
 ]
 
 
