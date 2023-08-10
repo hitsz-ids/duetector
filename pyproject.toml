@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling", ]
+build-backend = "hatchling.build"
+
+[project]
+name = "duetector"
+description = "duetector"
+keywords = ["duetector"]
+requires-python = ">=3.7"
+dependencies = [
+]
+dynamic = ["version", ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
+
+
+[[project.authors]]
+name = "wunder957"
+email = "wakedwunder957@gmail.com"
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.license]
+text = "Apache Software License 2.0"
+
+[project.urls]
+Source = "https://github.com/wunder957/duetector"
+
+[tool.check-manifest]
+ignore = [".*", ]
+
+[tool.hatch.version]
+path = "duetector/__init__.py"
