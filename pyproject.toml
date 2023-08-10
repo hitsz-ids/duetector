@@ -20,8 +20,8 @@ test = [
 
 
 [[project.authors]]
-name = "wunder957"
-email = "wakedwunder957@gmail.com"
+name = "hitsz-ids"
+email = "wakedhitsz-ids@gmail.com"
 
 [project.readme]
 file = "README.md"
@@ -31,7 +31,7 @@ content-type = "text/markdown"
 text = "Apache Software License 2.0"
 
 [project.urls]
-Source = "https://github.com/wunder957/duetector"
+Source = "https://github.com/hitsz-ids/duetector"
 
 [tool.check-manifest]
 ignore = [".*", ]

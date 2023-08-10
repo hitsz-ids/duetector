@@ -1,5 +1,5 @@
 """Top-level package for duetector."""
 
-__author__ = "wunder957"
-__email__ = "wakedwunder957@gmail.com"
+__author__ = "hitsz-ids"
+__email__ = "wakedhitsz-ids@gmail.com"
 __version__ = "0.0.0a0"
