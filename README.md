@@ -3,13 +3,12 @@
 <a href="https://github.com/hitsz-ids/duetector/actions"><img alt="Actions Status" src="https://github.com/hitsz-ids/duetector/actions/workflows/python-package.yml/badge.svg"></a>
 <a href="https://github.com/hitsz-ids/duetector/blob/main/LICENSE"><img alt="LICENSE" src="https://img.shields.io/github/license/hitsz-ids/duetector"></a>
 <a href="https://github.com/hitsz-ids/duetector/releases/"><img alt="Releases" src="https://img.shields.io/github/v/release/hitsz-ids/duetector"></a>
-<a href="https://pypi.org/project/duetector/"><img alt="Pypi" src="https://img.shields.io/pypi/dm/duetector"></a>
 <a href="https://github.com/hitsz-ids/duetector"><img alt="Last Commit" src="https://img.shields.io/github/last-commit/hitsz-ids/duetector"></a>
 <a href="https://github.com/hitsz-ids/duetector"><img alt="Python version" src="https://img.shields.io/pypi/pyversions/duetector"></a>
 </p>
 
 <p align="center">
-<a href="./README.md">[中文](README.md)</a> | <a href="./README_en.md">[English](README_en.md)</a>
+<a href="./README.md">中文</a> | <a href="./README_en.md">English</a>
 </p>
 
 ## 简介
