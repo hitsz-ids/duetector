@@ -11,8 +11,7 @@ packages. Before generating a package, we first need to install `build`.
 pip install build twine hatch
 ```
 
-Bump the version using `hatch`. By default this will create a tag.
-See the docs on [hatch-nodejs-version](https://github.com/agoose77/hatch-nodejs-version#semver) for details.
+Bump the version using `hatch`.
 
 ```bash
 hatch version <new-version>
@@ -32,3 +31,17 @@ Then to upload the package to PyPI, do:
 ```bash
 twine upload dist/*
 ```
+
+## Github Action release
+
+### Python package and Docker image
+
+The version number needs to be changed manually before proceeding with the release. 
+
+```bash
+hatch version <new-version>
+```
+
+Once there is a release, [Github Action](https://github.com/hitsz-ids/duetector/actions/workflows/publish.yml) will automatically publish docker image based on the `tag.`
+
+If it's a pre-release release, the `latest` version of the image will not be released.
