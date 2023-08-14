@@ -63,6 +63,8 @@ docker pull dataucon/duetector:v0.1.0
 
 TBD
 
+更多文档和例子可以在[这里]("./docs")找到。
+
 ## API文档
 
 TBD
