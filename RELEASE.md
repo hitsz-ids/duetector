@@ -36,7 +36,7 @@ twine upload dist/*
 
 ### Python package and Docker image
 
-The version number needs to be changed manually before proceeding with the release. 
+The version number needs to be changed manually before proceeding with the release.
 
 ```bash
 hatch version <new-version>

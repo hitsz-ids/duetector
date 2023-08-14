@@ -1,19 +1,24 @@
-![](https://img.shields.io/github/license/hitsz-ids/duetector)
-![](https://img.shields.io/github/v/release/hitsz-ids/duetector)
-![](https://img.shields.io/pypi/dm/duetector)
-![](https://img.shields.io/github/last-commit/hitsz-ids/duetector)
-![](https://img.shields.io/pypi/pyversions/duetector)
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+<h2 align="center">duetector🔍: Data Usage eBPF detector </h2>
+<p align="center">
+<a href="https://github.com/hitsz-ids/duetector/actions"><img alt="Actions Status" src="https://github.com/hitsz-ids/duetector/actions/workflows/python-package.yml/badge.svg"></a>
+<a href="https://github.com/hitsz-ids/duetector/blob/main/LICENSE"><img alt="LICENSE" src="https://img.shields.io/github/license/hitsz-ids/duetector"></a>
+<a href="https://github.com/hitsz-ids/duetector/releases/"><img alt="Releases" src="https://img.shields.io/github/v/release/hitsz-ids/duetector"></a>
+<a href="https://pypi.org/project/duetector/"><img alt="Pypi" src="https://img.shields.io/pypi/dm/duetector"></a>
+<a href="https://github.com/hitsz-ids/duetector"><img alt="Last Commit" src="https://img.shields.io/github/last-commit/hitsz-ids/duetector"></a>
+<a href="https://github.com/hitsz-ids/duetector"><img alt="Python version" src="https://img.shields.io/pypi/pyversions/duetector"></a>
+</p>
 
-[中文](README.md) | [English](README_en.md)
-
-# duetector🔍: Data Usage eBPF detector
+<p align="center">
+<a href="./README.md">[中文](README.md)</a> | <a href="./README_en.md">[English](README_en.md)</a>
+</p>
 
 ## Introduction
 
-[Intro DataUCON project](https://dataucon.idslab.io/)
+> duetector is one of the components in the DataUCON project, which is designed to provide support for data usage control. [Understanding DataUCON](https://dataucon.idslab.io/).
 
-[DataUCON project docs](https://github.com/hitsz-ids/dataucon)
+duetector🔍 is an eBPF-based data usage control probe that provides support for data usage control by probing for data usage behavior in the Linux kernel.
+
+In the [ABAUC control model](https://github.com/hitsz-ids/dataucon), duetector can be used as a PIP (Policy Information Point) to obtain data usage behavior, so as to provide information about data usage behavior for PDP (Policy Decision Point). Provide information on data usage behavior to PDP (Policy Decision Point).
 
 ## Table of Contents
 

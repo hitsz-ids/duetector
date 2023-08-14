@@ -1,19 +1,26 @@
-![](https://img.shields.io/github/license/hitsz-ids/duetector)
-![](https://img.shields.io/github/v/release/hitsz-ids/duetector)
-![](https://img.shields.io/pypi/dm/duetector)
-![](https://img.shields.io/github/last-commit/hitsz-ids/duetector)
-![](https://img.shields.io/pypi/pyversions/duetector)
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+<h2 align="center">duetector🔍: 基于eBPF的数据使用控制探测器</h2>
+<p align="center">
+<a href="https://github.com/hitsz-ids/duetector/actions"><img alt="Actions Status" src="https://github.com/hitsz-ids/duetector/actions/workflows/python-package.yml/badge.svg"></a>
+<a href="https://github.com/hitsz-ids/duetector/blob/main/LICENSE"><img alt="LICENSE" src="https://img.shields.io/github/license/hitsz-ids/duetector"></a>
+<a href="https://github.com/hitsz-ids/duetector/releases/"><img alt="Releases" src="https://img.shields.io/github/v/release/hitsz-ids/duetector"></a>
+<a href="https://pypi.org/project/duetector/"><img alt="Pypi" src="https://img.shields.io/pypi/dm/duetector"></a>
+<a href="https://github.com/hitsz-ids/duetector"><img alt="Last Commit" src="https://img.shields.io/github/last-commit/hitsz-ids/duetector"></a>
+<a href="https://github.com/hitsz-ids/duetector"><img alt="Python version" src="https://img.shields.io/pypi/pyversions/duetector"></a>
+</p>
 
-[中文](README.md) | [English](README_en.md)
-
-# duetector🔍: 基于eBPF的数据使用控制探测器
+<p align="center">
+<a href="./README.md">[中文](README.md)</a> | <a href="./README_en.md">[English](README_en.md)</a>
+</p>
 
 ## 简介
 
-[了解DataUCON](https://dataucon.idslab.io/)
+> duetector是DataUCON项目中的组件之一，DataUCON项目旨在为数据使用控制提供支持。[了解DataUCON](https://dataucon.idslab.io/)。
 
-[深入阅读DataUCON文档](https://github.com/hitsz-ids/dataucon)
+duetector🔍是一个基于eBPF的数据使用控制探测器，它可以在Linux内核中对数据使用行为进行探测，从而为数据使用控制提供支持。
+
+<!-- 这里需要补充ABAUC相关文档，然后替换链接 -->
+
+在[ABAUC控制模型](https://github.com/hitsz-ids/dataucon)当中，duetector可作为PIP（Policy Information Point）来获取数据使用行为，从而为PDP（Policy Decision Point）提供数据使用行为的信息。
 
 ## 目录
 
