@@ -1,9 +1,8 @@
-from typing import List
+from typing import Any, List
 
-from duetector.bcc import BPF
 from duetector.tracers.base import Tracer
 
 
 class Monitor:
-    bpf: BPF
+    bpf: Any
     traces: List[Tracer]

@@ -2,8 +2,15 @@
 
 from collections import namedtuple
 
-from duetector.bcc import BPF, testing_mode
 from duetector.tracers.base import Tracer
+
+
+class DummyBPF:
+    def __init__(self, text=None):
+        pass
+
+    def attach_dummy(self, **kwargs):
+        pass
 
 
 class DummyTracer(Tracer):
@@ -15,12 +22,12 @@ class DummyTracer(Tracer):
     data_t: namedtuple
 
     @classmethod
-    def attach(cls, bpf: BPF):
+    def attach(cls, bpf: DummyBPF):
         attatcher = getattr(bpf, f"attach_{cls.attach_type}")
         return attatcher(**cls.attatch_args)
 
     @classmethod
-    def add_callback(cls, bpf: BPF, callback):
+    def add_callback(cls, bpf: DummyBPF, callback):
         def _(cpu, data, size):
             event = bpf["events"].event(data)
             return callback(cls._convert_data(event))
@@ -28,7 +35,7 @@ class DummyTracer(Tracer):
         bpf["events"].open_perf_buffer(_)
 
     @classmethod
-    def get_poller(cls, bpf: BPF):
+    def get_poller(cls, bpf: DummyBPF):
         poller = getattr(bpf, cls.poll_fn)
         if not poller:
             raise
