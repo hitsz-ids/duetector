@@ -1,6 +1,6 @@
-ARG BCC_VERSION=v0.28.0
-
 FROM ubuntu:22.04
+
+ARG BCC_VERSION
 
 RUN apt-get update && apt-get install -y zip bison build-essential cmake flex git libedit-dev \
     libllvm14 llvm-14-dev libclang-14-dev python3 python3-pip python-is-python3 zlib1g-dev libelf-dev libfl-dev python3-setuptools \

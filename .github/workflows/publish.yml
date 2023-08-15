@@ -56,6 +56,8 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
+        build-args: |
+          BCC_VERSION=v0.28.0
         file: ./docker/Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/duetector:${{  github.ref_name }}
@@ -68,6 +70,8 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
+        build-args: |
+          BCC_VERSION=v0.28.0
         file: ./docker/Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/duetector:latest
