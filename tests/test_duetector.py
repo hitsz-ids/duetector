@@ -1,3 +1,5 @@
+# Currently we can only test the service module, as eBPF is not supported on
+
 import pytest
 
 

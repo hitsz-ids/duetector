@@ -1,4 +1,4 @@
-<h2 align="center">duetector🔍: 基于eBPF的数据使用控制探测器</h2>
+<h2 align="center">duetector🔍: 基于eBPF的数据使用探测器</h2>
 <p align="center">
 <a href="https://github.com/hitsz-ids/duetector/actions"><img alt="Actions Status" src="https://github.com/hitsz-ids/duetector/actions/workflows/python-package.yml/badge.svg"></a>
 <a href="https://results.pre-commit.ci/latest/github/hitsz-ids/duetector/main"><img alt="pre-commit.ci status" src="https://results.pre-commit.ci/badge/github/hitsz-ids/duetector/main.svg"></a>
@@ -17,7 +17,7 @@
 
 > duetector是DataUCON项目中的组件之一，DataUCON项目旨在为数据使用控制提供支持。[了解DataUCON](https://dataucon.idslab.io/)。
 
-duetector🔍是一个基于eBPF的数据使用控制探测器，它可以在Linux内核中对数据使用行为进行探测，从而为数据使用控制提供支持。
+duetector🔍是一个基于eBPF的数据使用探测器，它可以在Linux内核中对数据使用行为进行探测，从而为数据使用控制提供支持。
 
 <!-- 这里需要补充ABAUC相关文档，然后替换链接 -->
 
