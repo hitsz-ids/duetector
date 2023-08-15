@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from duetector.tracer.base import Tracer
+from duetector.tracers.base import Tracer
 
 
 class OpenTracer(Tracer):
