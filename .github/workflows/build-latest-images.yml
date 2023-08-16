@@ -1,0 +1,47 @@
+name: Build latest images manually
+
+on:
+    workflow_dispatch: {}
+
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    strategy:
+        fail-fast: false
+        matrix:
+          latest-version: ["0.0.1"]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # Build docker images
+    -
+      name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    -
+      name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    -
+      name: Build and push release
+      id: docker_build_release
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        build-args: |
+          BCC_VERSION=v0.28.0
+          DUETECTOR_VERSION=${{ matrix.latest-version }}
+        platforms: linux/amd64,linux/arm64/v8
+        file: ./docker/Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/duetector:latest
