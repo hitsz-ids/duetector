@@ -1,5 +1,3 @@
-# TODO: This is a hack to get around the fact that we can't import BPF in tests
-
 from collections import namedtuple
 
 from duetector.tracers.base import Tracer
@@ -7,19 +5,24 @@ from duetector.tracers.base import Tracer
 
 class DummyBPF:
     def __init__(self, text=None):
-        pass
+        self.callback
 
     def attach_dummy(self, **kwargs):
         pass
 
+    def poll_dummy(self, **kwargs):
+        self.callback()
+
+    def add_callback(self, func):
+        self.callback = func()
+
 
 class DummyTracer(Tracer):
     # Fake a tracer that does nothing for testing purposes
-    attach_type: str
-    attatch_args: str
-    poll_fn: str
-    prog: str
-    data_t: namedtuple
+    attach_type = "dummy"
+    poll_fn = "poll_dummy"
+    prog = "This is nor a prog to run"
+    data_t = namedtuple("DummyTracking", ["pid", "uid", "gid", "comm", "fname"])
 
     @classmethod
     def attach(cls, bpf: DummyBPF):
@@ -29,10 +32,10 @@ class DummyTracer(Tracer):
     @classmethod
     def add_callback(cls, bpf: DummyBPF, callback):
         def _(cpu, data, size):
-            event = bpf["events"].event(data)
-            return callback(cls._convert_data(event))
+            data = cls.data_t()
+            return callback(data)
 
-        bpf["events"].open_perf_buffer(_)
+        bpf.add_callback(_)
 
     @classmethod
     def get_poller(cls, bpf: DummyBPF):
