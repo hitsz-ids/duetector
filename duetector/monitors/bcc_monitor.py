@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Type
 
 from duetector.collectors import Collector
 from duetector.filters import Filter
@@ -13,15 +13,15 @@ class BccMonitor(Monitor):
         # Something like this:
         #  # Get all tracers from TracerManager
         #  self.tracers.append(TracerManager().get_tracers())
-        self.tracers: List[BccTracer] = [OpenTracer]
+        self.tracers: List[BccTracer] = [OpenTracer()]
 
         # TODO: Implement filters and plugin system
         # Something like this:
         #  self.filters = FilterManager().get_filters()
-        self.filters: Dict[Callable] = [Filter()]
+        self.filters: List[Callable] = [Filter()]
 
         # TODO: Implement plugin system
-        self.collectors: Dict[Collector] = [Collector()]
+        self.collectors: List[Collector] = [Collector()]
 
         self.bpf_tracers: Dict[Any, BccTracer] = {}
         self._init_bpf()

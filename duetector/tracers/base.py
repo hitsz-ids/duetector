@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Callable, Dict
+from typing import Callable, Dict, NamedTuple
 
 from duetector.exceptions import TracerError
 
@@ -14,19 +14,19 @@ class BccTracer:
     poll_fn: str
     poll_args: Dict[str, str] = {}
     prog: str
-    data_t: namedtuple
+    data_t: NamedTuple
 
     @classmethod
-    def _convert_data(cls, data) -> namedtuple:
+    def _convert_data(cls, data) -> NamedTuple:
         args = {}
-        for k in cls.data_t._fields:
+        for k in cls.data_t._fields:  # type: ignore
             v = getattr(data, k)
             if isinstance(v, bytes):
                 v = v.decode("utf-8")
 
             args[k] = v
 
-        return cls.data_t(**args)
+        return cls.data_t(**args)  # type: ignore
 
     @classmethod
     def attach(cls, bpf):
@@ -63,5 +63,5 @@ class BccTracer:
         return poller
 
     @classmethod
-    def add_callback(cls, bpf, callback: Callable[[namedtuple], None]):
+    def add_callback(cls, bpf, callback: Callable[[NamedTuple], None]):
         raise NotImplementedError("add_callback not implemented")

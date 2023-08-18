@@ -36,7 +36,7 @@ class OpenTracer(BccTracer):
     def add_callback(cls, bpf, callback):
         def _(ctx, data, size):
             event = bpf["buffer"].event(data)
-            return callback(cls._convert_data(event))
+            return callback(cls._convert_data(event))  # type: ignore
 
         bpf["buffer"].open_ring_buffer(_)
 
