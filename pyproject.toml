@@ -24,6 +24,7 @@ classifiers = [
 test = [
     "pytest",
     "pytest-cov",
+    "pytype",
 ]
 
 

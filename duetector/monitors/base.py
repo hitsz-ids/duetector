@@ -1,8 +1,11 @@
-from typing import Any, List
+from typing import List
 
+from duetector.collectors.base import Collector
+from duetector.filters.base import Filter
 from duetector.tracers.base import Tracer
 
 
 class Monitor:
-    bpf: Any
     traces: List[Tracer]
+    filters: List[Filter]
+    collectors: List[Collector]
