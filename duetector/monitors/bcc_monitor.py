@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, List, Type
 
-from duetector.collectors import Collector
+from duetector.collectors.base import Collector, MemoryCollector
 from duetector.filters import Filter
 from duetector.monitors.base import Monitor
 from duetector.tracers import BccTracer
@@ -21,7 +21,7 @@ class BccMonitor(Monitor):
         self.filters: List[Callable] = [Filter()]
 
         # TODO: Implement plugin system
-        self.collectors: List[Collector] = [Collector()]
+        self.collectors: List[Collector] = [MemoryCollector()]
 
         self.bpf_tracers: Dict[Any, BccTracer] = {}
         self._init_bpf()
@@ -45,8 +45,10 @@ class BccMonitor(Monitor):
         def _(data):
             for filter in self.filters:
                 data = filter(data)
+                if not data:
+                    return
             for collector in self.collectors:
-                collector.emit(data)
+                collector.emit(getattr(tracer, "name", tracer), data)
 
         tracer.add_callback(self.bpf_tracers[tracer], _)
 
@@ -57,12 +59,15 @@ class BccMonitor(Monitor):
     def poll(self, tracer: BccTracer):
         tracer.get_poller(self.bpf_tracers[tracer])(**tracer.poll_args)
 
+    def summary(self):
+        return {collector.__class__.__name__: collector.summary() for collector in self.collectors}
+
 
 if __name__ == "__main__":
     m = BccMonitor()
     while True:
         try:
             m.poll_all()
-
+            print(m.summary())
         except KeyboardInterrupt:
             exit()

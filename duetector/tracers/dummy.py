@@ -18,11 +18,13 @@ class DummyBPF:
 
 
 class DummyTracer(Tracer):
-    # Fake a tracer that does nothing for testing purposes
+    # Fake a tracer that does nothing for testing
     attach_type = "dummy"
     poll_fn = "poll_dummy"
-    prog = "This is nor a prog to run"
-    data_t = namedtuple("DummyTracking", ["pid", "uid", "gid", "comm", "fname"])
+    prog = "This is not a runnable program"
+    data_t = namedtuple(
+        "DummyTracking", ["pid", "uid", "gid", "comm", "fname", "timestamp", "custom"]
+    )
 
     @classmethod
     def attach(cls, bpf: DummyBPF):
