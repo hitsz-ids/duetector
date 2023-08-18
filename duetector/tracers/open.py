@@ -34,7 +34,7 @@ class OpenTracer(BccTracer):
 
     @classmethod
     def add_callback(cls, bpf, callback):
-        def _(cpu, data, size):
+        def _(ctx, data, size):
             event = bpf["buffer"].event(data)
             return callback(cls._convert_data(event))
 

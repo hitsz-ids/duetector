@@ -39,9 +39,9 @@ class BccMonitor(Monitor):
                 continue
             self.bpf_tracers[tracer] = bpf
             tracer.attach(bpf)
-            self._add_filters_callback(tracer)
+            self._add_callback(tracer)
 
-    def _add_filters_callback(self, tracer):
+    def _add_callback(self, tracer):
         def _(data):
             for filter in self.filters:
                 data = filter(data)
