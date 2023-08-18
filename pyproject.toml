@@ -9,6 +9,7 @@ keywords = ["duetector"]
 requires-python = ">=3.8"
 dependencies = [
     "loguru",
+    "pydantic",
 
 ]
 dynamic = ["version", ]
@@ -22,6 +23,7 @@ classifiers = [
 [project.optional-dependencies]
 test = [
     "pytest",
+    "pytest-cov",
 ]
 
 

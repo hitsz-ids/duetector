@@ -1,3 +1,3 @@
-from .open import OpenTracer
+from .base import BccTracer
 
-__all__ = ["OpenTracer"]
+__all__ = ["BccTracer"]

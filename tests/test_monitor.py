@@ -2,13 +2,13 @@
 
 import pytest
 
-from duetector.monitor.bcc_monitor import BccMonitor
+from duetector.monitors.bcc_monitor import BccMonitor
 from duetector.tracers.dummy import DummyBPF, DummyTracer
 
 
 class DummyMonitor(BccMonitor):
     def __init__(self):
-        self.tracers = [DummyTracer()]
+        self.tracers = [DummyTracer]
         self.bpf = DummyBPF()
 
 

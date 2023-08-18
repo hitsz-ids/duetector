@@ -1,2 +1,3 @@
 class Collector:
-    pass
+    def emit(self, data):
+        print(data)
