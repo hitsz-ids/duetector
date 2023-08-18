@@ -1,0 +1,17 @@
+ARG BCC_VERSION=v0.28.0
+
+FROM dataucon/ubuntu-bcc:${BCC_VERSION}
+
+ARG DUETECTOR_VERSION
+
+COPY . /duetector
+
+RUN pip install -e /duetector --no-cache-dir
+
+# docker build -t duetector:dev -f docker/Dockerfile.dev .
+
+# Current kernel build with CONFIG_IKHEADERS=m
+# docker run -it --rm --cap-add=sys_admin -v /sys/kernel/kheaders.tar.xz:/sys/kernel/kheaders.tar.xz -v /sys/kernel/debug:/sys/kernel/debug duetector:dev bash
+
+# Currnet kernel installed with headers
+# docker run -it --rm --cap-add=sys_admin -v /usr/lib/modules:/usr/lib/modules -v /sys/kernel/debug:/sys/kernel/debug duetector:dev bash
