@@ -33,7 +33,7 @@ class OpenTracer(BccTracer):
         data.pid = bpf_get_current_pid_tgid();
         data.uid = bpf_get_current_uid_gid();
         data.gid = bpf_get_current_uid_gid() >> 32;
-        u64 timestamp = bpf_ktime_get_ns();
+        data.timestamp = bpf_ktime_get_ns();
         bpf_get_current_comm(&data.comm, sizeof(data.comm));
         bpf_probe_read_user_str(&data.fname, sizeof(data.fname), filename);
         buffer.ringbuf_output(&data, sizeof(data), 0);
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     tracer.attach(b)
 
     def print_callback(data: tracer.data_t):
-        print(f"[{data.comm} ({data.pid})] OPEN {data.fname}")
+        print(f"[{data.comm} ({data.pid})] {data.timestamp} OPEN {data.fname}")
 
     tracer.add_callback(b, print_callback)
     poller = tracer.get_poller(b)

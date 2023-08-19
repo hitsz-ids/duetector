@@ -43,7 +43,7 @@ class BccMonitor(Monitor):
                 if not data:
                     return
             for collector in self.collectors:
-                collector.emit(getattr(tracer, "name", tracer), data)
+                collector.emit(tracer, data)
 
         tracer.add_callback(self.bpf_tracers[tracer], _)
 

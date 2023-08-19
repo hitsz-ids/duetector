@@ -25,14 +25,8 @@ class Tracking(pydantic.BaseModel):
         elif isinstance(tracer, str):
             tracer_name = tracer
         else:
-            tracer_name = tracer.__class__.__name__
-
-        if not isinstance(tracer, str):
-            tracer_name = getattr(tracer, "__name__", None)
-            if not tracer_name:
-                tracer_name = getattr(tracer, "__class__").__name__
-        else:
-            tracer_name = tracer
+            # Is instance of tracer
+            tracer_name = getattr(tracer, "name", tracer.__class__.__name__)
 
         args = {
             "tracer": tracer_name,

@@ -31,30 +31,17 @@ class MemoryCollector(Collector):
         self._trackings[t.tracer].append(t)
 
     def summary(self) -> Dict:
-        summary = {}
-        for tracer, trackings in self._trackings.items():
-            s = {}
-            for tracking in trackings:
-                if tracking.fname:
-                    pid_tracking = s.setdefault(
-                        f"{tracking.uid}:{tracking.gid} | [{tracking.pid}] {tracking.comm} | {tracking.cwd}",
-                        dict(),
-                    )
-                    pid_tracking.setdefault(tracking.fname, 0)
-                    pid_tracking[tracking.fname] += 1
-                    if tracking.timestamp:
-                        pid_tracking["last_updated"] = max(
-                            pid_tracking.get("last_updated", 0), tracking.timestamp
-                        )
-
-            summary[tracer] = s
-
-        return summary
+        return {
+            tracer: {
+                "count": len(trackings),
+                "first": trackings[0].timestamp,
+                "last": trackings[-1].timestamp,
+                "most_recent": trackings[-1].model_dump(),
+            }
+            for tracer, trackings in self._trackings.items()
+        }
 
 
 @hookimpl
 def init_collector(config):
-    def _():
-        return MemoryCollector(config)
-
-    return _
+    return MemoryCollector(config)
