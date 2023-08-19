@@ -1,6 +1,7 @@
 from collections import namedtuple
 from typing import Callable, NamedTuple
 
+from duetector.extension.tracer import hookimpl
 from duetector.tracers.base import BccTracer
 
 
@@ -40,27 +41,31 @@ class OpenTracer(BccTracer):
     }
     """
 
-    @classmethod
-    def add_callback(cls, bpf, callback: Callable[[NamedTuple], None]):
+    def add_callback(self, bpf, callback: Callable[[NamedTuple], None]):
         def _(ctx, data, size):
             event = bpf["buffer"].event(data)
-            return callback(cls._convert_data(event))  # type: ignore
+            return callback(self._convert_data(event))  # type: ignore
 
         bpf["buffer"].open_ring_buffer(_)
+
+
+@hookimpl
+def init_tracer(config):
+    return OpenTracer(config)
 
 
 if __name__ == "__main__":
     from bcc import BPF
 
     b = BPF(text=OpenTracer.prog)
+    tracer = OpenTracer()
+    tracer.attach(b)
 
-    OpenTracer.attach(b)
-
-    def print_callback(data: OpenTracer.data_t):
+    def print_callback(data: tracer.data_t):
         print(f"[{data.comm} ({data.pid})] OPEN {data.fname}")
 
-    OpenTracer.add_callback(b, print_callback)
-    poller = OpenTracer.get_poller(b)
+    tracer.add_callback(b, print_callback)
+    poller = tracer.get_poller(b)
     while True:
         try:
             poller()

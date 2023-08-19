@@ -1,27 +1,22 @@
 from typing import Any, Callable, Dict, List, Type
 
 from duetector.collectors.base import Collector, MemoryCollector
+from duetector.extension.collector.manager import CollectorManager
+from duetector.extension.filter.manager import FilterManager
+from duetector.extension.tracer.manager import TracerManager
 from duetector.filters import Filter
 from duetector.monitors.base import Monitor
 from duetector.tracers import BccTracer
-from duetector.tracers.open import OpenTracer
 
 
 class BccMonitor(Monitor):
-    def __init__(self):
-        # TODO: Add more Tracer and support plugin system
-        # Something like this:
-        #  # Get all tracers from TracerManager
-        #  self.tracers.append(TracerManager().get_tracers())
-        self.tracers: List[BccTracer] = [OpenTracer()]
+    def __init__(self, config=None):
+        # TODO: Dependency injection for config
+        super().__init__(config=config)
 
-        # TODO: Implement filters and plugin system
-        # Something like this:
-        #  self.filters = FilterManager().get_filters()
-        self.filters: List[Callable] = [Filter()]
-
-        # TODO: Implement plugin system
-        self.collectors: List[Collector] = [MemoryCollector()]
+        self.tracers: List[BccTracer] = TracerManager(config).init()
+        self.filters: List[Callable] = FilterManager(config).init()
+        self.collectors: List[Collector] = CollectorManager(config).init()
 
         self.bpf_tracers: Dict[Any, BccTracer] = {}
         self._init_bpf()

@@ -1,10 +1,15 @@
 from collections import deque
 from typing import Dict, Iterable, NamedTuple
 
+from duetector.extension.collector import hookimpl
+
 from .models import Tracking
 
 
 class Collector:
+    def __init__(self, config=None):
+        self.config = config
+
     def emit(self, tracer, data: NamedTuple):
         self._emit(Tracking.from_namedtuple(tracer, data))
 
@@ -16,7 +21,8 @@ class Collector:
 
 
 class MemoryCollector(Collector):
-    def __init__(self):
+    def __init__(self, config=None):
+        super().__init__(config=config)
         self._trackings: Dict[str, Iterable[Tracking]] = {}
         self.maxlen = 1024
 
@@ -44,3 +50,11 @@ class MemoryCollector(Collector):
             summary[tracer] = s
 
         return summary
+
+
+@hookimpl
+def init_collector(config):
+    def _():
+        return MemoryCollector(config)
+
+    return _

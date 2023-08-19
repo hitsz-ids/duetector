@@ -9,3 +9,7 @@ class Monitor:
     traces: List[Tracer]
     filters: List[Filter]
     collectors: List[Collector]
+
+    def __init__(self, config=None):
+        # TODO: Dependency injection for config
+        self.config = config
