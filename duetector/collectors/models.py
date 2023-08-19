@@ -33,7 +33,7 @@ class Tracking(pydantic.BaseModel):
             "_extended": {},
         }
         for field in data._fields:
-            if field in Tracking.__fields__:
+            if field in Tracking.model_fields:
                 args[field] = getattr(data, field)
             else:
                 args["_extended"][field] = getattr(data, field)

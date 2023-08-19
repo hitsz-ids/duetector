@@ -5,8 +5,7 @@ import pluggy
 
 import duetector.collectors
 from duetector.collectors.base import Collector
-
-from .var import project_name
+from duetector.extension.collector import project_name
 
 hookspec = pluggy.HookspecMarker(project_name)
 

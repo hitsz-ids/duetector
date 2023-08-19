@@ -1,11 +1,12 @@
 from collections import namedtuple
+from typing import Callable
 
-from duetector.tracers.base import Tracer
+from duetector.tracers.base import BccTracer
 
 
 class DummyBPF:
     def __init__(self, text=None):
-        self.callback
+        self.text = text
 
     def attach_dummy(self, **kwargs):
         pass
@@ -14,10 +15,10 @@ class DummyBPF:
         self.callback()
 
     def add_callback(self, func):
-        self.callback = func()
+        self.callback = func
 
 
-class DummyTracer(Tracer):
+class DummyTracer(BccTracer):
     # Fake a tracer that does nothing for testing
     attach_type = "dummy"
     poll_fn = "poll_dummy"
@@ -26,22 +27,27 @@ class DummyTracer(Tracer):
         "DummyTracking", ["pid", "uid", "gid", "comm", "fname", "timestamp", "custom"]
     )
 
-    @classmethod
-    def attach(cls, bpf: DummyBPF):
-        attatcher = getattr(bpf, f"attach_{cls.attach_type}")
-        return attatcher(**cls.attatch_args)
+    def attach(self, host: DummyBPF):
+        super().attach(host)
+
+    def detach(self, host: DummyBPF):
+        super().detach(host)
 
     @classmethod
     def add_callback(cls, bpf: DummyBPF, callback):
-        def _(cpu, data, size):
-            data = cls.data_t()
+        def _():
+            data = cls.data_t(
+                pid=9999,
+                uid=9999,
+                gid=9999,
+                comm="dummy",
+                fname="dummy.file",
+                timestamp=13205215231927,
+                custom="dummy-xargs",
+            )
             return callback(data)
 
         bpf.add_callback(_)
 
-    @classmethod
-    def get_poller(cls, bpf: DummyBPF):
-        poller = getattr(bpf, cls.poll_fn)
-        if not poller:
-            raise
-        return poller
+    def get_poller(self, host: DummyBPF) -> Callable:
+        return super().get_poller(host)

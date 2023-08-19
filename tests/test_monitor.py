@@ -2,38 +2,39 @@
 
 import pytest
 
-from duetector.collectors import Collector
-from duetector.filters import Filter
+from duetector.manager import CollectorManager, FilterManager, TracerManager
 from duetector.monitors.bcc_monitor import BccMonitor
 from duetector.tracers.dummy import DummyBPF, DummyTracer
 
 
 class MockMonitor(BccMonitor):
-    def __init__(self):
-        self.tracers = [DummyTracer]
-        self.filters = [Filter()]
-        self.collectors = [Collector()]
+    def __init__(self, config=None):
+        self.config = config
+
+        self.tracers = [DummyTracer(config)]
+        self.filters = FilterManager(config).init()
+        self.collectors = CollectorManager(config).init()
 
         self.bpf_tracers = {}
         self._init_bpf()
 
     def _init_bpf(self):
         for tracer in self.tracers:
-            try:
-                bpf = DummyBPF(text=tracer.prog)
-            except Exception:
-                # Compiler error
-                # TODO: Add logger
-                continue
+            bpf = DummyBPF(text=tracer.prog)
             self.bpf_tracers[tracer] = bpf
             tracer.attach(bpf)
             self._add_callback(tracer)
 
 
 @pytest.fixture
-def bcc_monitor():
-    yield MockMonitor()
+def bcc_monitor(config):
+    yield MockMonitor(config)
 
 
-def test_bcc_monitor():
-    pass
+def test_bcc_monitor(bcc_monitor: MockMonitor):
+    bcc_monitor.poll_all()
+    print(bcc_monitor.summary())
+
+
+if __name__ == "__main__":
+    pytest.main(["-vv", "-s", __file__])

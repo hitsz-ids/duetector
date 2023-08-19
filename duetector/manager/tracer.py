@@ -4,9 +4,8 @@ from typing import List, Optional
 import pluggy
 
 import duetector.tracers
+from duetector.extension.tracer import project_name
 from duetector.tracers.base import Tracer
-
-from .var import project_name
 
 hookspec = pluggy.HookspecMarker(project_name)
 

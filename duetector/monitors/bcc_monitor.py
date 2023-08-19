@@ -1,10 +1,7 @@
-from typing import Any, Callable, Dict, List, Type
+from typing import Any, Callable, Dict, List
 
-from duetector.collectors.base import Collector, MemoryCollector
-from duetector.extension.collector.manager import CollectorManager
-from duetector.extension.filter.manager import FilterManager
-from duetector.extension.tracer.manager import TracerManager
-from duetector.filters import Filter
+from duetector.collectors.base import Collector
+from duetector.manager import CollectorManager, FilterManager, TracerManager
 from duetector.monitors.base import Monitor
 from duetector.tracers import BccTracer
 

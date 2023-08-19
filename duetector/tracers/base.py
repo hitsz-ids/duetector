@@ -11,20 +11,24 @@ class Tracer:
         # TODO: Dependency injection for config
         self.config = config
 
-    def attach(self, manager):
+    def attach(self, host):
         raise NotImplementedError("attach not implemented")
 
-    def detach(self, manager):
+    def detach(self, host):
         raise NotImplementedError("detach not implemented")
 
-    def get_poller(self, manager) -> Callable:
+    def get_poller(self, host) -> Callable:
         raise NotImplementedError("get_poller not implemented")
 
-    def add_callback(self, manager, callback: Callable[[NamedTuple], None]):
+    def add_callback(self, host, callback: Callable[[NamedTuple], None]):
         raise NotImplementedError("add_callback not implemented")
 
 
 class BccTracer(Tracer):
+    """
+    host of BccTracer is bcc.BPF
+    """
+
     attach_type: str
     attatch_args: Dict[str, str] = {}
     poll_fn: str
@@ -43,23 +47,23 @@ class BccTracer(Tracer):
 
         return self.data_t(**args)  # type: ignore
 
-    def attach(self, bpf):
+    def attach(self, host):
         if not self.attach_type:
             # No need to attach, in this case, function name indicates
             # More: https://github.com/iovisor/bcc/blob/master/docs/reference_guide.md
             return
-        attatcher = getattr(bpf, f"attach_{self.attach_type}")
+        attatcher = getattr(host, f"attach_{self.attach_type}")
         return attatcher(**self.attatch_args)
 
-    def detach(self, bpf):
+    def detach(self, host):
         if not self.attach_type:
             # Means prog is not attached by python's BPF.attatch_()
             # So user should detach it manually
             raise TracerError("Unable to detach, no attach type specified")
-        attatcher = getattr(bpf, f"detach_{self.attach_type}")
+        attatcher = getattr(host, f"detach_{self.attach_type}")
         return attatcher(**self.attatch_args)
 
-    def get_poller(self, bpf) -> Callable:
+    def get_poller(self, host) -> Callable:
         if not self.poll_fn:
             # Not support poll
 
@@ -69,10 +73,10 @@ class BccTracer(Tracer):
             # Prevent AttributeError
             return _
 
-        poller = getattr(bpf, self.poll_fn)
+        poller = getattr(host, self.poll_fn)
         if not poller:
             raise TracerError(f"{self.poll_fn} function not found in BPF")
         return poller
 
-    def add_callback(self, bpf, callback: Callable[[NamedTuple], None]):
+    def add_callback(self, host, callback: Callable[[NamedTuple], None]):
         raise NotImplementedError("add_callback not implemented")

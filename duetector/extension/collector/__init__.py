@@ -1,5 +1,4 @@
 import pluggy
 
-from .var import project_name
-
+project_name = "duetector.collector"
 hookimpl = pluggy.HookimplMarker(project_name)

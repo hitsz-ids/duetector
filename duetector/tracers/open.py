@@ -41,12 +41,12 @@ class OpenTracer(BccTracer):
     }
     """
 
-    def add_callback(self, bpf, callback: Callable[[NamedTuple], None]):
+    def add_callback(self, host, callback: Callable[[NamedTuple], None]):
         def _(ctx, data, size):
-            event = bpf["buffer"].event(data)
+            event = host["buffer"].event(data)
             return callback(self._convert_data(event))  # type: ignore
 
-        bpf["buffer"].open_ring_buffer(_)
+        host["buffer"].open_ring_buffer(_)
 
 
 @hookimpl
