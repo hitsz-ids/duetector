@@ -33,7 +33,7 @@ def bcc_monitor(config):
 
 def test_bcc_monitor(bcc_monitor: MockMonitor):
     bcc_monitor.poll_all()
-    bcc_monitor.summary()["MemoryCollector"]["DummyTracer"][
+    bcc_monitor.summary()["DequeCollector"]["DummyTracer"][
         "most_recent"
     ] == DummyTracer.get_dummy_data()
 
