@@ -1,3 +1,4 @@
+import os
 from typing import NamedTuple, Optional
 
 from duetector.extension.filter import hookimpl
@@ -10,19 +11,23 @@ class Filter:
 
     def __call__(self, data: NamedTuple) -> Optional[NamedTuple]:
         fname = getattr(data, "fname")
-        if fname and any(
-            [
-                fname.startswith(p)
-                for p in [
-                    "/proc",
-                    "/sys",
-                    "/lib",
-                    "/dev",
-                    "/run",
-                    "/usr/lib",
-                    "/etc/ld.so.cache",
+        if (
+            fname
+            and any(
+                [
+                    fname.startswith(p)
+                    for p in [
+                        "/proc",
+                        "/sys",
+                        "/lib",
+                        "/dev",
+                        "/run",
+                        "/usr/lib",
+                        "/etc/ld.so.cache",
+                    ]
                 ]
-            ]
+            )
+            or getattr(data, "pid") == os.getpid()
         ):
             return None
 

@@ -3,7 +3,7 @@ from typing import List, Optional
 
 import pluggy
 
-import duetector.tracers
+import duetector
 from duetector.extension.tracer import project_name
 from duetector.tracers.base import Tracer
 
@@ -22,7 +22,7 @@ class TracerManager:
         self.pm = pluggy.PluginManager(project_name)
         self.pm.add_hookspecs(sys.modules[__name__])
         self.pm.load_setuptools_entrypoints(project_name)
-        self.register(duetector.tracers)
+        self.register(duetector.tracers.openat2)
 
     def register(self, module):
         self.pm.register(module)
