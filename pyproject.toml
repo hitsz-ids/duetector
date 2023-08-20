@@ -10,7 +10,8 @@ requires-python = ">=3.8"
 dependencies = [
     "loguru",
     "pydantic",
-    "pluggy"
+    "pluggy",
+    "SQLAlchemy>=2"
 ]
 dynamic = ["version", ]
 classifiers = [

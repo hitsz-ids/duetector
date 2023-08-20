@@ -2,7 +2,7 @@
 
 import pytest
 
-from duetector.manager import CollectorManager, FilterManager, TracerManager
+from duetector.manager import CollectorManager, FilterManager
 from duetector.monitors.bcc_monitor import BccMonitor
 from duetector.tracers.dummy import DummyBPF, DummyTracer
 
@@ -33,7 +33,9 @@ def bcc_monitor(config):
 
 def test_bcc_monitor(bcc_monitor: MockMonitor):
     bcc_monitor.poll_all()
-    print(bcc_monitor.summary())
+    bcc_monitor.summary()["MemoryCollector"]["DummyTracer"][
+        "most_recent"
+    ] == DummyTracer.get_dummy_data()
 
 
 if __name__ == "__main__":

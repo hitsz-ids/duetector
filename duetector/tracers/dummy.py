@@ -34,18 +34,20 @@ class DummyTracer(BccTracer):
         super().detach(host)
 
     @classmethod
-    def add_callback(cls, bpf: DummyBPF, callback):
+    def get_dummy_data(cls):
+        return cls.data_t(
+            pid=9999,
+            uid=9999,
+            gid=9999,
+            comm="dummy",
+            fname="dummy.file",
+            timestamp=13205215231927,
+            custom="dummy-xargs",
+        )
+
+    def add_callback(self, bpf: DummyBPF, callback):
         def _():
-            data = cls.data_t(
-                pid=9999,
-                uid=9999,
-                gid=9999,
-                comm="dummy",
-                fname="dummy.file",
-                timestamp=13205215231927,
-                custom="dummy-xargs",
-            )
-            return callback(data)
+            return callback(self.get_dummy_data())
 
         bpf.add_callback(_)
 
