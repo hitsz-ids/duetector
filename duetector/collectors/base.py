@@ -20,7 +20,7 @@ class Collector:
         raise NotImplementedError
 
 
-class MemoryCollector(Collector):
+class DequeCollector(Collector):
     def __init__(self, config=None):
         super().__init__(config=config)
         self._trackings: Dict[str, Iterable[Tracking]] = {}
@@ -44,4 +44,4 @@ class MemoryCollector(Collector):
 
 @hookimpl
 def init_collector(config):
-    return MemoryCollector(config)
+    return DequeCollector(config)
