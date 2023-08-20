@@ -1,4 +1,8 @@
-from . import openat2
 from .base import BccTracer
 
-__all__ = ["BccTracer", "openat2"]
+__all__ = ["BccTracer"]
+
+# Expose for plugin system
+from . import openat2
+
+registers = [openat2]

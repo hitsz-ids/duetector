@@ -6,6 +6,7 @@ import pluggy
 import duetector.filters
 from duetector.extension.filter import project_name
 from duetector.filters.base import Filter
+from duetector.manager import Manager
 
 hookspec = pluggy.HookspecMarker(project_name)
 
@@ -15,7 +16,7 @@ def init_filter(config) -> Optional[Filter]:
     """Initialize tracer from config"""
 
 
-class FilterManager:
+class FilterManager(Manager):
     def __init__(self, config=None):
         self.config = config
 
@@ -23,9 +24,6 @@ class FilterManager:
         self.pm.add_hookspecs(sys.modules[__name__])
         self.pm.load_setuptools_entrypoints(project_name)
         self.register(duetector.filters)
-
-    def register(self, module):
-        self.pm.register(module)
 
     def init(self) -> List[Filter]:
         objs = []

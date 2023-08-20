@@ -1,4 +1,6 @@
 # Expose init_collector for plugin system
-from .base import init_collector  # noqa
+# Expose for plugin system
+from . import base, sqlite
 from .base import Collector
-from .sqlite import init_collector  # noqa
+
+registers = [base, sqlite]
