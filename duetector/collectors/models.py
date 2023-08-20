@@ -16,7 +16,7 @@ class Tracking(pydantic.BaseModel):
     fname: Optional[str] = None
     timestamp: Optional[int] = None
 
-    _extended: Dict[str, str] = {}
+    extended: Dict[str, str] = {}
 
     @staticmethod
     def from_namedtuple(tracer, data: NamedTuple) -> Tracking:  # type: ignore
@@ -30,13 +30,13 @@ class Tracking(pydantic.BaseModel):
 
         args = {
             "tracer": tracer_name,
-            "_extended": {},
+            "extended": {},
         }
         for field in data._fields:
             if field in Tracking.model_fields:
                 args[field] = getattr(data, field)
             else:
-                args["_extended"][field] = getattr(data, field)
+                args["extended"][field] = getattr(data, field)
 
         if not args.get("cwd"):
             # Try get cwd from /proc/<pid>/cwd
