@@ -1,4 +1,3 @@
-
 # Code Style and Lint
 
 We use [black](https://github.com/psf/black) as the code formatter, the best way to use it is to install the pre-commit hook, it will automatically format the code before each commit
@@ -22,7 +21,7 @@ pre-commit run --all-files
 pip install -e .[test]
 ```
 
-# Unit-test
+# Unittest
 
 We use pytest to write unit tests, and use pytest-cov to generate coverage reports
 
@@ -32,3 +31,11 @@ pytest --cov=duetector # Generate coverage reports
 ```
 
 Run unit-test before PR, **ensure that new features are covered by unit tests**
+
+# Typing
+
+(Optional, python<=3.10) Use [pytype](https://github.com/google/pytype) to check typed
+
+```
+pytype ./duetector
+```

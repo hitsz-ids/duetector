@@ -1,42 +1,55 @@
-# TODO: This is a hack to get around the fact that we can't import BPF in tests
-
 from collections import namedtuple
+from typing import Callable
 
-from duetector.tracers.base import Tracer
+from duetector.tracers.base import BccTracer
 
 
 class DummyBPF:
     def __init__(self, text=None):
-        pass
+        self.text = text
 
     def attach_dummy(self, **kwargs):
         pass
 
+    def poll_dummy(self, **kwargs):
+        self.callback()
 
-class DummyTracer(Tracer):
-    # Fake a tracer that does nothing for testing purposes
-    attach_type: str
-    attatch_args: str
-    poll_fn: str
-    prog: str
-    data_t: namedtuple
+    def add_callback(self, func):
+        self.callback = func
+
+
+class DummyTracer(BccTracer):
+    # Fake a tracer that does nothing for testing
+    attach_type = "dummy"
+    poll_fn = "poll_dummy"
+    prog = "This is not a runnable program"
+    data_t = namedtuple(
+        "DummyTracking", ["pid", "uid", "gid", "comm", "fname", "timestamp", "custom"]
+    )
+
+    def attach(self, host: DummyBPF):
+        super().attach(host)
+
+    def detach(self, host: DummyBPF):
+        super().detach(host)
 
     @classmethod
-    def attach(cls, bpf: DummyBPF):
-        attatcher = getattr(bpf, f"attach_{cls.attach_type}")
-        return attatcher(**cls.attatch_args)
+    def get_dummy_data(cls):
+        return cls.data_t(
+            pid=9999,
+            uid=9999,
+            gid=9999,
+            comm="dummy",
+            fname="dummy.file",
+            timestamp=13205215231927,
+            custom="dummy-xargs",
+        )
 
-    @classmethod
-    def add_callback(cls, bpf: DummyBPF, callback):
-        def _(cpu, data, size):
-            event = bpf["events"].event(data)
-            return callback(cls._convert_data(event))
+    def add_callback(self, bpf: DummyBPF, callback):
+        def _():
+            return callback(self.get_dummy_data())
 
-        bpf["events"].open_perf_buffer(_)
+        bpf.add_callback(_)
 
-    @classmethod
-    def get_poller(cls, bpf: DummyBPF):
-        poller = getattr(bpf, cls.poll_fn)
-        if not poller:
-            raise
-        return poller
+    def get_poller(self, host: DummyBPF) -> Callable:
+        return super().get_poller(host)
