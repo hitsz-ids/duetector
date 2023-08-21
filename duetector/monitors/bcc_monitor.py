@@ -1,15 +1,21 @@
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
 from duetector.collectors.base import Collector
+from duetector.log import logger
 from duetector.manager import CollectorManager, FilterManager, TracerManager
 from duetector.monitors.base import Monitor
 from duetector.tracers import BccTracer
 
 
 class BccMonitor(Monitor):
-    def __init__(self, config=None):
-        # TODO: Dependency injection for config
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config=config)
+        if self.disabled:
+            logger.info("BccMonitor disabled")
+            self.tracers = []
+            self.filters = []
+            self.collectors = []
+            return
 
         self.tracers: List[BccTracer] = TracerManager(config).init()
         self.filters: List[Callable] = FilterManager(config).init()
@@ -25,13 +31,14 @@ class BccMonitor(Monitor):
         for tracer in self.tracers:
             try:
                 bpf = BPF(text=tracer.prog)
-            except Exception:
-                # Compiler error
-                # TODO: Add logger
+            except Exception as e:
+                logger.error(f"Failed to compile {tracer.__class__.__name__}")
+                logger.exception(e)
                 continue
             self.bpf_tracers[tracer] = bpf
             tracer.attach(bpf)
             self._add_callback(tracer)
+            logger.info(f"Tracer {tracer.__class__.__name__} attached")
 
     def _add_callback(self, tracer):
         def _(data):
@@ -57,9 +64,10 @@ class BccMonitor(Monitor):
 
 if __name__ == "__main__":
     m = BccMonitor()
+    print(m)
     while True:
         try:
             m.poll_all()
-            print(m.summary())
         except KeyboardInterrupt:
+            print(m.summary())
             exit()

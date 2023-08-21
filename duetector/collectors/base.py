@@ -1,16 +1,24 @@
 from collections import deque
-from typing import Dict, Iterable, NamedTuple
+from typing import Any, Dict, Iterable, NamedTuple, Optional
 
+from duetector.config import Configuable
 from duetector.extension.collector import hookimpl
 
 from .models import Tracking
 
 
-class Collector:
-    def __init__(self, config=None):
-        self.config = config
+class Collector(Configuable):
+    @property
+    def config_spec(self):
+        return self.__class__.__name__
+
+    @property
+    def disabled(self):
+        return self.config.disabled
 
     def emit(self, tracer, data: NamedTuple):
+        if self.disabled:
+            return
         self._emit(Tracking.from_namedtuple(tracer, data))
 
     def _emit(self, t: Tracking):
@@ -21,10 +29,18 @@ class Collector:
 
 
 class DequeCollector(Collector):
-    def __init__(self, config=None):
-        super().__init__(config=config)
+    default_config = {
+        "disabled": True,
+        "maxlen": 1024,
+    }
+
+    @property
+    def maxlen(self):
+        return self.config.maxlen
+
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
         self._trackings: Dict[str, Iterable[Tracking]] = {}
-        self.maxlen = 1024
 
     def _emit(self, t: Tracking):
         self._trackings.setdefault(t.tracer, deque(maxlen=self.maxlen))

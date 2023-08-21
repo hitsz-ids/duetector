@@ -1,15 +1,20 @@
-from typing import List
+from typing import Any, Dict, List, Optional
 
 from duetector.collectors.base import Collector
+from duetector.config import Configuable
 from duetector.filters.base import Filter
 from duetector.tracers.base import Tracer
 
 
-class Monitor:
+class Monitor(Configuable):
     traces: List[Tracer]
     filters: List[Filter]
     collectors: List[Collector]
 
-    def __init__(self, config=None):
-        # TODO: Dependency injection for config
-        self.config = config
+    @property
+    def config_spec(self):
+        return self.__class__.__name__
+
+    @property
+    def disabled(self):
+        return self.config.disabled

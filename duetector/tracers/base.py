@@ -1,15 +1,20 @@
 from collections import namedtuple
-from typing import Callable, Dict, NamedTuple
+from typing import Any, Callable, Dict, NamedTuple, Optional
 
-from duetector.exceptions import TracerError
+from duetector.config import Configuable
+from duetector.exceptions import TracerError, TreacerDisabledError
 
 
-class Tracer:
+class Tracer(Configuable):
     data_t: NamedTuple
 
-    def __init__(self, config=None):
-        # TODO: Dependency injection for config
-        self.config = config
+    @property
+    def config_spec(self):
+        return self.__class__.__name__
+
+    @property
+    def disabled(self):
+        return self.config.disabled
 
     def attach(self, host):
         raise NotImplementedError("attach not implemented")
@@ -48,7 +53,10 @@ class BccTracer(Tracer):
         return self.data_t(**args)  # type: ignore
 
     def attach(self, host):
-        if not self.attach_type:
+        if self.disabled:
+            raise TreacerDisabledError("Tracer is disabled")
+
+        if not self.attach_type or self.disabled:
             # No need to attach, in this case, function name indicates
             # More: https://github.com/iovisor/bcc/blob/master/docs/reference_guide.md
             return
@@ -56,6 +64,9 @@ class BccTracer(Tracer):
         return attatcher(**self.attatch_args)
 
     def detach(self, host):
+        if self.disabled:
+            raise TreacerDisabledError("Tracer is disabled")
+
         if not self.attach_type:
             # Means prog is not attached by python's BPF.attatch_()
             # So user should detach it manually
@@ -64,6 +75,9 @@ class BccTracer(Tracer):
         return attatcher(**self.attatch_args)
 
     def get_poller(self, host) -> Callable:
+        if self.disabled:
+            raise TreacerDisabledError("Tracer is disabled")
+
         if not self.poll_fn:
             # Not support poll
 

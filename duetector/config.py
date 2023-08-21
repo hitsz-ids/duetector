@@ -7,24 +7,6 @@ from duetector.exceptions import ConfigFileNotFoundError
 from duetector.log import logger
 
 
-class Configuable:
-    default_config = {
-        "enabled": True,
-    }
-
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
-        if not config:
-            config = {}
-        self.config = Config(self.default_config.update(**config))
-
-    @property
-    def enabled(self):
-        return self.config.enabled
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}({self.config})"
-
-
 class Config:
     def __init__(self, config_dict: Optional[Dict[str, Any]] = None):
         if not config_dict:
@@ -71,3 +53,21 @@ class ConfigLoader:
         except tomli.TOMLDecodeError as e:
             logger.error(f"Error loading config: {e}")
             raise e
+
+
+class Configuable:
+    default_config = {}
+    config_spec = None
+
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+        if not config:
+            config = {}
+        if self.config_spec:
+            config = config.get(self.config_spec, {})
+        c = self.default_config.copy()
+        c.update(config)
+        self.config = Config(c)
+        logger.debug(f"{self} initializing...")
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.config})"

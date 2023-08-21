@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict, Optional
 
 from sqlalchemy import select
 
@@ -9,9 +9,9 @@ from duetector.extension.collector import hookimpl
 
 
 class SQLiteCollector(Collector):
-    def __init__(self, config=None):
-        super().__init__(config=config)
-        self.sm = SessionManager(config=config)
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
+        self.sm = SessionManager(config)
 
     def _emit(self, t: Tracking):
         m = self.sm.get_tracking_model(t.tracer)

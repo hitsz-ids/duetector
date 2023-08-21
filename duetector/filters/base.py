@@ -1,15 +1,25 @@
 import os
 from typing import NamedTuple, Optional
 
+from duetector.config import Configuable
 from duetector.extension.filter import hookimpl
 
 
-class Filter:
-    def __init__(self, config=None):
-        # TODO: Dependency injection for config
-        self.config = config
+class Filter(Configuable):
+    @property
+    def config_spec(self):
+        return self.__class__.__name__
 
+    @property
+    def disabled(self):
+        return self.config.disabled
+
+
+class DefaultFilter(Filter):
     def __call__(self, data: NamedTuple) -> Optional[NamedTuple]:
+        if self.disabled:
+            return data
+
         fname = getattr(data, "fname")
         if (
             fname
@@ -36,4 +46,4 @@ class Filter:
 
 @hookimpl
 def init_filter(config=None):
-    return Filter(config=config)
+    return DefaultFilter(config=config)

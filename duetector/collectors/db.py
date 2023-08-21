@@ -6,6 +6,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sess
 from sqlalchemy.types import JSON
 
 from duetector.collectors.models import Tracking
+from duetector.config import Configuable
 from duetector.utils import Singleton
 
 
@@ -34,10 +35,9 @@ class TrackingMixin:
         return f"<Tracking {self.id}>"
 
 
-class SessionManager(metaclass=Singleton):
-    def __init__(self, config=None):
-        # TODO:
-        self.config = config
+class SessionManager(Configuable, metaclass=Singleton):
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
         self._engine: Optional[sqlalchemy.engine.Engine] = None
         self._sessionmaker: Optional[sessionmaker] = None
         self._tracking_models: Dict[str, type] = {}

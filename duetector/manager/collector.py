@@ -1,11 +1,12 @@
 import sys
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 import pluggy
 
 import duetector.collectors
 from duetector.collectors.base import Collector
 from duetector.extension.collector import project_name
+from duetector.log import logger
 from duetector.manager import Manager
 
 hookspec = pluggy.HookspecMarker(project_name)
@@ -13,12 +14,16 @@ hookspec = pluggy.HookspecMarker(project_name)
 
 @hookspec
 def init_collector(config) -> Optional[Collector]:
-    """Initialize tracer from config"""
+    """
+    Initialize collector from config
+    None means the collector is not available
+    Also the collector can be disabled by config, Manager will discard disabled collectors
+    """
 
 
 class CollectorManager(Manager):
-    def __init__(self, config=None):
-        self.config = config
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
 
         self.pm = pluggy.PluginManager(project_name)
         self.pm.add_hookspecs(sys.modules[__name__])
@@ -27,8 +32,12 @@ class CollectorManager(Manager):
 
     def init(self) -> List[Collector]:
         objs = []
-        for f in self.pm.hook.init_collector(config=self.config):
-            if f is not None:
+        for f in self.pm.hook.init_collector(config=self.config.config_dict):
+            if isinstance(f, Collector) and not f.disabled:
                 objs.append(f)
+            else:
+                logger.debug(
+                    f"Collector {f.__class__.__name__} is not available (Not a instance of Collector or Disabled)"
+                )
 
         return objs
