@@ -35,11 +35,12 @@ class CollectorManager(Manager):
     def init(self) -> List[Collector]:
         objs = []
         for f in self.pm.hook.init_collector(config=self.config.config_dict):
-            if isinstance(f, Collector) and not f.disabled:
-                objs.append(f)
-            else:
-                logger.debug(
-                    f"Collector {f.__class__.__name__} is not available (Not a instance of Collector or Disabled)"
-                )
+            if not f:
+                continue
+            if f.disabled:
+                logger.info(f"Collector {f.__class__.__name__} is disabled")
+                continue
+
+            objs.append(f)
 
         return objs
