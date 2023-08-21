@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from threading import Lock
 from typing import Any, Dict, Generator, Optional
 
 import sqlalchemy
@@ -44,6 +45,10 @@ class SessionManager(Configuable, metaclass=Singleton):
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
+        self._engine: Optional[sqlalchemy.engine.Engine] = None
+        self._sessionmaker: Optional[sessionmaker] = None
+        self._tracking_models: Dict[str, type] = {}
+        self.mutex = Lock()
 
     @property
     def debug(self):
@@ -57,12 +62,6 @@ class SessionManager(Configuable, metaclass=Singleton):
         if self.debug:
             config["echo"] = True
         return config
-
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
-        super().__init__(config, *args, **kwargs)
-        self._engine: Optional[sqlalchemy.engine.Engine] = None
-        self._sessionmaker: Optional[sessionmaker] = None
-        self._tracking_models: Dict[str, type] = {}
 
     @property
     def engine(self):
@@ -82,32 +81,33 @@ class SessionManager(Configuable, metaclass=Singleton):
             yield session
 
     def get_tracking_model(self, tracer: str = "unknown") -> type:
-        # FIXME: Mutex for thread safety
-        if tracer in self._tracking_models:
+        # For thread safety
+        with self.mutex:
+            if tracer in self._tracking_models:
+                return self._tracking_models[tracer]
+
+            class TrackingModel(Base, TrackingMixin):
+                __tablename__ = f"duetector_tracking_{tracer}"
+
+                def to_tracking(self) -> Tracking:
+                    return Tracking(
+                        tracer=tracer,
+                        pid=self.pid,
+                        uid=self.uid,
+                        gid=self.gid,
+                        timestamp=self.timestamp,
+                        comm=self.comm,
+                        cwd=self.cwd,
+                        fname=self.fname,
+                        extended=self.extended,
+                    )
+
+            try:
+                self._tracking_models[tracer] = self._init_tracking_model(TrackingModel)
+            except Exception as e:
+                # FIXME: unregister TrackingModel
+                raise
             return self._tracking_models[tracer]
-
-        class TrackingModel(Base, TrackingMixin):
-            __tablename__ = f"duetector_tracking_{tracer}"
-
-            def to_tracking(self) -> Tracking:
-                return Tracking(
-                    tracer=tracer,
-                    pid=self.pid,
-                    uid=self.uid,
-                    gid=self.gid,
-                    timestamp=self.timestamp,
-                    comm=self.comm,
-                    cwd=self.cwd,
-                    fname=self.fname,
-                    extended=self.extended,
-                )
-
-        try:
-            self._tracking_models[tracer] = self._init_tracking_model(TrackingModel)
-        except Exception as e:
-            # FIXME: unregister TrackingModel
-            raise
-        return self._tracking_models[tracer]
 
     def get_all_model(self) -> Dict[str, type]:
         return self._tracking_models.items()
