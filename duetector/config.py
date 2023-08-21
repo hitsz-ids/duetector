@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import tomli
 
@@ -40,7 +40,7 @@ class ConfigLoader:
         config_dict.setdefault("monitor", {})
         return config_dict
 
-    def load_config(self) -> Config:
+    def load_config(self) -> Dict[str, Any]:
         logger.info(f"Loading config from {self.config_path}")
         if not self.config_path.exists():
             raise ConfigFileNotFoundError(f"Config file:{self.config_path} not found.")
@@ -49,7 +49,7 @@ class ConfigLoader:
             with self.config_path.open("rb") as f:
                 config = tomli.load(f)
                 config = self._init_default_modules(config)
-                return Config(config)
+                return config
         except tomli.TOMLDecodeError as e:
             logger.error(f"Error loading config: {e}")
             raise e
@@ -57,13 +57,16 @@ class ConfigLoader:
 
 class Configuable:
     default_config = {}
-    config_spec = None
+    config_scope = None
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: Optional[Union[Config, Dict[str, Any]]] = None, *args, **kwargs):
         if not config:
             config = {}
-        if self.config_spec:
-            config = config.get(self.config_spec, {})
+        elif isinstance(config, Config):
+            config = config.config_dict
+
+        if self.config_scope:
+            config = config.get(self.config_scope, {})
         c = self.default_config.copy()
         c.update(config)
         self.config = Config(c)

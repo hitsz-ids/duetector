@@ -9,7 +9,7 @@ from .models import Tracking
 
 class Collector(Configuable):
     @property
-    def config_spec(self):
+    def config_scope(self):
         return self.__class__.__name__
 
     @property

@@ -12,7 +12,7 @@ class Monitor(Configuable):
     collectors: List[Collector]
 
     @property
-    def config_spec(self):
+    def config_scope(self):
         return self.__class__.__name__
 
     @property

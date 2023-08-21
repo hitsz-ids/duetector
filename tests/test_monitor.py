@@ -1,4 +1,4 @@
-# TODO
+from typing import Any, Dict, Optional
 
 import pytest
 
@@ -8,8 +8,10 @@ from duetector.tracers.dummy import DummyBPF, DummyTracer
 
 
 class MockMonitor(BccMonitor):
-    def __init__(self, config=None):
-        self.config = config
+    config_scope = "BccMonitor"
+
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+        super().__init__(config=config)
 
         self.tracers = [DummyTracer(config)]
         self.filters = FilterManager(config).init()

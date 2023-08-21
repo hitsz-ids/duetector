@@ -7,7 +7,7 @@ from duetector.extension.filter import hookimpl
 
 class Filter(Configuable):
     @property
-    def config_spec(self):
+    def config_scope(self):
         return self.__class__.__name__
 
     @property
