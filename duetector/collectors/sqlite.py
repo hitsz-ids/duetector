@@ -3,14 +3,15 @@ from typing import Any, Dict, Optional
 from sqlalchemy import select
 
 from duetector.collectors.base import Collector
-from duetector.collectors.db import SessionManager
 from duetector.collectors.models import Tracking
+from duetector.db import SessionManager
 from duetector.extension.collector import hookimpl
 
 
 class SQLiteCollector(Collector):
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
+        # Init as a submodel
         self.sm = SessionManager(self.config.config_dict)
 
     def _emit(self, t: Tracking):

@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Any, Callable, Dict, NamedTuple, Optional
+from typing import Any, Callable, Dict, NamedTuple, Optional, Type
 
 import pytest
 
@@ -61,8 +61,8 @@ class MockMonitor(Monitor):
     def __init__(
         self,
         config: Optional[Dict[str, Any]],
-        mock_cls: type[Monitor],
-        mock_tracer: type[Tracer],
+        mock_cls: Type[Monitor],
+        mock_tracer: Type[Tracer],
     ):
         self.default_config = mock_cls.default_config
         self.config_scope = mock_cls.config_scope

@@ -42,6 +42,9 @@ class SessionManager(Configuable, metaclass=Singleton):
         "url": "sqlite://",
     }
 
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
+
     @property
     def debug(self):
         return self.config.debug or self.config.echo
