@@ -12,7 +12,8 @@ dependencies = [
     "pydantic",
     "pluggy",
     "tomli",
-    "SQLAlchemy>=2"
+    "SQLAlchemy>=2",
+    "click",
 ]
 dynamic = ["version", ]
 classifiers = [
