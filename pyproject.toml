@@ -11,6 +11,7 @@ dependencies = [
     "loguru",
     "pydantic",
     "pluggy",
+    "tomli",
     "SQLAlchemy>=2"
 ]
 dynamic = ["version", ]
