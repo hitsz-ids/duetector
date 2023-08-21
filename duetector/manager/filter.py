@@ -35,11 +35,12 @@ class FilterManager(Manager):
     def init(self) -> List[Filter]:
         objs = []
         for f in self.pm.hook.init_filter(config=self.config.config_dict):
-            if isinstance(f, Filter) and not f.disabled:
-                objs.append(f)
-            else:
-                logger.debug(
-                    f"Collector {f.__class__.__name__} is not available (Not a instance of Collector or Disabled)"
-                )
+            if not f:
+                continue
+            if f.disabled:
+                logger.info(f"Filter {f.__class__.__name__} is disabled")
+                continue
+
+            objs.append(f)
 
         return objs
