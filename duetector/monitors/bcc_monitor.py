@@ -8,6 +8,15 @@ from duetector.tracers import BccTracer
 
 
 class BccMonitor(Monitor):
+    config_scope = "monitor.bcc"
+    default_config = {
+        "auto_init": True,
+    }
+
+    @property
+    def auto_init(self):
+        return self.config.auto_init
+
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config=config)
         if self.disabled:
@@ -17,14 +26,15 @@ class BccMonitor(Monitor):
             self.collectors = []
             return
 
-        self.tracers: List[BccTracer] = TracerManager(config).init()
+        self.tracers: List[BccTracer] = TracerManager(config).init(tracer_type=BccTracer)
         self.filters: List[Callable] = FilterManager(config).init()
         self.collectors: List[Collector] = CollectorManager(config).init()
 
         self.bpf_tracers: Dict[Any, BccTracer] = {}
-        self._init_bpf()
+        if self.auto_init:
+            self.init()
 
-    def _init_bpf(self):
+    def init(self):
         # Prevrent ImportError for CI testing without bcc
         from bcc import BPF  # noqa
 
@@ -35,12 +45,12 @@ class BccMonitor(Monitor):
                 logger.error(f"Failed to compile {tracer.__class__.__name__}")
                 logger.exception(e)
                 continue
-            self.bpf_tracers[tracer] = bpf
             tracer.attach(bpf)
-            self._add_callback(tracer)
+            self._add_callback(bpf, tracer)
+            self.bpf_tracers[tracer] = bpf
             logger.info(f"Tracer {tracer.__class__.__name__} attached")
 
-    def _add_callback(self, tracer):
+    def _add_callback(self, host, tracer):
         def _(data):
             for filter in self.filters:
                 data = filter(data)
@@ -49,10 +59,10 @@ class BccMonitor(Monitor):
             for collector in self.collectors:
                 collector.emit(tracer, data)
 
-        tracer.add_callback(self.bpf_tracers[tracer], _)
+        tracer.add_callback(host, _)
 
     def poll_all(self):
-        for tracer in self.tracers:
+        for tracer in self.bpf_tracers.keys():
             self.poll(tracer)
 
     def poll(self, tracer: BccTracer):

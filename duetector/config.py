@@ -57,7 +57,7 @@ class ConfigLoader:
 
 class Configuable:
     default_config = {}
-    config_scope = None
+    config_scope: Optional[str] = None
 
     def __init__(self, config: Optional[Union[Config, Dict[str, Any]]] = None, *args, **kwargs):
         if not config:
@@ -66,11 +66,12 @@ class Configuable:
             config = config.config_dict
 
         if self.config_scope:
-            config = config.get(self.config_scope, {})
+            for score in self.config_scope.split("."):
+                config = config.get(score, {})
         c = self.default_config.copy()
         c.update(config)
         self.config = Config(c)
-        logger.debug(f"{self} initializing...")
+        logger.debug(f"{self} config loaded.")
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.config})"

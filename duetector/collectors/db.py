@@ -32,10 +32,29 @@ class TrackingMixin:
     extended: Mapped[Dict[str, Any]] = mapped_column(type_=JSON, default={})
 
     def __repr__(self):
-        return f"<Tracking {self.id}>"
+        return f"<Tracking [{self.pid} {self.comm}] {self.timestamp}>"
 
 
 class SessionManager(Configuable, metaclass=Singleton):
+    config_scope = "db"
+
+    default_engine_config = {
+        "url": "sqlite://",
+    }
+
+    @property
+    def debug(self):
+        return self.config.debug or self.config.echo
+
+    @property
+    def engine_config(self) -> Dict[str, Any]:
+        config = self.default_engine_config
+        if self.config.engine:
+            config.update(self.config.engine.config_dict)
+        if self.debug:
+            config["echo"] = True
+        return config
+
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         self._engine: Optional[sqlalchemy.engine.Engine] = None
@@ -44,19 +63,12 @@ class SessionManager(Configuable, metaclass=Singleton):
 
     @property
     def engine(self):
-        # TODO: Use config to config engine
         if not self._engine:
-            self._engine = sqlalchemy.create_engine(
-                "sqlite://",
-                # echo=True,
-                # self.config.db_url,
-                # echo=self.config.debug,
-            )
+            self._engine = sqlalchemy.create_engine(**self.engine_config)
         return self._engine
 
     @property
     def sessionmaker(self):
-        # TODO: Use config to config sessionmaker
         if not self._sessionmaker:
             self._sessionmaker = sessionmaker(bind=self.engine)
         return self._sessionmaker

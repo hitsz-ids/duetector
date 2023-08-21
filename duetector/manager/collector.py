@@ -22,6 +22,8 @@ def init_collector(config) -> Optional[Collector]:
 
 
 class CollectorManager(Manager):
+    config_scope = "collector"
+
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 

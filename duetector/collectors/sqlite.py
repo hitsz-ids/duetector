@@ -11,7 +11,7 @@ from duetector.extension.collector import hookimpl
 class SQLiteCollector(Collector):
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
-        self.sm = SessionManager(config)
+        self.sm = SessionManager(self.config.config_dict)
 
     def _emit(self, t: Tracking):
         m = self.sm.get_tracking_model(t.tracer)

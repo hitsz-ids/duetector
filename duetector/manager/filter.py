@@ -22,6 +22,8 @@ def init_filter(config) -> Optional[Filter]:
 
 
 class FilterManager(Manager):
+    config_scope = "filter"
+
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 

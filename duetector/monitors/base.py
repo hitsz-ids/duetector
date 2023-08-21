@@ -11,10 +11,21 @@ class Monitor(Configuable):
     filters: List[Filter]
     collectors: List[Collector]
 
-    @property
-    def config_scope(self):
-        return self.__class__.__name__
+    config_scope = "monitor"
 
     @property
     def disabled(self):
         return self.config.disabled
+
+    def init(self):
+        raise NotImplementedError
+
+    def poll_all(self):
+        for tracer in self.tracers:
+            self.poll(tracer)
+
+    def poll(self, tracer: Tracer):
+        raise NotImplementedError
+
+    def summary(self) -> Dict:
+        return {collector.__class__.__name__: collector.summary() for collector in self.collectors}
