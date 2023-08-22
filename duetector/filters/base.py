@@ -14,6 +14,9 @@ class Filter(Configuable):
     def disabled(self):
         return self.config.disabled
 
+    def __call__(self, data: NamedTuple) -> Optional[NamedTuple]:
+        raise NotImplementedError
+
 
 class DefaultFilter(Filter):
     def __call__(self, data: NamedTuple) -> Optional[NamedTuple]:
