@@ -11,10 +11,6 @@ from duetector.config import Configuable
 from duetector.utils import Singleton
 
 
-class Base(DeclarativeBase):
-    pass
-
-
 class TrackingMixin:
     id: Mapped[int] = mapped_column(
         primary_key=True,
@@ -36,7 +32,7 @@ class TrackingMixin:
         return f"<Tracking [{self.pid} {self.comm}] {self.timestamp}>"
 
 
-class SessionManager(Configuable, metaclass=Singleton):
+class SessionManager(Configuable):
     config_scope = "db"
 
     default_engine_config = {
@@ -86,6 +82,9 @@ class SessionManager(Configuable, metaclass=Singleton):
             if tracer in self._tracking_models:
                 return self._tracking_models[tracer]
 
+            class Base(DeclarativeBase):
+                pass
+
             class TrackingModel(Base, TrackingMixin):
                 __tablename__ = f"duetector_tracking_{tracer}"
 
@@ -121,4 +120,9 @@ class SessionManager(Configuable, metaclass=Singleton):
 if __name__ == "__main__":
     sm = SessionManager()
     m = sm.get_tracking_model()
+
+    sm2 = SessionManager()
+    m2 = sm2.get_tracking_model()
+
     print(m())
+    print(m2())
