@@ -12,6 +12,7 @@ dependencies = [
     "pydantic",
     "pluggy",
     "tomli",
+    "tomli-w",
     "SQLAlchemy>=2",
     "click",
 ]

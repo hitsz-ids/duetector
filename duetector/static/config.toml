@@ -1,3 +1,6 @@
+# All config keys will be converted to lower case.
+# It's ok to use upper case or camel case for readability.
+
 # Currently we mannually create a default config file.
 # TODO: A script to generate default config file
 

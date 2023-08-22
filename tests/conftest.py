@@ -14,7 +14,7 @@ CONFIG = """
 [monitor.bcc]
 
 [collector.DBCollector.db]
-debug=true
+# debug=true
 
 """
 

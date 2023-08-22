@@ -35,8 +35,11 @@ class TrackingMixin:
 class SessionManager(Configuable):
     config_scope = "db"
 
-    default_engine_config = {
-        "url": "sqlite://",
+    default_config = {
+        "table_prefix": "duetector_tracking",
+        "engine": {
+            "url": "sqlite://",
+        },
     }
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
@@ -51,10 +54,12 @@ class SessionManager(Configuable):
         return self.config.debug or self.config.echo
 
     @property
+    def table_prefix(self):
+        return self.config.table_prefix
+
+    @property
     def engine_config(self) -> Dict[str, Any]:
-        config = self.default_engine_config
-        if self.config.engine:
-            config.update(self.config.engine.config_dict)
+        config = self.config.engine.config_dict
         if self.debug:
             config["echo"] = True
         return config
@@ -86,7 +91,7 @@ class SessionManager(Configuable):
                 pass
 
             class TrackingModel(Base, TrackingMixin):
-                __tablename__ = f"duetector_tracking_{tracer}@{collector_id}"
+                __tablename__ = f"{self.table_prefix}:{tracer}@{collector_id}"
 
                 def to_tracking(self) -> Tracking:
                     return Tracking(
@@ -115,14 +120,3 @@ class SessionManager(Configuable):
         if not sqlalchemy.inspect(self.engine).has_table(tracking_model.__tablename__):
             tracking_model.__table__.create(self.engine)
         return tracking_model
-
-
-if __name__ == "__main__":
-    sm = SessionManager()
-    m = sm.get_tracking_model()
-
-    sm2 = SessionManager()
-    m2 = sm2.get_tracking_model()
-
-    print(m())
-    print(m2())
