@@ -76,7 +76,7 @@ class SessionManager(Configuable):
         with self.sessionmaker.begin() as session:
             yield session
 
-    def get_tracking_model(self, tracer: str = "unknown") -> type:
+    def get_tracking_model(self, tracer: str = "unknown", collector_id: str = "") -> type:
         # For thread safety
         with self.mutex:
             if tracer in self._tracking_models:
@@ -86,7 +86,7 @@ class SessionManager(Configuable):
                 pass
 
             class TrackingModel(Base, TrackingMixin):
-                __tablename__ = f"duetector_tracking_{tracer}"
+                __tablename__ = f"duetector_tracking_{tracer}@{collector_id}"
 
                 def to_tracking(self) -> Tracking:
                     return Tracking(
