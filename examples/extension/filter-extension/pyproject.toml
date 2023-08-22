@@ -1,0 +1,17 @@
+# Build with hatch, you can use any build tool you like.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "duetector-filter"
+
+dependencies = ["duetector"]
+dynamic = ["version"]
+
+# This is the entry point for the FilterManager to find the Filter.
+[project.entry-points."duetector.filter"]
+echofilter = "duetector_echofilter.echo"
+
+[tool.hatch.version]
+path = "duetector_echofilter/__init__.py"
