@@ -39,7 +39,13 @@ class ConfigLoader:
     ENV_PREFIX = "DUETECTOR_"
     ENV_SEP = "__"
 
-    def __init__(self, path: Optional[Union[str, Path]] = None, load_env: bool = True):
+    def __init__(
+        self,
+        path: Optional[Union[str, Path]] = None,
+        load_env: bool = True,
+        dump_when_load=True,
+        config_dump_dir="/tmp",
+    ):
         if not path:
             path = CONFIG_PATH
             if not path.exists():
@@ -47,6 +53,8 @@ class ConfigLoader:
                 self.generate_config()
         self.config_path: Path = Path(path).absolute()
         self.load_env = load_env
+        self.dump_when_load = dump_when_load
+        self.config_dump_dir = config_dump_dir
 
     def __repr__(self) -> str:
         return f"ConfigLoader({self.config_path})"
@@ -82,22 +90,24 @@ class ConfigLoader:
         try:
             with self.config_path.open("rb") as f:
                 config = tomli.load(f)
+
                 config = self._init_default_modules(config)
                 if self.load_env:
                     config = self.load_env_config(config)
+
                 config = self.normalize_config(config)
-                # Dump current config to a tmp file
-                self.config_path = self.config_path.with_name("current.config.toml")
-                self.dump_config(config, self.config_path)
+
+                if self.dump_when_load:
+                    # Dump current config to a tmp file
+                    config_dump_path = (
+                        Path(self.config_dump_dir) / f"duetector_config.toml.{os.getpid()}"
+                    )
+                    self.dump_config(config, config_dump_path)
                 return config
         except tomli.TOMLDecodeError as e:
             logger.error(f"Error loading config: {e}")
             raise e
 
-    # TODO: Config from environment variables
-    #       Load default config from file, changed by environment variables
-    #       dump config to a tmp file, then load from the tmp file
-    #       CLI should do this process, but need this module to support it
     def load_env_config(self, config_dict: Dict[str, Any]) -> Dict[str, Any]:
         logger.info(
             f"Loading config from environment variables, prefix: {self.ENV_PREFIX}, sep: {self.ENV_SEP}"
@@ -117,9 +127,11 @@ class ConfigLoader:
         return config_dict
 
     def dump_config(self, config_dict: Dict[str, Any], path: Union[str, Path]):
-        with Path(path).open("wb") as f:
+        dump_path = Path(path).expanduser().resolve()
+        dump_path.parent.mkdir(parents=True, exist_ok=True)
+        with dump_path.open("wb") as f:
             tomli_w.dump(config_dict, f)
-        logger.info(f"Current config has been dumped to {path}")
+        logger.info(f"Current config has been dumped to {dump_path}")
 
 
 class Configuable:
