@@ -30,6 +30,9 @@ test = [
     "pytype",
 ]
 
+[project.scripts]
+duectl = "duetector.cli.main:cli"
+
 
 [[project.authors]]
 name = "hitsz-ids"
