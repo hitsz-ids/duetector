@@ -15,7 +15,11 @@
 
 ## 简介
 
-> duetector是DataUCON项目中的组件之一，DataUCON项目旨在为数据使用控制提供支持。[了解DataUCON](https://dataucon.idslab.io/)。
+> duetector是DataUCON项目中的组件之一，DataUCON项目旨在为数据使用控制提供支持。
+>
+> [查看DataUCON的网页](https://dataucon.idslab.io/)
+>
+> [深入了解并部署DataUCON](https://github.com/hitsz-ids/dataucon)
 
 duetector🔍是一个基于eBPF的数据使用探测器，它可以在Linux内核中对数据使用行为进行探测，从而为数据使用控制提供支持。
 
@@ -35,9 +39,22 @@ duetector🔍是一个基于eBPF的数据使用探测器，它可以在Linux内�
 
 ## 主要特性
 
-TBD
+- [x] 插件化系统
+    - [x] 支持自定义tracer
+    - [x] 支持自定义filter
+    - [x] 支持自定义collector
+    - [x] [自定义插件示例](./examples/)
+- [ ] 配置管理
+    - [x] 使用单一配置文件配置
+    - [ ] 动态加载配置
+- [ ] 基于eBPF的数据使用探测器
+    - [x] 文件打开操作
+    - [ ] ……
+- [x] 支持SQL数据库的数据收集器
+- [ ] CLI工具
+- [ ] PIP服务
 
-TODO: 特性和[对应的内核配置](https://github.com/iovisor/bcc/blob/master/docs/kernel_config.md)
+eBPF探测器需要内核支持，详见[内核支持](./docs/kernel_config.md)
 
 ## 安装
 
@@ -55,11 +72,13 @@ pip install duetector
 docker pull dataucon/duetector:latest
 ```
 
-预发布版本将不会更新到 `latest`上，您可以指定tag进行拉取，如 `v0.1.0`
+预发布版本将不会更新到 `latest`上，您可以指定tag进行拉取，如 `v0.0.1a`
 
 ```bash
-docker pull dataucon/duetector:v0.1.0
+docker pull dataucon/duetector:v0.0.1a
 ```
+
+使用docker镜像运行的更多细节请参考[这里](./docs/how-to/run-with-docker.md)
 
 ## 快速开始
 
