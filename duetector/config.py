@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
@@ -5,6 +6,10 @@ import tomli
 
 from duetector.exceptions import ConfigFileNotFoundError
 from duetector.log import logger
+
+_HERE = Path(__file__).parent
+DEFAULT_CONFIG = _HERE / "static" / "config.toml"
+CONFIG_PATH = Path("~/.config/duetector/config.toml").expanduser()
 
 
 class Config:
@@ -27,8 +32,12 @@ class Config:
 
 
 class ConfigLoader:
-    def __init__(self, path):
+    def __init__(self, path: Union[str, Path] = CONFIG_PATH):
         self.config_path: Path = Path(path).absolute()
+
+        if not self.config_path.exists() and self.config_path == CONFIG_PATH.absolute():
+            # Create default config file automatically
+            self.generate_default_config()
 
     def __repr__(self) -> str:
         return f"ConfigLoader({self.config_path})"
@@ -39,6 +48,11 @@ class ConfigLoader:
         config_dict.setdefault("filter", {})
         config_dict.setdefault("monitor", {})
         return config_dict
+
+    def generate_config(self):
+        logger.info(f"Creating default config file {self.config_path}")
+        self.config_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(DEFAULT_CONFIG, self.config_path)
 
     def load_config(self) -> Dict[str, Any]:
         logger.info(f"Loading config from {self.config_path}")

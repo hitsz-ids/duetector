@@ -1,0 +1,17 @@
+# Build with hatch, you can use any build tool you like.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "duetector-logtracer"
+
+dependencies = ["duetector"]
+dynamic = ["version"]
+
+# This is the entry point for the TracerManager to find the Tracer.
+[project.entry-points."duetector.tracer"]
+logtracer = "duetector_logtracer.log"
+
+[tool.hatch.version]
+path = "duetector_logtracer/__init__.py"

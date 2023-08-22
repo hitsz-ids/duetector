@@ -8,7 +8,7 @@ from duetector.db import SessionManager
 from duetector.extension.collector import hookimpl
 
 
-class SQLiteCollector(Collector):
+class DBCollector(Collector):
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         # Init as a submodel
@@ -37,4 +37,4 @@ class SQLiteCollector(Collector):
 
 @hookimpl
 def init_collector(config):
-    return SQLiteCollector(config)
+    return DBCollector(config)

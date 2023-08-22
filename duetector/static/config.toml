@@ -1,0 +1,66 @@
+# Currently we mannually create a default config file.
+# TODO: A script to generate default config file
+
+[tracer]
+
+[tracer.OpenTracer]
+# A bcc tracer for openat2 syscall
+# ------------------------------------------------------------------------------------
+# enable=true
+# ------------------------------------------------------------------------------------
+
+[filter]
+
+[filter.DefaultFilter]
+# By default, the current process and
+# some frequently accessed system resources are
+# filtered out.
+# ------------------------------------------------------------------------------------
+# enable=true
+# ------------------------------------------------------------------------------------
+
+[collector]
+# Collector is a component that store tracking data.
+# ------------------------------------------------------------------------------------
+# enable=true
+# ------------------------------------------------------------------------------------
+
+[collector.DequeCollector]
+# DequeCollector is a collector that store tracking data in a deque.
+# This is for testing purpose only.
+# ------------------------------------------------------------------------------------
+# enable=false
+# maxlen=1024
+# ------------------------------------------------------------------------------------
+
+[collector.DBCollector]
+# DBCollector is a collector that store tracking data in a SQLite database.
+# ------------------------------------------------------------------------------------
+# enable=true
+# ------------------------------------------------------------------------------------
+
+
+[collector.DBCollector.db]
+# Config DBCollector's SessionManager
+# ------------------------------------------------------------------------------------
+# debug=false # set debug=true will force set engine.echo=true
+# ------------------------------------------------------------------------------------
+[collector.DBCollector.db.engine]
+# The following parameters will be passed into sqlachemy.create_engine()
+# ------------------------------------------------------------------------------------
+# url = "sqlite:///"
+# echo = false
+# ------------------------------------------------------------------------------------
+
+[monitor]
+# Monitor combine tracer, filter and collector.
+# Monitor provide a backend for tracer,
+#   and a frontend for collector,
+#   using poll to trigger tracer to collect data,
+#   using filter to filter out some data.
+
+[monitor.bcc]
+# A monitor that use bcc backend.
+# ------------------------------------------------------------------------------------
+# enable=true
+# ------------------------------------------------------------------------------------
