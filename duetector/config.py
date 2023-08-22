@@ -69,6 +69,12 @@ class ConfigLoader:
             raise e
 
 
+# TODO: Config from environment variables
+#       Load default config from file, changed by environment variables
+#       dump config to a tmp file, then load from the tmp file
+#       CLI should do this process, but need this module to support it
+
+
 class Configuable:
     default_config = {}
     config_scope: Optional[str] = None

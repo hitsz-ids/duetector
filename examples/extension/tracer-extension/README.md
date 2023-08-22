@@ -1,5 +1,7 @@
 In this example we will write a BccTracer only print log when syscall `clone` is called.
 
+Full example and more details can be found in [duetector_logtracer](./duetector_logtracer/)
+
 ## 1 Write a Tracer
 
 Here we write the echo Tracer and set it to not `disabled` by defaylt.

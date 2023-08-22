@@ -6,6 +6,10 @@ from duetector.extension.filter import hookimpl
 
 
 class Filter(Configuable):
+    default_config = {
+        "disabled": False,
+    }
+
     @property
     def config_scope(self):
         return self.__class__.__name__

@@ -1,3 +1,7 @@
+In this example, we will write a simple echo Collector. The Collector will print the tracking data to the console.
+
+Full example and more details can be found in [duetector_echocollector](./duetector_echocollector/)
+
 ## 1 Write a Collector
 
 Here we write the echo Collector and set it to not `disabled` by defaylt.

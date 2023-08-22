@@ -1,3 +1,7 @@
+In this example, we will write a simple echo Filter. The Filter will print the tracking data to the console.
+
+Full example and more details can be found in [duetector_echofilter](./duetector_echofilter/)
+
 ## 1 Write a Filter
 
 Here we write the echo Filter and set it to not `disabled` by defaylt.
