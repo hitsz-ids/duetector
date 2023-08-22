@@ -13,7 +13,7 @@ CONFIG = """
 
 [monitor.bcc]
 
-[collector.SQLiteCollector.db]
+[collector.DBCollector.db]
 debug=true
 
 """

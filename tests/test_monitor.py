@@ -109,7 +109,7 @@ def bcc_monitor(full_config):
 def test_bcc_monitor(bcc_monitor: MockMonitor):
     bcc_monitor.poll_all()
     assert bcc_monitor.summary()
-    bcc_monitor.summary()["SQLiteCollector"]["BccMockTracer"]["last"] == Tracking(
+    bcc_monitor.summary()["DBCollector"]["BccMockTracer"]["last"] == Tracking(
         tracer="BccMockTracer",
         pid=9999,
         uid=9999,
