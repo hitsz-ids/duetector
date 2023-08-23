@@ -11,7 +11,7 @@ from .models import Tracking
 class Collector(Configuable):
     default_config = {
         "disabled": False,
-        "id": None,
+        "id": platform.node(),
     }
 
     @property
@@ -25,7 +25,7 @@ class Collector(Configuable):
     @property
     def id(self) -> str:
         # ID for current collector
-        return self.config.id or platform.node()
+        return self.config.id
 
     def emit(self, tracer, data: NamedTuple):
         if self.disabled:

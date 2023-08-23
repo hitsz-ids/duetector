@@ -10,6 +10,7 @@ from duetector.tracers import BccTracer
 class BccMonitor(Monitor):
     config_scope = "monitor.bcc"
     default_config = {
+        **Monitor.default_config,
         "auto_init": True,
     }
 

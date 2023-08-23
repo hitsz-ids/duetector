@@ -32,10 +32,14 @@ class TracerManager(Manager):
         self.pm.load_setuptools_entrypoints(project_name)
         self.register(duetector.tracers)
 
-    def init(self, tracer_type=Tracer) -> List[Tracer]:
+    def init(self, tracer_type=Tracer, ignore_disabled=True) -> List[Tracer]:
+        if self.disabled:
+            logger.info("TracerManager disabled.")
+            return []
+
         objs = []
         for f in self.pm.hook.init_tracer(config=self.config.config_dict):
-            if not f or f.disabled:
+            if not f or (f.disabled and ignore_disabled):
                 logger.debug(f"Tracer {f.__class__.__name__} is not available (None or Disabled)")
                 continue
             if not isinstance(f, tracer_type):
