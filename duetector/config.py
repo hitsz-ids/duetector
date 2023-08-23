@@ -50,7 +50,7 @@ class ConfigLoader:
         if not path:
             path = Path(CONFIG_PATH).expanduser()
 
-        self.config_path: Path = Path(path).absolute()
+        self.config_path: Path = Path(path).expanduser().absolute()
         if not self.config_path.exists():
             self.generate_config()
 
@@ -112,7 +112,7 @@ class ConfigLoader:
 
     def load_env_config(self, config_dict: Dict[str, Any]) -> Dict[str, Any]:
         logger.info(
-            f"Loading config from environment variables, prefix: {self.ENV_PREFIX}, sep: {self.ENV_SEP}"
+            f"Loading config from environment variables, prefix: `{self.ENV_PREFIX}`, sep: `{self.ENV_SEP}`"
         )
         for k, v in os.environ.items():
             if not k.startswith(self.ENV_PREFIX):
