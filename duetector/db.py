@@ -2,9 +2,15 @@ from contextlib import contextmanager
 from threading import Lock
 from typing import Any, Dict, Generator, Optional
 
-import sqlalchemy
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
-from sqlalchemy.types import JSON
+import sqlalchemy  # type: ignore
+from sqlalchemy.orm import (  # type: ignore
+    DeclarativeBase,
+    Mapped,
+    Session,
+    mapped_column,
+    sessionmaker,
+)
+from sqlalchemy.types import JSON  # type: ignore
 
 from duetector.collectors.models import Tracking
 from duetector.config import Configuable
@@ -50,7 +56,7 @@ class SessionManager(Configuable):
         super().__init__(config, *args, **kwargs)
         self._engine: Optional[sqlalchemy.engine.Engine] = None
         self._sessionmaker: Optional[sessionmaker] = None
-        self._tracking_models: Dict[str, type] = {}
+        self._tracking_models: Dict[str, type[TrackingMixin]] = {}
         self.mutex = Lock()
 
     @property
@@ -117,8 +123,8 @@ class SessionManager(Configuable):
                 raise
             return self._tracking_models[tracer]
 
-    def get_all_model(self) -> Dict[str, type]:
-        return self._tracking_models.items()
+    def get_all_model(self) -> Dict[str, type[TrackingMixin]]:  # type: ignore
+        return self._tracking_models.copy()
 
     def _init_tracking_model(self, tracking_model: type) -> type:
         if not sqlalchemy.inspect(self.engine).has_table(tracking_model.__tablename__):

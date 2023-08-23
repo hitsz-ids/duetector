@@ -7,7 +7,7 @@ from duetector.tracers.base import Tracer
 
 
 class Monitor(Configuable):
-    traces: List[Tracer]
+    tracers: List[Tracer]
     filters: List[Filter]
     collectors: List[Collector]
 

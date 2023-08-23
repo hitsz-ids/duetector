@@ -27,7 +27,7 @@ class BccMonitor(Monitor):
             self.collectors = []
             return
 
-        self.tracers: List[BccTracer] = TracerManager(config).init(tracer_type=BccTracer)
+        self.tracers: List[BccTracer] = TracerManager(config).init(tracer_type=BccTracer)  # type: ignore
         self.filters: List[Callable] = FilterManager(config).init()
         self.collectors: List[Collector] = CollectorManager(config).init()
 
@@ -66,7 +66,7 @@ class BccMonitor(Monitor):
         for tracer in self.bpf_tracers.keys():
             self.poll(tracer)
 
-    def poll(self, tracer: BccTracer):
+    def poll(self, tracer: BccTracer):  # type: ignore
         tracer.get_poller(self.bpf_tracers[tracer])(**tracer.poll_args)
 
     def summary(self):

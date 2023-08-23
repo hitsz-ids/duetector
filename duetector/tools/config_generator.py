@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict
 
 import tomli_w
 
@@ -18,11 +19,11 @@ class ConfigGenerator:
 
         for manager in self.managers:
             m = manager()
-            manager_scope = self.dynamic_config.setdefault(m.config_scope.lower(), {})
+            manager_scope: Dict = self.dynamic_config.setdefault(m.config_scope.lower(), {})
             manager_scope.update(m.default_config)
 
             for c in m.init(ignore_disabled=False):
-                config_scpre = manager_scope.setdefault(c.config_scope.lower(), {})
+                config_scpre: Dict = manager_scope.setdefault(c.config_scope.lower(), {})
                 config_scpre.update(c.default_config)
 
         # Support .(dot) separated config_scope

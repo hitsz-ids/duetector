@@ -1,6 +1,6 @@
 import platform
 from collections import deque
-from typing import Any, Dict, Iterable, NamedTuple, Optional
+from typing import Any, Deque, Dict, Iterable, NamedTuple, Optional
 
 from duetector.config import Configuable
 from duetector.extension.collector import hookimpl
@@ -52,7 +52,7 @@ class DequeCollector(Collector):
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
-        self._trackings: Dict[str, Iterable[Tracking]] = {}
+        self._trackings: Dict[str, Deque[Tracking]] = {}
 
     def _emit(self, t: Tracking):
         self._trackings.setdefault(t.tracer, deque(maxlen=self.maxlen))
