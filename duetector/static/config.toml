@@ -1,3 +1,6 @@
+# All config keys will be converted to lower case.
+# It's ok to use upper case or camel case for readability.
+
 # Currently we mannually create a default config file.
 # TODO: A script to generate default config file
 
@@ -48,7 +51,7 @@
 [collector.DBCollector.db.engine]
 # The following parameters will be passed into sqlachemy.create_engine()
 # ------------------------------------------------------------------------------------
-# url = "sqlite:///"
+# url = "sqlite://duetector-dbcollector.sqlite3"
 # echo = false
 # ------------------------------------------------------------------------------------
 

@@ -12,7 +12,9 @@ dependencies = [
     "pydantic",
     "pluggy",
     "tomli",
-    "SQLAlchemy>=2"
+    "tomli-w",
+    "SQLAlchemy>=2",
+    "click",
 ]
 dynamic = ["version", ]
 classifiers = [
@@ -28,6 +30,9 @@ test = [
     "pytest-cov",
     "pytype",
 ]
+
+[project.scripts]
+duectl = "duetector.cli.main:cli"
 
 
 [[project.authors]]

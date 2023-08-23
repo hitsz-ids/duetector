@@ -7,7 +7,7 @@ import duetector.filters
 from duetector.extension.filter import project_name
 from duetector.filters.base import Filter
 from duetector.log import logger
-from duetector.manager import Manager
+from duetector.managers import Manager
 
 hookspec = pluggy.HookspecMarker(project_name)
 

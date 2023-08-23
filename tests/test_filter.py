@@ -3,7 +3,7 @@ from collections import namedtuple
 import pytest
 
 from duetector.filters.base import DefaultFilter
-from duetector.manager import FilterManager
+from duetector.managers import FilterManager
 
 
 @pytest.fixture

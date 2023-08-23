@@ -6,6 +6,10 @@ from duetector.tracers.base import BccTracer
 
 
 class LogTracer(BccTracer):
+    default_config = {
+        **BccTracer.default_config,  # inherit default_config
+    }
+
     attach_type = "kprobe"
     attatch_args = {"fn_name": "hello", "event": "__x64_sys_clone"}
     poll_fn = None

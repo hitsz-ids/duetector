@@ -6,6 +6,7 @@ from duetector.filters import Filter
 
 class EchoFilter(Filter):
     default_config = {
+        **Filter.default_config,  # inherit default_config
         "disabled": False,
     }
 
