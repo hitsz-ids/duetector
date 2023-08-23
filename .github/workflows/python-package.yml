@@ -31,4 +31,4 @@ jobs:
         pytype ./duetector
     - name: Test with pytest
       run: |
-        pytest -vv
+        pytest -vv --cov=duetector
