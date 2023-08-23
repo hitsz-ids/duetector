@@ -5,7 +5,7 @@ import pytest
 
 from duetector.collectors.models import Tracking
 from duetector.config import Configuable
-from duetector.manager import CollectorManager, FilterManager, TracerManager
+from duetector.managers import CollectorManager, FilterManager, TracerManager
 from duetector.monitors.bcc_monitor import BccMonitor, Monitor
 from duetector.tracers.base import BccTracer, Tracer
 from duetector.tracers.dummy import DummyBPF, DummyTracer
