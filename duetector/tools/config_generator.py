@@ -14,7 +14,7 @@ def _recursive_load(config_scope: str, config_dict: dict, default_config: dict):
     last = config_dict
     for p in prefix:
         last = last.setdefault(p, {})
-    last[config_scope] = default_config
+    last[config_scope] = default_config.copy()
 
 
 class ConfigGenerator:
@@ -69,4 +69,4 @@ class ConfigGenerator:
 if __name__ == "__main__":
     _HERE = Path(__file__).parent
     c = ConfigGenerator(load=False)
-    c.generate(_HERE / ".." / "static/config.dynamic.toml")
+    c.generate(_HERE / ".." / "static/config.toml")

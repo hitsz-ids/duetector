@@ -1,69 +1,36 @@
 # All config keys will be converted to lower case.
 # It's ok to use upper case or camel case for readability.
 
-# Currently we mannually create a default config file.
-# TODO: A script to generate default config file
+[filter]
+disabled = false
+
+[filter.defaultfilter]
+disabled = false
 
 [tracer]
+disabled = false
 
-[tracer.OpenTracer]
-# A bcc tracer for openat2 syscall
-# ------------------------------------------------------------------------------------
-# enable=true
-# ------------------------------------------------------------------------------------
-
-[filter]
-
-[filter.DefaultFilter]
-# By default, the current process and
-# some frequently accessed system resources are
-# filtered out.
-# ------------------------------------------------------------------------------------
-# enable=true
-# ------------------------------------------------------------------------------------
+[tracer.opentracer]
+disabled = false
 
 [collector]
-# Collector is a component that store tracking data.
-# ------------------------------------------------------------------------------------
-# enable=true
-# ------------------------------------------------------------------------------------
+disabled = false
 
-[collector.DequeCollector]
-# DequeCollector is a collector that store tracking data in a deque.
-# This is for testing purpose only.
-# ------------------------------------------------------------------------------------
-# enable=false
-# maxlen=1024
-# ------------------------------------------------------------------------------------
+[collector.dbcollector]
+disabled = false
+id = "haseeArch"
 
-[collector.DBCollector]
-# DBCollector is a collector that store tracking data in a SQLite database.
-# ------------------------------------------------------------------------------------
-# enable=true
-# ------------------------------------------------------------------------------------
+[collector.dbcollector.db]
+table_prefix = "duetector_tracking"
 
+[collector.dbcollector.db.engine]
+url = "sqlite:///duetector-dbcollector.sqlite3"
 
-[collector.DBCollector.db]
-# Config DBCollector's SessionManager
-# ------------------------------------------------------------------------------------
-# debug=false # set debug=true will force set engine.echo=true
-# ------------------------------------------------------------------------------------
-[collector.DBCollector.db.engine]
-# The following parameters will be passed into sqlachemy.create_engine()
-# ------------------------------------------------------------------------------------
-# url = "sqlite://duetector-dbcollector.sqlite3"
-# echo = false
-# ------------------------------------------------------------------------------------
-
-[monitor]
-# Monitor combine tracer, filter and collector.
-# Monitor provide a backend for tracer,
-#   and a frontend for collector,
-#   using poll to trigger tracer to collect data,
-#   using filter to filter out some data.
+[collector.dequecollector]
+disabled = true
+id = "haseeArch"
+maxlen = 1024
 
 [monitor.bcc]
-# A monitor that use bcc backend.
-# ------------------------------------------------------------------------------------
-# enable=true
-# ------------------------------------------------------------------------------------
+disabled = false
+auto_init = true
