@@ -22,6 +22,15 @@ class ConfigGenerator:
     Tools for generate config file by inspecting all modules
     """
 
+    HEADLINES = """# This is a auto generated config file for duetector🔍
+# You can modify this file to change duetector's behavior
+# For more information, please visit https://github.com/hitsz-ids/duetector
+
+# All config keys will be converted to lower case.
+# It's ok to use upper case or camel case for readability.
+
+"""
+
     managers = [FilterManager, TracerManager, CollectorManager]
     monitors = [BccMonitor]
 
@@ -62,11 +71,15 @@ class ConfigGenerator:
         dump_path = Path(dump_path).expanduser().absolute()
         logger.info(f"Dumping dynamic config to {dump_path}")
 
-        with dump_path.open("wb") as f:
+        with dump_path.open("w") as f:
+            f.write(self.HEADLINES)
+
+        with dump_path.open("ab") as f:
             tomli_w.dump(self.dynamic_config, f)
 
 
 if __name__ == "__main__":
     _HERE = Path(__file__).parent
     c = ConfigGenerator(load=False)
-    c.generate(_HERE / ".." / "static/config.toml")
+    config_path = _HERE / ".." / "static/config.toml"
+    c.generate(config_path)
