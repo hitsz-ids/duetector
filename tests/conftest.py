@@ -16,6 +16,10 @@ CONFIG = """
 [collector.DBCollector.db]
 # debug=true
 
+[collector.DBCollector.db.engine]
+url="sqlite://"
+
+
 """
 
 

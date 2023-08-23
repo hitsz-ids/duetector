@@ -51,7 +51,7 @@
 [collector.DBCollector.db.engine]
 # The following parameters will be passed into sqlachemy.create_engine()
 # ------------------------------------------------------------------------------------
-# url = "sqlite:///"
+# url = "sqlite://duetector-dbcollector.sqlite3"
 # echo = false
 # ------------------------------------------------------------------------------------
 

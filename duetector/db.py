@@ -38,7 +38,7 @@ class SessionManager(Configuable):
     default_config = {
         "table_prefix": "duetector_tracking",
         "engine": {
-            "url": "sqlite://",
+            "url": "sqlite:///",
         },
     }
 

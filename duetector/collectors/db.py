@@ -9,6 +9,15 @@ from duetector.extension.collector import hookimpl
 
 
 class DBCollector(Collector):
+    default_config = {
+        **Collector.default_config,
+        "db": {
+            "engine": {
+                "url": "sqlite:///duetector-dbcollector.sqlite3",
+            }
+        },
+    }
+
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         # Init as a submodel
