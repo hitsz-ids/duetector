@@ -2,7 +2,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 from duetector.collectors.base import Collector
 from duetector.log import logger
-from duetector.manager import CollectorManager, FilterManager, TracerManager
+from duetector.managers import CollectorManager, FilterManager, TracerManager
 from duetector.monitors.base import Monitor
 from duetector.tracers import BccTracer
 

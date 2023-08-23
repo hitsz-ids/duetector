@@ -14,7 +14,11 @@ CONFIG = """
 [monitor.bcc]
 
 [collector.DBCollector.db]
-debug=true
+# debug=true
+
+[collector.DBCollector.db.engine]
+url="sqlite://"
+
 
 """
 

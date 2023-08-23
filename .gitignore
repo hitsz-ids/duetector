@@ -570,3 +570,4 @@ dmypy.json
 cython_debug/
 
 .idea/**
+duetector-dbcollector.sqlite3

@@ -7,6 +7,7 @@ from duetector.extension.collector import hookimpl
 
 class EchoCollector(Collector):
     default_config = {
+        **Collector.default_config,  # inherit default_config
         "disabled": False,
     }
 

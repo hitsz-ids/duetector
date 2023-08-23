@@ -1,3 +1,4 @@
+import platform
 from collections import deque
 from typing import Any, Dict, Iterable, NamedTuple, Optional
 
@@ -8,6 +9,11 @@ from .models import Tracking
 
 
 class Collector(Configuable):
+    default_config = {
+        "disabled": False,
+        "id": None,
+    }
+
     @property
     def config_scope(self):
         return self.__class__.__name__
@@ -15,6 +21,11 @@ class Collector(Configuable):
     @property
     def disabled(self):
         return self.config.disabled
+
+    @property
+    def id(self) -> str:
+        # ID for current collector
+        return self.config.id or platform.node()
 
     def emit(self, tracer, data: NamedTuple):
         if self.disabled:
@@ -30,6 +41,7 @@ class Collector(Configuable):
 
 class DequeCollector(Collector):
     default_config = {
+        **Collector.default_config,
         "disabled": True,
         "maxlen": 1024,
     }

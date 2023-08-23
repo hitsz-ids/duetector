@@ -9,7 +9,7 @@ outofscope = "outofscope"
 [scope]
 default_a = "b"
 
-[scope.subscope]
+[scope.subScope]
 default_b = "c"
 
 """

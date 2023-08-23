@@ -9,13 +9,26 @@ from duetector.extension.collector import hookimpl
 
 
 class DBCollector(Collector):
+    default_config = {
+        **Collector.default_config,
+        "db": {
+            "engine": {
+                "url": "sqlite:///duetector-dbcollector.sqlite3",
+            }
+        },
+    }
+
+    # TODO: A better repr not present sensitive info
+    def __repr__(self):
+        return f"<DBCollector @{self.id}>"
+
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         # Init as a submodel
         self.sm = SessionManager(self.config.config_dict)
 
     def _emit(self, t: Tracking):
-        m = self.sm.get_tracking_model(t.tracer)
+        m = self.sm.get_tracking_model(t.tracer, self.id)
         with self.sm.begin() as session:
             tracking = m(**t.model_dump(exclude=["tracer"]))
             session.add(tracking)

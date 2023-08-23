@@ -7,6 +7,9 @@ from duetector.exceptions import TracerError, TreacerDisabledError
 
 class Tracer(Configuable):
     data_t: NamedTuple
+    default_config = {
+        "disabled": False,
+    }
 
     @property
     def config_scope(self):
@@ -33,6 +36,10 @@ class BccTracer(Tracer):
     """
     host of BccTracer is bcc.BPF
     """
+
+    default_config = {
+        **Tracer.default_config,
+    }
 
     attach_type: str
     attatch_args: Dict[str, str] = {}
