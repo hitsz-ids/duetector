@@ -8,6 +8,13 @@ from duetector.tracers import BccTracer
 
 
 class BccMonitor(Monitor):
+    """
+    A monitor use bcc.BPF host
+
+    Config:
+        - auto_init: Init tracers on init
+    """
+
     config_scope = "monitor.bcc"
     default_config = {
         **Monitor.default_config,

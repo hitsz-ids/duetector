@@ -15,6 +15,10 @@ CONFIG_PATH = "~/.config/duetector/config.toml"
 
 
 class Config:
+    """
+    A wrapper for config dict
+    """
+
     def __init__(self, config_dict: Optional[Dict[str, Any]] = None):
         if not config_dict:
             config_dict = {}
@@ -36,6 +40,12 @@ class Config:
 
 
 class ConfigLoader:
+    """
+    A loader for config file and environment variables
+
+    User should use CLI for this
+    """
+
     ENV_PREFIX = "DUETECTOR_"
     ENV_SEP = "__"
     DUMP_DIR = "/tmp"
@@ -137,6 +147,14 @@ class ConfigLoader:
 
 
 class Configuable:
+    """
+    A base class for all configuable classes
+
+    default_config: Dict[str, Any]  default config for this class
+    config_scope: str
+        config scope for this class, e.g. tracer, collector
+    """
+
     default_config = {}
     config_scope: Optional[str] = None
 

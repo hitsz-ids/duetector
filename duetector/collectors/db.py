@@ -9,6 +9,15 @@ from duetector.extension.collector import hookimpl
 
 
 class DBCollector(Collector):
+    """
+    A collector using database, sqlite by default.
+
+    Every tracker will create a table in database, see SessionManager.get_tracking_model
+
+    Config:
+        - db: A SessionManager config
+    """
+
     default_config = {
         **Collector.default_config,
         "db": {

@@ -6,6 +6,10 @@ from duetector.tracers.base import BccTracer
 
 
 class OpenTracer(BccTracer):
+    """
+    A tracer for openat2 syscall
+    """
+
     attach_type = "kprobe"
     attatch_args = {"fn_name": "trace_entry", "event": "do_sys_openat2"}
     poll_fn = "ring_buffer_poll"

@@ -9,6 +9,10 @@ from .models import Tracking
 
 
 class Collector(Configuable):
+    """
+    Base class for all collectors
+    """
+
     default_config = {
         "disabled": False,
         "id": platform.node(),
@@ -40,6 +44,13 @@ class Collector(Configuable):
 
 
 class DequeCollector(Collector):
+    """
+    A simple collector using deque, disabled by default
+
+    Config:
+        - maxlen: Max length of deque
+    """
+
     default_config = {
         **Collector.default_config,
         "disabled": True,

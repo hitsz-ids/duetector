@@ -14,7 +14,6 @@ from sqlalchemy.types import JSON  # type: ignore
 
 from duetector.collectors.models import Tracking
 from duetector.config import Configuable
-from duetector.utils import Singleton
 
 
 class TrackingMixin:
@@ -39,6 +38,15 @@ class TrackingMixin:
 
 
 class SessionManager(Configuable):
+    """
+    A wrapper for sqlalchemy session
+
+    Config:
+        - table_prefix: str  prefix for all table names
+        - engine: Dict[str, Any]  config for sqlalchemy.create_engine
+
+    """
+
     config_scope = "db"
 
     default_config = {
@@ -56,7 +64,7 @@ class SessionManager(Configuable):
         super().__init__(config, *args, **kwargs)
         self._engine: Optional[sqlalchemy.engine.Engine] = None
         self._sessionmaker: Optional[sessionmaker] = None
-        self._tracking_models: Dict[str, TrackingMixin] = {}
+        self._tracking_models: Dict[str, type] = {}
         self.mutex = Lock()
 
     @property
@@ -123,7 +131,7 @@ class SessionManager(Configuable):
                 raise
             return self._tracking_models[tracer]
 
-    def get_all_model(self) -> Dict[str, TrackingMixin]:  # type: ignore
+    def get_all_model(self) -> Dict[str, type]:
         return self._tracking_models.copy()
 
     def _init_tracking_model(self, tracking_model: type) -> type:

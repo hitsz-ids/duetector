@@ -6,6 +6,13 @@ from duetector.exceptions import TracerError, TreacerDisabledError
 
 
 class Tracer(Configuable):
+    """
+    A base class for all tracers
+
+    Subclass should implement attach, detach, get_poller and add_callback
+    `data_t` is a NamedTuple, which is used to convert raw data to a NamedTuple
+    """
+
     data_t: NamedTuple
     default_config = {
         "disabled": False,
@@ -29,12 +36,23 @@ class Tracer(Configuable):
         raise NotImplementedError("get_poller not implemented")
 
     def add_callback(self, host, callback: Callable[[NamedTuple], None]):
+        # attatch callback to host
         raise NotImplementedError("add_callback not implemented")
 
 
 class BccTracer(Tracer):
     """
-    host of BccTracer is bcc.BPF
+    A Tracer use bcc.BPF host
+
+    attatch_type: str  attatch type for bcc.BPF, e.g. kprobe, kretprobe, etc.
+    attatch_args: Dict[str, str]  args for attatch function
+    poll_fn: str  poll function name in bcc.BPF
+    poll_args: Dict[str, str]  args for poll function
+    prog: str  bpf program
+    data_t: NamedTuple  data type for this tracer
+
+    add_callback should attatch callback to bpf, translate raw data to data_t then call the callback
+    # FIXME: Maybe it's hard for using? Maybe we should use a more simple way to implement this?
     """
 
     default_config = {
