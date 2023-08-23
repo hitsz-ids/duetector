@@ -7,6 +7,9 @@ from duetector.log import logger
 
 
 class ConfigGenerator:
+    managers = []
+    monitors = []
+
     def __init__(self, load=True, path=None, load_env=True):
         # dynamic_config containers all default config for all modules, including extensions
         self.dynamic_config = {}
