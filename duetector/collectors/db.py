@@ -18,6 +18,10 @@ class DBCollector(Collector):
         },
     }
 
+    # TODO: A better repr not present sensitive info
+    def __repr__(self):
+        return f"<DBCollector @{self.id}>"
+
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         # Init as a submodel

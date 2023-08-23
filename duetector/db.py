@@ -42,6 +42,10 @@ class SessionManager(Configuable):
         },
     }
 
+    def __repr__(self):
+        # TODO: A better repr not present sensitive info
+        return f"<SessionManager >"
+
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         self._engine: Optional[sqlalchemy.engine.Engine] = None

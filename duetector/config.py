@@ -11,7 +11,7 @@ from duetector.log import logger
 
 _HERE = Path(__file__).parent
 DEFAULT_CONFIG = _HERE / "static" / "config.toml"
-CONFIG_PATH = Path("~/.config/duetector/config.toml").expanduser()
+CONFIG_PATH = "~/.config/duetector/config.toml"
 
 
 class Config:
@@ -38,23 +38,25 @@ class Config:
 class ConfigLoader:
     ENV_PREFIX = "DUETECTOR_"
     ENV_SEP = "__"
+    DUMP_DIR = "/tmp"
 
     def __init__(
         self,
         path: Optional[Union[str, Path]] = None,
         load_env: bool = True,
         dump_when_load=True,
-        config_dump_dir="/tmp",
+        config_dump_dir=None,
     ):
         if not path:
-            path = CONFIG_PATH
-            if not path.exists():
-                # Create default config file automatically
-                self.generate_config()
+            path = Path(CONFIG_PATH).expanduser()
+
         self.config_path: Path = Path(path).absolute()
+        if not self.config_path.exists():
+            self.generate_config()
+
         self.load_env = load_env
         self.dump_when_load = dump_when_load
-        self.config_dump_dir = config_dump_dir
+        self.config_dump_dir = config_dump_dir or self.DUMP_DIR
 
     def __repr__(self) -> str:
         return f"ConfigLoader({self.config_path})"
@@ -148,7 +150,16 @@ class Configuable:
             for score in self.config_scope.split("."):
                 config = config.get(score.lower(), {})
         c = self.default_config.copy()
-        c.update(config)
+
+        def _recursive_update(c, config):
+            for k, v in config.items():
+                if not isinstance(v, dict):
+                    c[k] = v
+                else:
+                    c.setdefault(k, {})
+                    _recursive_update(c[k], v)
+
+        _recursive_update(c, config)
         self.config = Config(c)
         logger.debug(f"{self} config loaded.")
 
