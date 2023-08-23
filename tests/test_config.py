@@ -1,6 +1,7 @@
 import pytest
 
 from duetector.config import ConfigLoader, Configuable
+from duetector.tools.config_generator import ConfigGenerator
 
 CONFIG_CONTENT = """
 
@@ -9,7 +10,7 @@ outofscope = "outofscope"
 [scope]
 default_a = "b"
 
-[scope.subScope]
+[scope.subscope]
 default_b = "c"
 
 """
@@ -24,7 +25,12 @@ def config_file(tmpdir):
 
 @pytest.fixture
 def config_loader(config_file):
-    yield ConfigLoader(config_file)
+    yield ConfigLoader(config_file, load_env=True)
+
+
+@pytest.fixture
+def config_generator(config_file):
+    yield ConfigGenerator(load=True, path=config_file, load_env=True)
 
 
 class ConfiguableTesting(Configuable):
@@ -49,6 +55,24 @@ def test_config(config_loader: ConfigLoader):
     assert config_subscope_in_obj.outofscope == None
     assert config_subscope_in_obj.default_a == "a"
     assert config_subscope_in_obj.default_b == "c"
+
+
+def test_load_env(config_loader: ConfigLoader, monkeypatch):
+    prefix = config_loader.ENV_PREFIX
+    sep = config_loader.ENV_SEP
+    monkeypatch.setenv(f"{prefix}ENVSCOPE{sep}DEFAULT_A", "env_a")
+    monkeypatch.setenv(f"{prefix}ENVSCOPE{sep}ENVSUBSCOPE{sep}DEFAULT_B", "env_b")
+    config = config_loader.load_config()
+
+    assert config["ENVSCOPE".lower()]["DEFAULT_A".lower()] == "env_a"
+    assert config["ENVSCOPE".lower()]["ENVSUBSCOPE".lower()]["DEFAULT_B".lower()] == "env_b"
+
+
+def test_generate(config_generator: ConfigGenerator, tmpdir):
+    tmpdir.join("config-generated.toml")
+    generated_file = tmpdir.join("config-generated.toml")
+    config_generator.generate(generated_file)
+    assert generated_file.exists()
 
 
 if __name__ == "__main__":

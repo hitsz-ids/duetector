@@ -129,14 +129,13 @@ class ConfigLoader:
             if not k.startswith(self.ENV_PREFIX):
                 continue
             k = k[len(self.ENV_PREFIX) :]
+            k = k.lower()
             logger.debug(f"Loading {k.replace(self.ENV_SEP, '.')}={v}")
             *index, spec = k.split(self.ENV_SEP)
-            if not index:
-                config_dict[spec] = v
-            else:
-                for i in index:
-                    last = config_dict.setdefault(i, {})
-                last[spec] = v
+            last = config_dict
+            for i in index:
+                last = last.setdefault(i, {})
+            last[spec] = v
         return config_dict
 
     def dump_config(self, config_dict: Dict[str, Any], path: Union[str, Path]):
