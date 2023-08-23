@@ -12,9 +12,10 @@ class DBCollector(Collector):
     default_config = {
         **Collector.default_config,
         "db": {
+            **SessionManager.default_config,
             "engine": {
                 "url": "sqlite:///duetector-dbcollector.sqlite3",
-            }
+            },
         },
     }
 

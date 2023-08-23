@@ -7,7 +7,7 @@ import click
 
 from duetector.config import CONFIG_PATH, ConfigLoader
 from duetector.monitors import BccMonitor
-from duetector.tools.generate_config import ConfigGenerator
+from duetector.tools.config_generator import ConfigGenerator
 
 
 def check_privileges():
@@ -17,6 +17,11 @@ def check_privileges():
 
 @click.command()
 @click.option(
+    "--load_current_config",
+    default=True,
+    help=f"Wheather load current config file, if True, will use --path as origin config file path, default True.",
+)
+@click.option(
     "--path",
     default=CONFIG_PATH,
     help=f"Origin config file path, default: {CONFIG_PATH}",
@@ -24,20 +29,20 @@ def check_privileges():
 @click.option(
     "--load_env",
     default=True,
-    help=f"Weather load env variables, Prefix: {ConfigLoader.ENV_PREFIX}, Separator:{ConfigLoader.ENV_SEP}, eg. {ConfigLoader.ENV_PREFIX}config{ConfigLoader.ENV_SEP}a means config.a",
+    help=f"Weather load env variables when load current config, default True, Prefix: {ConfigLoader.ENV_PREFIX}, Separator:{ConfigLoader.ENV_SEP}, eg. {ConfigLoader.ENV_PREFIX}config{ConfigLoader.ENV_SEP}a means config.a",
 )
 @click.option(
     "--dump_path",
     default=CONFIG_PATH,
     help=f"File path to dump, default: {CONFIG_PATH}",
 )
-def generate_dynamic_config(path, load_env, dump_path):
+def generate_dynamic_config(load_current_config, path, load_env, dump_path):
     """
-    Generate config file of current version, including dynamic extensions, modules and env variables
+    Generate config file of current version, including extensions, modules and env variables
     """
     path = Path(path).expanduser().absolute()
 
-    c = ConfigGenerator(path=path, load_env=load_env)
+    c = ConfigGenerator(load=load_current_config, path=path, load_env=load_env)
     if path.as_posix() == Path(dump_path).expanduser().absolute().as_posix():
         shutil.move(path, path.with_suffix(".old"))
     c.generate(dump_path)

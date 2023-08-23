@@ -163,5 +163,6 @@ class Configuable:
         self.config = Config(c)
         logger.debug(f"{self} config loaded.")
 
+    # FIXME: A better repr not present sensitive info
     def __repr__(self):
         return f"{self.__class__.__name__}({self.config})"
