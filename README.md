@@ -23,7 +23,7 @@
 
 duetector🔍是一个基于eBPF的数据使用探测器，它可以在Linux内核中对数据使用行为进行探测，从而为数据使用控制提供支持。
 
-<!-- 这里需要补充ABAUC相关文档，然后替换链接 -->
+**🐛🐞🧪 项目正在大力开发中，期待任何Bug报告、功能请求、合并请求**
 
 在[ABAUC控制模型](https://github.com/hitsz-ids/dataucon)当中，duetector可作为PIP（Policy Information Point）来获取数据使用行为，从而为PDP（Policy Decision Point）提供数据使用行为的信息。
 
@@ -85,7 +85,7 @@ docker pull dataucon/duetector:v0.0.1a
 
 使用命令行启动monitor，由于bcc需要root权限，所以我们使用 `sudo` 命令，这将启动所有的探测器，并将探测内容收集到当前目录下的 `duetector-dbcollector.sqlite3`文件中
 
-```
+```bash
 sudo duectl start
 ```
 
@@ -97,19 +97,19 @@ sudo duectl start
 
 启动时，配置文件将自动生成，对应路径为 `~/.config/duetector` ，可以使用 `--config`指定使用的配置文件
 
-```
+```bash
 sudo duectl start --config <config-file-path>
 ```
 
 当使用插件时，默认的配置文件不会包含插件的配置内容，使用动态生成配置的指令生成带有插件配置的配置文件，这个指令也支持合并当前已有的配置文件和环境变量
 
-```
+```bash
 duectl generate-dynamic-config --help
 ```
 
 当配置文件出错时，可以使用 `generate-config` 恢复默认状态
 
-```
+```bash
 duectl generate-config
 ```
 
