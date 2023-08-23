@@ -4,12 +4,34 @@ import tomli_w
 
 from duetector.config import ConfigLoader
 from duetector.log import logger
+from duetector.managers import CollectorManager, FilterManager, TracerManager
+from duetector.monitors import BccMonitor
 
 
 class ConfigGenerator:
+    managers = [FilterManager, TracerManager, CollectorManager]
+    monitors = [BccMonitor]
+
     def __init__(self, load=True, path=None, load_env=True):
         # dynamic_config containers all default config for all modules, including extensions
         self.dynamic_config = {}
+
+        for manager in self.managers:
+            m = manager()
+            manager_scope = self.dynamic_config.setdefault(m.config_scope.lower(), {})
+            manager_scope.update(m.default_config)
+
+            for c in m.init(ignore_disabled=False):
+                config_scpre = manager_scope.setdefault(c.config_scope.lower(), {})
+                config_scpre.update(c.default_config)
+
+        # Support .(dot) separated config_scope
+        for m in self.monitors:
+            *prefix, config_scope = m.config_scope.split(".")
+            last = self.dynamic_config
+            for p in prefix:
+                last = last.setdefault(p, {})
+            last[config_scope] = m.default_config
 
         # This will generate default config file if not exists
         if load:

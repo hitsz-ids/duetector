@@ -13,6 +13,8 @@ class Monitor(Configuable):
 
     config_scope = "monitor"
 
+    default_config = {"disabled": False}
+
     @property
     def disabled(self):
         return self.config.disabled

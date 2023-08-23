@@ -6,6 +6,8 @@ from duetector.config import Configuable
 class Manager(Configuable):
     pm: pluggy.PluginManager
 
+    default_config = {"disabled": False}
+
     def register(self, subpackage):
         registers = getattr(subpackage, "registers", [subpackage])
         for register in registers:

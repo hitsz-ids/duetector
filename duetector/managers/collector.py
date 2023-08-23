@@ -32,12 +32,16 @@ class CollectorManager(Manager):
         self.pm.load_setuptools_entrypoints(project_name)
         self.register(duetector.collectors)
 
-    def init(self) -> List[Collector]:
+    def init(self, ignore_disabled=True) -> List[Collector]:
+        if self.disabled:
+            logger.info("CollectorManager disabled.")
+            return []
+
         objs = []
         for f in self.pm.hook.init_collector(config=self.config.config_dict):
             if not f:
                 continue
-            if f.disabled:
+            if f.disabled and ignore_disabled:
                 logger.info(f"Collector {f.__class__.__name__} is disabled")
                 continue
 

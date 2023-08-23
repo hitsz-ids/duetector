@@ -32,12 +32,15 @@ class FilterManager(Manager):
         self.pm.load_setuptools_entrypoints(project_name)
         self.register(duetector.filters)
 
-    def init(self) -> List[Filter]:
+    def init(self, ignore_disabled=True) -> List[Filter]:
+        if self.disabled:
+            logger.info("FilterManager disabled.")
+            return []
         objs = []
         for f in self.pm.hook.init_filter(config=self.config.config_dict):
             if not f:
                 continue
-            if f.disabled:
+            if f.disabled and ignore_disabled:
                 logger.info(f"Filter {f.__class__.__name__} is disabled")
                 continue
 
