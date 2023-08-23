@@ -56,12 +56,13 @@ class ConfigLoader:
         load_env: bool = True,
         dump_when_load=True,
         config_dump_dir=None,
+        generate_config=True,
     ):
         if not path:
             path = Path(CONFIG_PATH).expanduser()
 
         self.config_path: Path = Path(path).expanduser().absolute()
-        if not self.config_path.exists():
+        if generate_config and not self.config_path.exists():
             self.generate_config()
 
         self.load_env = load_env

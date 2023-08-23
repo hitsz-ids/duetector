@@ -79,7 +79,7 @@ def generate_config(path):
     """
     Generate config file of current version
     """
-    ConfigLoader(path).generate_config()
+    ConfigLoader(path, generate_config=False).generate_config()
 
 
 @click.command()
