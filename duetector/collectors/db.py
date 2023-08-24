@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from sqlalchemy import select
+from sqlalchemy import select  # type: ignore
 
 from duetector.collectors.base import Collector
 from duetector.collectors.models import Tracking
@@ -9,6 +9,15 @@ from duetector.extension.collector import hookimpl
 
 
 class DBCollector(Collector):
+    """
+    A collector using database, sqlite by default.
+
+    Every tracker will create a table in database, see SessionManager.get_tracking_model
+
+    Config:
+        - db: A SessionManager config
+    """
+
     default_config = {
         **Collector.default_config,
         "db": {
@@ -19,9 +28,10 @@ class DBCollector(Collector):
         },
     }
 
-    # TODO: A better repr not present sensitive info
     def __repr__(self):
-        return f"<DBCollector @{self.id}>"
+        config_without_db = self.config.config_dict.copy()
+        config_without_db.pop("db", None)
+        return f"<[DBCollector {self.sm}] {config_without_db}>"
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
@@ -41,14 +51,18 @@ class DBCollector(Collector):
                 tracer: {
                     "count": len(session.execute(select(m)).fetchall()),
                     "first at": session.execute(select(m)).first()[0].timestamp,
-                    "last": session.execute(select(m).order_by(m.id.desc()))
+                    "last": session.execute(select(m).order_by(m.id.desc()))  # type: ignore
                     .first()[0]
                     .to_tracking(),
                 }
-                for tracer, m in self.sm.get_all_model()
+                for tracer, m in self.sm.get_all_model().items()
             }
 
 
 @hookimpl
 def init_collector(config):
     return DBCollector(config)
+
+
+if __name__ == "__main__":
+    print(DBCollector())

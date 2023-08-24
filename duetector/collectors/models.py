@@ -6,6 +6,13 @@ import pydantic
 
 
 class Tracking(pydantic.BaseModel):
+    """
+    Tracking model for all tracers, bring tracer's data into a common model
+
+    Extended fields will be stored in `extended` field as a dict
+    Use Tracking.from_namedtuple to create a Tracking instance from tracer's data
+    """
+
     tracer: str
 
     pid: Optional[int] = None
@@ -32,7 +39,7 @@ class Tracking(pydantic.BaseModel):
             "tracer": tracer_name,
             "extended": {},
         }
-        for field in data._fields:
+        for field in data._fields:  # type: ignore
             if field in Tracking.model_fields:
                 args[field] = getattr(data, field)
             else:

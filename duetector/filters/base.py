@@ -6,6 +6,12 @@ from duetector.extension.filter import hookimpl
 
 
 class Filter(Configuable):
+    """
+    A base class for all filters
+
+    Implement __call__ method to filter data
+    """
+
     default_config = {
         "disabled": False,
     }
@@ -23,6 +29,12 @@ class Filter(Configuable):
 
 
 class DefaultFilter(Filter):
+    """
+    A default filter to filter some useless data
+
+    TODO: Split to multiple filters if needed
+    """
+
     def __call__(self, data: NamedTuple) -> Optional[NamedTuple]:
         if self.disabled:
             return data

@@ -22,17 +22,17 @@ disabled = false
 
 [collector.dbcollector]
 disabled = false
-statis_id = ""
+id = "unittest"
 
 [collector.dbcollector.db]
 table_prefix = "duetector_tracking"
 
 [collector.dbcollector.db.engine]
-url = "sqlite:///duetector-dbcollector.sqlite3"
+url = "sqlite:///"
 
 [collector.dequecollector]
 disabled = true
-statis_id = ""
+id = "unittest"
 maxlen = 1024
 
 [monitor.bcc]

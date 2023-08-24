@@ -4,6 +4,12 @@ from duetector.config import Configuable
 
 
 class Manager(Configuable):
+    """
+    Manager based on pulggy
+
+    FIXME: Need better abstraction, lots of duplicated code in subclasses
+    """
+
     pm: pluggy.PluginManager
 
     default_config = {"disabled": False}

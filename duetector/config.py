@@ -15,6 +15,10 @@ CONFIG_PATH = "~/.config/duetector/config.toml"
 
 
 class Config:
+    """
+    A wrapper for config dict
+    """
+
     def __init__(self, config_dict: Optional[Dict[str, Any]] = None):
         if not config_dict:
             config_dict = {}
@@ -36,6 +40,12 @@ class Config:
 
 
 class ConfigLoader:
+    """
+    A loader for config file and environment variables
+
+    User should use CLI for this
+    """
+
     ENV_PREFIX = "DUETECTOR_"
     ENV_SEP = "__"
     DUMP_DIR = "/tmp"
@@ -46,12 +56,13 @@ class ConfigLoader:
         load_env: bool = True,
         dump_when_load=True,
         config_dump_dir=None,
+        generate_config=True,
     ):
         if not path:
             path = Path(CONFIG_PATH).expanduser()
 
         self.config_path: Path = Path(path).expanduser().absolute()
-        if not self.config_path.exists():
+        if generate_config and not self.config_path.exists():
             self.generate_config()
 
         self.load_env = load_env
@@ -59,7 +70,7 @@ class ConfigLoader:
         self.config_dump_dir = config_dump_dir or self.DUMP_DIR
 
     def __repr__(self) -> str:
-        return f"ConfigLoader({self.config_path})"
+        return f"ConfigLoader(path={self.config_path}, dump_when_load={self.dump_when_load}, load_env={self.load_env}, config_dump_dir={self.config_dump_dir})"
 
     def _init_default_modules(self, config_dict: Dict[str, Any]) -> Dict[str, Any]:
         config_dict.setdefault("tracer", {})
@@ -118,14 +129,13 @@ class ConfigLoader:
             if not k.startswith(self.ENV_PREFIX):
                 continue
             k = k[len(self.ENV_PREFIX) :]
+            k = k.lower()
             logger.debug(f"Loading {k.replace(self.ENV_SEP, '.')}={v}")
             *index, spec = k.split(self.ENV_SEP)
-            if not index:
-                config_dict[spec] = v
-            else:
-                for i in index:
-                    last = config_dict.setdefault(i, {})
-                last[spec] = v
+            last = config_dict
+            for i in index:
+                last = last.setdefault(i, {})
+            last[spec] = v
         return config_dict
 
     def dump_config(self, config_dict: Dict[str, Any], path: Union[str, Path]):
@@ -137,6 +147,14 @@ class ConfigLoader:
 
 
 class Configuable:
+    """
+    A base class for all configuable classes
+
+    default_config: Dict[str, Any]  default config for this class
+    config_scope: str
+        config scope for this class, e.g. tracer, collector
+    """
+
     default_config = {}
     config_scope: Optional[str] = None
 
@@ -161,8 +179,7 @@ class Configuable:
 
         _recursive_update(c, config)
         self.config = Config(c)
-        logger.debug(f"{self} config loaded.")
+        logger.debug(f"{self.__class__.__name__} config loaded.")
 
-    # FIXME: A better repr not present sensitive info
     def __repr__(self):
         return f"{self.__class__.__name__}({self.config})"

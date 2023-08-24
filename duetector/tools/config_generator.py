@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict
 
 import tomli_w
 
@@ -8,7 +9,28 @@ from duetector.managers import CollectorManager, FilterManager, TracerManager
 from duetector.monitors import BccMonitor
 
 
+def _recursive_load(config_scope: str, config_dict: dict, default_config: dict):
+    *prefix, config_scope = config_scope.lower().split(".")
+    last = config_dict
+    for p in prefix:
+        last = last.setdefault(p, {})
+    last[config_scope] = default_config.copy()
+
+
 class ConfigGenerator:
+    """
+    Tools for generate config file by inspecting all modules
+    """
+
+    HEADLINES = """# This is a auto generated config file for duetector🔍
+# You can modify this file to change duetector's behavior
+# For more information, please visit https://github.com/hitsz-ids/duetector
+
+# All config keys will be converted to lower case.
+# It's ok to use upper case or camel case for readability.
+
+"""
+
     managers = [FilterManager, TracerManager, CollectorManager]
     monitors = [BccMonitor]
 
@@ -18,20 +40,17 @@ class ConfigGenerator:
 
         for manager in self.managers:
             m = manager()
-            manager_scope = self.dynamic_config.setdefault(m.config_scope.lower(), {})
-            manager_scope.update(m.default_config)
-
+            _recursive_load(m.config_scope, self.dynamic_config, m.default_config)
             for c in m.init(ignore_disabled=False):
-                config_scpre = manager_scope.setdefault(c.config_scope.lower(), {})
-                config_scpre.update(c.default_config)
+                _recursive_load(
+                    c.config_scope,
+                    self.dynamic_config[m.config_scope],
+                    c.default_config,
+                )
 
         # Support .(dot) separated config_scope
         for m in self.monitors:
-            *prefix, config_scope = m.config_scope.split(".")
-            last = self.dynamic_config
-            for p in prefix:
-                last = last.setdefault(p, {})
-            last[config_scope] = m.default_config
+            _recursive_load(m.config_scope, self.dynamic_config, m.default_config)
 
         # This will generate default config file if not exists
         if load:
@@ -52,11 +71,15 @@ class ConfigGenerator:
         dump_path = Path(dump_path).expanduser().absolute()
         logger.info(f"Dumping dynamic config to {dump_path}")
 
-        with dump_path.open("wb") as f:
+        with dump_path.open("w") as f:
+            f.write(self.HEADLINES)
+
+        with dump_path.open("ab") as f:
             tomli_w.dump(self.dynamic_config, f)
 
 
 if __name__ == "__main__":
     _HERE = Path(__file__).parent
     c = ConfigGenerator(load=False)
-    c.generate(_HERE / ".." / "static/config.dynamic.toml")
+    config_path = _HERE / ".." / "static/config.toml"
+    c.generate(config_path)

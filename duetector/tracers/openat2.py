@@ -6,6 +6,10 @@ from duetector.tracers.base import BccTracer
 
 
 class OpenTracer(BccTracer):
+    """
+    A tracer for openat2 syscall
+    """
+
     attach_type = "kprobe"
     attatch_args = {"fn_name": "trace_entry", "event": "do_sys_openat2"}
     poll_fn = "ring_buffer_poll"
@@ -61,8 +65,8 @@ if __name__ == "__main__":
     tracer = OpenTracer()
     tracer.attach(b)
 
-    def print_callback(data: tracer.data_t):
-        print(f"[{data.comm} ({data.pid})] {data.timestamp} OPEN {data.fname}")
+    def print_callback(data: NamedTuple):
+        print(f"[{data.comm} ({data.pid})] {data.timestamp} OPEN {data.fname}")  # type: ignore
 
     tracer.add_callback(b, print_callback)
     poller = tracer.get_poller(b)

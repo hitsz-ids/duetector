@@ -1,26 +1,12 @@
+from pathlib import Path
+
 import pytest
 
 from duetector.config import ConfigLoader
 
-CONFIG = """
-[tracer]
+_HERE = Path(__file__).parent
 
-
-[filter]
-
-[collector]
-
-
-[monitor.bcc]
-
-[collector.DBCollector.db]
-debug=true
-
-[collector.DBCollector.db.engine]
-url="sqlite://"
-
-
-"""
+CONFIG = (_HERE / "config.toml").read_text()
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
 import platform
 from collections import deque
-from typing import Any, Dict, Iterable, NamedTuple, Optional
+from typing import Any, Deque, Dict, Iterable, NamedTuple, Optional
 
 from duetector.config import Configuable
 from duetector.extension.collector import hookimpl
@@ -9,9 +9,13 @@ from .models import Tracking
 
 
 class Collector(Configuable):
+    """
+    Base class for all collectors
+    """
+
     default_config = {
         "disabled": False,
-        "id": platform.node(),
+        "statis_id": "",
     }
 
     @property
@@ -25,7 +29,8 @@ class Collector(Configuable):
     @property
     def id(self) -> str:
         # ID for current collector
-        return self.config.id
+        # If not set, use hostname
+        return self.config.statis_id or platform.node()
 
     def emit(self, tracer, data: NamedTuple):
         if self.disabled:
@@ -40,6 +45,13 @@ class Collector(Configuable):
 
 
 class DequeCollector(Collector):
+    """
+    A simple collector using deque, disabled by default
+
+    Config:
+        - maxlen: Max length of deque
+    """
+
     default_config = {
         **Collector.default_config,
         "disabled": True,
@@ -52,7 +64,7 @@ class DequeCollector(Collector):
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
-        self._trackings: Dict[str, Iterable[Tracking]] = {}
+        self._trackings: Dict[str, Deque[Tracking]] = {}
 
     def _emit(self, t: Tracking):
         self._trackings.setdefault(t.tracer, deque(maxlen=self.maxlen))

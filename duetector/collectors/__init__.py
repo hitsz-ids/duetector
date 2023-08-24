@@ -1,6 +1,9 @@
-# Expose init_collector for plugin system
+from .base import Collector
+
+__all__ = ["Collector"]
+
+
 # Expose for plugin system
 from . import base, db
-from .base import Collector
 
 registers = [base, db]

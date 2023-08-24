@@ -2,13 +2,18 @@ from contextlib import contextmanager
 from threading import Lock
 from typing import Any, Dict, Generator, Optional
 
-import sqlalchemy
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
-from sqlalchemy.types import JSON
+import sqlalchemy  # type: ignore
+from sqlalchemy.orm import (  # type: ignore
+    DeclarativeBase,
+    Mapped,
+    Session,
+    mapped_column,
+    sessionmaker,
+)
+from sqlalchemy.types import JSON  # type: ignore
 
 from duetector.collectors.models import Tracking
 from duetector.config import Configuable
-from duetector.utils import Singleton
 
 
 class TrackingMixin:
@@ -33,6 +38,15 @@ class TrackingMixin:
 
 
 class SessionManager(Configuable):
+    """
+    A wrapper for sqlalchemy session
+
+    Config:
+        - table_prefix: str  prefix for all table names
+        - engine: Dict[str, Any]  config for sqlalchemy.create_engine
+
+    """
+
     config_scope = "db"
 
     default_config = {
@@ -43,8 +57,14 @@ class SessionManager(Configuable):
     }
 
     def __repr__(self):
-        # TODO: A better repr not present sensitive info
-        return f"<SessionManager >"
+        url = self.config.engine.url or ""
+        if "@" in url:
+            database_type = self.config.engine.url.split(":")[0]
+            safe_url = f'{database_type}://********@{(self.config.engine.url or "").split("@")[-1]}'
+        else:
+            safe_url = url
+
+        return f"<[SessionManager {safe_url}]{self.table_prefix}*>"
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
@@ -118,9 +138,13 @@ class SessionManager(Configuable):
             return self._tracking_models[tracer]
 
     def get_all_model(self) -> Dict[str, type]:
-        return self._tracking_models.items()
+        return self._tracking_models.copy()
 
     def _init_tracking_model(self, tracking_model: type) -> type:
         if not sqlalchemy.inspect(self.engine).has_table(tracking_model.__tablename__):
             tracking_model.__table__.create(self.engine)
         return tracking_model
+
+
+if __name__ == "__main__":
+    print(SessionManager())

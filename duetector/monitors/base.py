@@ -7,7 +7,14 @@ from duetector.tracers.base import Tracer
 
 
 class Monitor(Configuable):
-    traces: List[Tracer]
+    """
+    A base class for all monitors
+
+    A monitor is a collection of tracers, filters and collectors,
+    record host and tracer, provide a way to poll data
+    """
+
+    tracers: List[Tracer]
     filters: List[Filter]
     collectors: List[Collector]
 
