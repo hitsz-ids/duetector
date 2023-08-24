@@ -28,7 +28,7 @@ id = "unittest"
 table_prefix = "duetector_tracking"
 
 [collector.dbcollector.db.engine]
-url = "sqlite:///duetector-dbcollector.sqlite3"
+url = "sqlite:///"
 
 [collector.dequecollector]
 disabled = true
