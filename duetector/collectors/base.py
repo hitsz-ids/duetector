@@ -15,7 +15,7 @@ class Collector(Configuable):
 
     default_config = {
         "disabled": False,
-        "id": platform.node(),
+        "statis_id": "",
     }
 
     @property
@@ -29,7 +29,8 @@ class Collector(Configuable):
     @property
     def id(self) -> str:
         # ID for current collector
-        return self.config.id
+        # If not set, use hostname
+        return self.config.statis_id or platform.node()
 
     def emit(self, tracer, data: NamedTuple):
         if self.disabled:

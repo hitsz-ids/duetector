@@ -28,9 +28,10 @@ class DBCollector(Collector):
         },
     }
 
-    # TODO: A better repr not present sensitive info
     def __repr__(self):
-        return f"<DBCollector @{self.id}>"
+        config_without_db = self.config.config_dict.copy()
+        config_without_db.pop("db", None)
+        return f"<[DBCollector {self.sm}] {config_without_db}>"
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
@@ -61,3 +62,7 @@ class DBCollector(Collector):
 @hookimpl
 def init_collector(config):
     return DBCollector(config)
+
+
+if __name__ == "__main__":
+    print(DBCollector())

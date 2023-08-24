@@ -70,7 +70,7 @@ class ConfigLoader:
         self.config_dump_dir = config_dump_dir or self.DUMP_DIR
 
     def __repr__(self) -> str:
-        return f"ConfigLoader({self.config_path})"
+        return f"ConfigLoader(path={self.config_path}, dump_when_load={self.dump_when_load}, load_env={self.load_env}, config_dump_dir={self.config_dump_dir})"
 
     def _init_default_modules(self, config_dict: Dict[str, Any]) -> Dict[str, Any]:
         config_dict.setdefault("tracer", {})
@@ -179,8 +179,7 @@ class Configuable:
 
         _recursive_update(c, config)
         self.config = Config(c)
-        logger.debug(f"{self} config loaded.")
+        logger.debug(f"{self.__class__.__name__} config loaded.")
 
-    # FIXME: A better repr not present sensitive info
     def __repr__(self):
         return f"{self.__class__.__name__}({self.config})"

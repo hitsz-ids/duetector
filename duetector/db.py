@@ -57,8 +57,14 @@ class SessionManager(Configuable):
     }
 
     def __repr__(self):
-        # TODO: A better repr not present sensitive info
-        return f"<SessionManager >"
+        url = self.config.engine.url or ""
+        if "@" in url:
+            database_type = self.config.engine.url.split(":")[0]
+            safe_url = f'{database_type}://********@{(self.config.engine.url or "").split("@")[-1]}'
+        else:
+            safe_url = url
+
+        return f"<[SessionManager {safe_url}]{self.table_prefix}*>"
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
@@ -138,3 +144,7 @@ class SessionManager(Configuable):
         if not sqlalchemy.inspect(self.engine).has_table(tracking_model.__tablename__):
             tracking_model.__table__.create(self.engine)
         return tracking_model
+
+
+if __name__ == "__main__":
+    print(SessionManager())

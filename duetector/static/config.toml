@@ -22,7 +22,7 @@ disabled = false
 
 [collector.dbcollector]
 disabled = false
-# id = hostname
+statis_id = ""
 
 [collector.dbcollector.db]
 table_prefix = "duetector_tracking"
@@ -32,7 +32,7 @@ url = "sqlite:///duetector-dbcollector.sqlite3"
 
 [collector.dequecollector]
 disabled = true
-# id = hostname
+statis_id = ""
 maxlen = 1024
 
 [monitor.bcc]
