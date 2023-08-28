@@ -28,6 +28,7 @@ class PatternFilter(Filter):
             0,
         ],
     }
+    _re_cache = {}
 
     @property
     def enable_customize_exclude(self) -> bool:
@@ -50,7 +51,13 @@ class PatternFilter(Filter):
             return False
         if isinstance(re_list, str):
             re_list = [re_list]
-        return any(re.search(pattern, field) for pattern in re_list)
+
+        def _cached_search(pattern, field):
+            if pattern not in self._re_cache:
+                self._re_cache[pattern] = re.compile(pattern)
+            return self._re_cache[pattern].search(field)
+
+        return any(_cached_search(pattern, field) for pattern in re_list)
 
     def filter(self, data: NamedTuple) -> Optional[NamedTuple]:
         if getattr(data, "pid", None) == os.getpid():
