@@ -4,6 +4,6 @@ __all__ = ["Filter"]
 
 
 # Expose for plugin system
-from . import base
+from . import pattern
 
-registers = [base]
+registers = [pattern]

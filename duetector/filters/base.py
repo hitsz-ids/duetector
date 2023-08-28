@@ -9,7 +9,8 @@ class Filter(Configuable):
     """
     A base class for all filters
 
-    Implement __call__ method to filter data
+    Implement `filter` method
+    User should call Filter() directly to filter data
     """
 
     default_config = {
@@ -24,8 +25,13 @@ class Filter(Configuable):
     def disabled(self):
         return self.config.disabled
 
-    def __call__(self, data: NamedTuple) -> Optional[NamedTuple]:
+    def filter(self, data: NamedTuple) -> Optional[NamedTuple]:
         raise NotImplementedError
+
+    def __call__(self, data: NamedTuple) -> Optional[NamedTuple]:
+        if self.disabled:
+            return data
+        return self.filter(data)
 
 
 class DefaultFilter(Filter):
@@ -35,10 +41,7 @@ class DefaultFilter(Filter):
     TODO: Split to multiple filters if needed
     """
 
-    def __call__(self, data: NamedTuple) -> Optional[NamedTuple]:
-        if self.disabled:
-            return data
-
+    def filter(self, data: NamedTuple) -> Optional[NamedTuple]:
         fname = getattr(data, "fname", None)
         if (
             (
