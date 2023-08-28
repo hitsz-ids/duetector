@@ -1,9 +1,7 @@
 import subprocess
-from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, NamedTuple, Optional
 
-from pytest import Collector
-
+from duetector.collectors.base import Collector
 from duetector.log import logger
 from duetector.managers import CollectorManager, FilterManager, TracerManager
 from duetector.monitors.base import Monitor
