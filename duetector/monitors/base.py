@@ -26,9 +26,6 @@ class Monitor(Configuable):
     def disabled(self):
         return self.config.disabled
 
-    def init(self):
-        raise NotImplementedError
-
     def poll_all(self):
         for tracer in self.tracers:
             self.poll(tracer)

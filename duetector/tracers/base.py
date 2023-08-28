@@ -1,7 +1,8 @@
 from collections import namedtuple
-from typing import Any, Callable, Dict, NamedTuple, Optional
+from threading import Lock
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
 
-from duetector.config import Configuable
+from duetector.config import Config, Configuable
 from duetector.exceptions import TracerError, TreacerDisabledError
 
 
@@ -119,3 +120,46 @@ class BccTracer(Tracer):
 
     def add_callback(self, host, callback: Callable[[NamedTuple], None]):
         raise NotImplementedError("add_callback not implemented")
+
+
+class ShellTracer(Tracer):
+    comm = List[str]
+    data_t = namedtuple("ShellOutput", ["output"])
+
+    _cache: Optional[Any] = None
+    default_config = {"disabled": False, "enable_cache": True}
+
+    def __init__(self, config: Optional[Union[Config, Dict[str, Any]]] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
+        self.mutex = Lock()
+
+    @property
+    def config_scope(self):
+        return self.__class__.__name__
+
+    @property
+    def enable_cache(self):
+        return self.config.enable_cache
+
+    @property
+    def disabled(self):
+        return self.config.disabled
+
+    def set_cache(self, cache):
+        with self.mutex:
+            self._cache = cache
+
+    def get_cache(self):
+        return self._cache
+
+    def attach(self, host):
+        host.attach(self)
+
+    def detach(self, host):
+        host.detach(self)
+
+    def get_poller(self, host) -> Callable:
+        host.get_poller(self)
+
+    def add_callback(self, host, callback: Callable[[NamedTuple], None]):
+        host.add_callback(self, callback)

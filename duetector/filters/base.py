@@ -39,7 +39,7 @@ class DefaultFilter(Filter):
         if self.disabled:
             return data
 
-        fname = getattr(data, "fname")
+        fname = getattr(data, "fname", None)
         if (
             fname
             and any(
@@ -56,7 +56,7 @@ class DefaultFilter(Filter):
                     ]
                 ]
             )
-            or getattr(data, "pid") == os.getpid()
+            or getattr(data, "pid", None) == os.getpid()
         ):
             return None
 

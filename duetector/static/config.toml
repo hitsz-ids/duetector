@@ -14,6 +14,10 @@ disabled = false
 [tracer]
 disabled = false
 
+[tracer.unametracer]
+disabled = false
+enable_cache = true
+
 [tracer.opentracer]
 disabled = false
 
@@ -38,3 +42,9 @@ maxlen = 1024
 [monitor.bcc]
 disabled = false
 auto_init = true
+continue_on_exception = true
+
+[monitor.sh]
+disabled = false
+auto_init = true
+timeout = 5

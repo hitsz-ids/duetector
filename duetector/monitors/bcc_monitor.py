@@ -19,7 +19,12 @@ class BccMonitor(Monitor):
     default_config = {
         **Monitor.default_config,
         "auto_init": True,
+        "continue_on_exception": True,
     }
+
+    @property
+    def continue_on_exception(self):
+        return self.config.continue_on_exception
 
     @property
     def auto_init(self):
@@ -52,7 +57,10 @@ class BccMonitor(Monitor):
             except Exception as e:
                 logger.error(f"Failed to compile {tracer.__class__.__name__}")
                 logger.exception(e)
-                continue
+                if self.continue_on_exception:
+                    continue
+                else:
+                    raise e
             tracer.attach(bpf)
             self._add_callback(bpf, tracer)
             self.bpf_tracers[tracer] = bpf
