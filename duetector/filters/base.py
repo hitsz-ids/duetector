@@ -59,8 +59,7 @@ class DefaultFilter(Filter):
                 )
             )
             or getattr(data, "pid", None) == os.getpid()
-            # FIXME: Filter ourselves out in a better way
-            or getattr(data, "comm", None) == "duectl"
+            or getattr(data, "uid", None) == 0
         ):
             return None
         return data
