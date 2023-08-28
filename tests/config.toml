@@ -8,8 +8,26 @@
 [filter]
 disabled = false
 
-[filter.defaultfilter]
+
+[filter.patternfilter]
 disabled = false
+enable_customize_exclude = true
+re_exclude_fname = [
+    "/proc",
+    "/sys",
+    "/lib",
+    "/dev",
+    "/run",
+    "/usr/lib",
+    "/etc/ld.so.cache",
+    "/re/*"
+]
+re_exclude_comm = []
+exclude_pid = []
+exclude_uid = [0]
+exclude_gid = [0]
+exclude_custom = ["ignore_custom"]
+re_exclude_gcustom = ["ignore_custom*"]
 
 [tracer]
 disabled = false

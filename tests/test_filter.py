@@ -2,8 +2,12 @@ from collections import namedtuple
 
 import pytest
 
-from duetector.filters.base import DefaultFilter
+from duetector.filters.pattern import PatternFilter
 from duetector.managers import FilterManager
+
+data_t = namedtuple(
+    "Tracking", ["pid", "uid", "gid", "comm", "fname", "timestamp", "custom", "gcustom"]
+)
 
 
 @pytest.fixture
@@ -12,33 +16,69 @@ def config(full_config):
 
 
 @pytest.fixture
-def default_filter(config):
-    yield DefaultFilter(config)
+def pattern_filter(config):
+    yield PatternFilter(config)
 
 
-def test_default_filter(default_filter):
-    data_t = namedtuple("Tracking", ["pid", "uid", "gid", "comm", "fname", "timestamp", "custom"])
-    data = data_t(
-        pid=9999,
-        uid=9999,
-        gid=9999,
-        comm="dummy",
-        fname="dummy.file",
-        timestamp=13205215231927,
-        custom="dummy-xargs",
-    )
-    assert default_filter(data) == data
+passed = dict(
+    pid=9999,
+    uid=9999,
+    gid=9999,
+    comm="dummy",
+    fname="dummy.file",
+    timestamp=13205215231927,
+    custom="passed",
+    gcustom="passed",
+)
 
-    data = data_t(
-        pid=9999,
-        uid=9999,
-        gid=9999,
-        comm="dummy",
-        fname="/etc/ld.so.cache",
-        timestamp=13205215231927,
-        custom="dummy-xargs",
-    )
-    assert default_filter(data) == None
+
+params = [
+    (passed, True),
+    (
+        {
+            **passed,
+            "uid": 0,  # Filtered
+        },
+        False,
+    ),
+    (
+        {
+            **passed,
+            "fname": "/etc/ld.so.cache",  # Filtered
+        },
+        False,
+    ),
+    (
+        {
+            **passed,
+            "fname": "/re/Filtered",  # Filtered
+        },
+        False,
+    ),
+    (
+        {
+            **passed,
+            "custom": "ignore_custom",  # Filtered
+        },
+        False,
+    ),
+    (
+        {
+            **passed,
+            "gcustom": "ignore_custom123",  # Filtered
+        },
+        False,
+    ),
+]
+
+
+@pytest.mark.parametrize("data_args, passed", params)
+def test_filter(pattern_filter, data_args, passed):
+    data = data_t(**data_args)
+    if passed:
+        assert pattern_filter(data) == data
+    else:
+        assert pattern_filter(data) == None
 
 
 if __name__ == "__main__":
