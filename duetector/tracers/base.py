@@ -10,7 +10,7 @@ class Tracer(Configuable):
     """
     A base class for all tracers
 
-    Subclass should implement attach, detach, get_poller and add_callback
+    Subclass should implement attach, detach, get_poller and set_callback
     `data_t` is a NamedTuple, which is used to convert raw data to a NamedTuple
     """
 
@@ -36,9 +36,9 @@ class Tracer(Configuable):
     def get_poller(self, host) -> Callable:
         raise NotImplementedError("get_poller not implemented")
 
-    def add_callback(self, host, callback: Callable[[NamedTuple], None]):
+    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
         # attatch callback to host
-        raise NotImplementedError("add_callback not implemented")
+        raise NotImplementedError("set_callback not implemented")
 
 
 class BccTracer(Tracer):
@@ -52,7 +52,7 @@ class BccTracer(Tracer):
     prog: str  bpf program
     data_t: NamedTuple  data type for this tracer
 
-    add_callback should attatch callback to bpf, translate raw data to data_t then call the callback
+    set_callback should attatch callback to bpf, translate raw data to data_t then call the callback
     # FIXME: Maybe it's hard for using? Maybe we should use a more simple way to implement this?
     """
 
@@ -118,8 +118,8 @@ class BccTracer(Tracer):
             raise TracerError(f"{self.poll_fn} function not found in BPF")
         return poller
 
-    def add_callback(self, host, callback: Callable[[NamedTuple], None]):
-        raise NotImplementedError("add_callback not implemented")
+    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+        raise NotImplementedError("set_callback not implemented")
 
 
 class ShellTracer(Tracer):
@@ -159,7 +159,7 @@ class ShellTracer(Tracer):
         host.detach(self)
 
     def get_poller(self, host) -> Callable:
-        host.get_poller(self)
+        return host.get_poller(self)
 
-    def add_callback(self, host, callback: Callable[[NamedTuple], None]):
-        host.add_callback(self, callback)
+    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+        host.set_callback(self, callback)

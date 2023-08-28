@@ -63,11 +63,11 @@ class BccMonitor(Monitor):
                 else:
                     raise e
             tracer.attach(bpf)
-            self._add_callback(bpf, tracer)
+            self._set_callback(bpf, tracer)
             self.bpf_tracers[tracer] = bpf
             logger.info(f"Tracer {tracer.__class__.__name__} attached")
 
-    def _add_callback(self, host, tracer):
+    def _set_callback(self, host, tracer):
         def _(data):
             for filter in self.filters:
                 data = filter(data)
@@ -76,7 +76,7 @@ class BccMonitor(Monitor):
             for collector in self.collectors:
                 collector.emit(tracer, data)
 
-        tracer.add_callback(host, _)
+        tracer.set_callback(host, _)
 
     def poll_all(self):
         with ThreadPoolExecutor(max_workers=10) as e:

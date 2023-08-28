@@ -17,7 +17,7 @@ class ShTracerHost:
 
     def __init__(self, timeout=5):
         self.tracers: Dict[ShellTracer, List[str]] = {}
-        self.callbacks: Dict[ShellTracer, List[Callable[[NamedTuple], None]]] = {}
+        self.callbacks: Dict[ShellTracer, Callable[[NamedTuple], None]] = {}
         self.timeout = timeout
 
     def attach(self, tracer):
@@ -45,8 +45,9 @@ class ShTracerHost:
                     # No change, no need to call callback
                     return
                 tracer.set_cache(output)
-            for callback in self.callbacks[tracer]:
-                callback(tracer.data_t(output=output))
+
+            callback = self.callbacks[tracer]
+            callback(tracer.data_t(output=output))
 
         return _
 
@@ -57,8 +58,8 @@ class ShTracerHost:
         with ThreadPoolExecutor(max_workers=10) as e:
             e.map(self.poll, self.tracers)
 
-    def add_callback(self, tracer, callback):
-        self.callbacks.setdefault(tracer, []).append(callback)
+    def set_callback(self, tracer, callback):
+        self.callbacks[tracer] = callback
 
 
 class ShMonitor(Monitor):
@@ -100,10 +101,10 @@ class ShMonitor(Monitor):
     def init(self):
         for tracer in self.tracers:
             tracer.attach(self.host)
-            self._add_callback(self.host, tracer)
+            self._set_callback(self.host, tracer)
             logger.info(f"Tracer {tracer.__class__.__name__} attached")
 
-    def _add_callback(self, host, tracer):
+    def _set_callback(self, host, tracer):
         def _(data):
             for filter in self.filters:
                 data = filter(data)
@@ -112,7 +113,7 @@ class ShMonitor(Monitor):
             for collector in self.collectors:
                 collector.emit(tracer, data)
 
-        tracer.add_callback(host, _)
+        tracer.set_callback(host, _)
 
     def poll_all(self):
         return self.host.poll_all()
