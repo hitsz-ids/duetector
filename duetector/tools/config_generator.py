@@ -6,7 +6,7 @@ import tomli_w
 from duetector.config import ConfigLoader
 from duetector.log import logger
 from duetector.managers import CollectorManager, FilterManager, TracerManager
-from duetector.monitors import BccMonitor
+from duetector.monitors import BccMonitor, ShMonitor
 
 
 def _recursive_load(config_scope: str, config_dict: dict, default_config: dict):
@@ -32,7 +32,7 @@ class ConfigGenerator:
 """
 
     managers = [FilterManager, TracerManager, CollectorManager]
-    monitors = [BccMonitor]
+    monitors = [BccMonitor, ShMonitor]
 
     def __init__(self, load=True, path=None, load_env=True):
         # dynamic_config containers all default config for all modules, including extensions

@@ -34,6 +34,7 @@ def data_t():
 
 def test_dbcollector(dbcollector: DBCollector, data_t):
     dbcollector.emit("dummy", data_t)
+    dbcollector.shutdown()
     assert dbcollector.summary() == {
         "dummy": {
             "count": 1,

@@ -45,7 +45,7 @@ class OpenTracer(BccTracer):
     }
     """
 
-    def add_callback(self, host, callback: Callable[[NamedTuple], None]):
+    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
         def _(ctx, data, size):
             event = host["buffer"].event(data)
             return callback(self._convert_data(event))  # type: ignore
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     def print_callback(data: NamedTuple):
         print(f"[{data.comm} ({data.pid})] {data.timestamp} OPEN {data.fname}")  # type: ignore
 
-    tracer.add_callback(b, print_callback)
+    tracer.set_callback(b, print_callback)
     poller = tracer.get_poller(b)
     while True:
         try:

@@ -50,7 +50,7 @@ class MockTracer(Tracer):
 
         return _
 
-    def add_callback(self, host, callback: Callable[[NamedTuple], None]):
+    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
         def _(data):
             return callback(data)
 
@@ -85,7 +85,7 @@ class MockMonitor(Monitor):
                 "tracer": None,
             }
             tracer.attach(host)
-            self.mock_cls._add_callback(self, host, tracer)
+            self.mock_cls._set_callback(self, host, tracer)
             self.bpf_tracers[tracer] = host
 
     def poll_all(self):
@@ -108,6 +108,7 @@ def bcc_monitor(full_config):
 
 def test_bcc_monitor(bcc_monitor: MockMonitor):
     bcc_monitor.poll_all()
+    bcc_monitor.shutdown()
     assert bcc_monitor.summary()
     bcc_monitor.summary()["DBCollector"]["BccMockTracer"]["last"] == Tracking(
         tracer="BccMockTracer",

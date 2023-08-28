@@ -2,11 +2,13 @@ import os
 import shutil
 import time
 from pathlib import Path
+from typing import List
 
 import click
 
 from duetector.config import CONFIG_PATH, ConfigLoader
-from duetector.monitors import BccMonitor
+from duetector.monitors import BccMonitor, ShMonitor
+from duetector.monitors.base import Monitor
 from duetector.tools.config_generator import ConfigGenerator
 
 
@@ -99,12 +101,28 @@ def generate_config(path):
     default=f"{ConfigLoader.DUMP_DIR}",
     help=f"Config dump dir, default: {ConfigLoader.DUMP_DIR}",
 )
-def start(config, load_env, dump_when_load, config_dump_dir):
+@click.option(
+    "--enable_bcc_monitor",
+    default=True,
+    help=f"Set false or False to disable bcc monitor, default: true",
+)
+@click.option(
+    "--enable_sh_monitor",
+    default=True,
+    help=f"Set false or False to disable shell monitor, default: true",
+)
+def start(
+    config,
+    load_env,
+    dump_when_load,
+    config_dump_dir,
+    enable_bcc_monitor,
+    enable_sh_monitor,
+):
     """
     Start A bcc monitor and wait for KeyboardInterrupt
     """
 
-    check_privileges()
     config = Path(config).expanduser()
     c = ConfigLoader(
         path=config,
@@ -112,14 +130,22 @@ def start(config, load_env, dump_when_load, config_dump_dir):
         dump_when_load=dump_when_load,
         config_dump_dir=config_dump_dir,
     ).load_config()
-    m = BccMonitor(c)
+    monitors: List[Monitor] = []
+    if enable_bcc_monitor:
+        check_privileges()
+        monitors.append(BccMonitor(c))
+    if enable_sh_monitor:
+        monitors.append(ShMonitor(c))
 
     while True:
         try:
             time.sleep(0.5)
-            m.poll_all()
+            for m in monitors:
+                m.poll_all()
         except KeyboardInterrupt:
-            print(m.summary())
+            for m in monitors:
+                m.shutdown()
+                print(m.summary())
             exit()
 
 

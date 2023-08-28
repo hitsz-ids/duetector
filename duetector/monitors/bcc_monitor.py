@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, Optional
 
 from duetector.collectors.base import Collector
@@ -19,7 +20,12 @@ class BccMonitor(Monitor):
     default_config = {
         **Monitor.default_config,
         "auto_init": True,
+        "continue_on_exception": True,
     }
+
+    @property
+    def continue_on_exception(self):
+        return self.config.continue_on_exception
 
     @property
     def auto_init(self):
@@ -52,13 +58,16 @@ class BccMonitor(Monitor):
             except Exception as e:
                 logger.error(f"Failed to compile {tracer.__class__.__name__}")
                 logger.exception(e)
-                continue
+                if self.continue_on_exception:
+                    continue
+                else:
+                    raise e
             tracer.attach(bpf)
-            self._add_callback(bpf, tracer)
+            self._set_callback(bpf, tracer)
             self.bpf_tracers[tracer] = bpf
             logger.info(f"Tracer {tracer.__class__.__name__} attached")
 
-    def _add_callback(self, host, tracer):
+    def _set_callback(self, host, tracer):
         def _(data):
             for filter in self.filters:
                 data = filter(data)
@@ -67,11 +76,10 @@ class BccMonitor(Monitor):
             for collector in self.collectors:
                 collector.emit(tracer, data)
 
-        tracer.add_callback(host, _)
+        tracer.set_callback(host, _)
 
     def poll_all(self):
-        for tracer in self.bpf_tracers.keys():
-            self.poll(tracer)
+        self._backend.map(self.poll, self.tracers)
 
     def poll(self, tracer: BccTracer):  # type: ignore
         tracer.get_poller(self.bpf_tracers[tracer])(**tracer.poll_args)

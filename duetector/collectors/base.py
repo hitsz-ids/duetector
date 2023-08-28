@@ -1,8 +1,9 @@
 import platform
 from collections import deque
-from typing import Any, Deque, Dict, Iterable, NamedTuple, Optional
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Deque, Dict, Iterable, NamedTuple, Optional, Union
 
-from duetector.config import Configuable
+from duetector.config import Config, Configuable
 from duetector.extension.collector import hookimpl
 
 from .models import Tracking
@@ -16,7 +17,15 @@ class Collector(Configuable):
     default_config = {
         "disabled": False,
         "statis_id": "",
+        "backend_args": {
+            "max_workers": 10,
+        },
     }
+    _backend_imp = ThreadPoolExecutor
+
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
+        self._backend = self._backend_imp(**self.backend_args.config_dict)
 
     @property
     def config_scope(self):
@@ -32,16 +41,23 @@ class Collector(Configuable):
         # If not set, use hostname
         return self.config.statis_id or platform.node()
 
+    @property
+    def backend_args(self):
+        return self.config.backend_args
+
     def emit(self, tracer, data: NamedTuple):
         if self.disabled:
             return
-        self._emit(Tracking.from_namedtuple(tracer, data))
+        self._backend.submit(self._emit, Tracking.from_namedtuple(tracer, data))
 
     def _emit(self, t: Tracking):
         raise NotImplementedError
 
     def summary(self) -> Dict:
         raise NotImplementedError
+
+    def shutdown(self):
+        self._backend.shutdown()
 
 
 class DequeCollector(Collector):

@@ -14,6 +14,10 @@ disabled = false
 [tracer]
 disabled = false
 
+[tracer.unametracer]
+disabled = false
+enable_cache = true
+
 [tracer.opentracer]
 disabled = false
 
@@ -23,6 +27,9 @@ disabled = false
 [collector.dbcollector]
 disabled = false
 statis_id = ""
+
+[collector.dbcollector.backend_args]
+max_workers = 10
 
 [collector.dbcollector.db]
 table_prefix = "duetector_tracking"
@@ -35,6 +42,21 @@ disabled = true
 statis_id = ""
 maxlen = 1024
 
+[collector.dequecollector.backend_args]
+max_workers = 10
+
 [monitor.bcc]
 disabled = false
 auto_init = true
+continue_on_exception = true
+
+[monitor.bcc.backend_args]
+max_workers = 10
+
+[monitor.sh]
+disabled = false
+auto_init = true
+timeout = 5
+
+[monitor.sh.backend_args]
+max_workers = 10

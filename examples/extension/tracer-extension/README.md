@@ -29,7 +29,7 @@ class LogTracer(BccTracer):
     }
     """
 
-    def add_callback(self, host, callback: Callable[[NamedTuple], None]):
+    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
         # No need to collect data
         return
 ```

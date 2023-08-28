@@ -14,7 +14,7 @@ class DummyBPF:
     def poll_dummy(self, **kwargs):
         self.callback()
 
-    def add_callback(self, func):
+    def set_callback(self, func):
         self.callback = func
 
 
@@ -45,11 +45,11 @@ class DummyTracer(BccTracer):
             custom="dummy-xargs",
         )
 
-    def add_callback(self, bpf: DummyBPF, callback):
+    def set_callback(self, bpf: DummyBPF, callback):
         def _():
             return callback(self.get_dummy_data())
 
-        bpf.add_callback(_)
+        bpf.set_callback(_)
 
     def get_poller(self, host: DummyBPF) -> Callable:
         return super().get_poller(host)
