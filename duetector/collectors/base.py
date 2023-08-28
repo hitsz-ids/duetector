@@ -9,9 +9,7 @@ from duetector.extension.collector import hookimpl
 from .models import Tracking
 
 
-class Collector(
-    Configuable,
-):
+class Collector(Configuable):
     """
     Base class for all collectors
     """
@@ -25,7 +23,7 @@ class Collector(
     }
     _backend_imp = ThreadPoolExecutor
 
-    def __init__(self, config: Config | Dict[str, Any] | None = None, *args, **kwargs):
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         self._backend = self._backend_imp(**self.backend_args.config_dict)
 
