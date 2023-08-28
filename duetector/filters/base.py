@@ -41,25 +41,28 @@ class DefaultFilter(Filter):
 
         fname = getattr(data, "fname", None)
         if (
-            fname
-            and any(
-                [
-                    fname.startswith(p)
-                    for p in [
-                        "/proc",
-                        "/sys",
-                        "/lib",
-                        "/dev",
-                        "/run",
-                        "/usr/lib",
-                        "/etc/ld.so.cache",
+            (
+                fname
+                and any(
+                    [
+                        fname.startswith(p)
+                        for p in [
+                            "/proc",
+                            "/sys",
+                            "/lib",
+                            "/dev",
+                            "/run",
+                            "/usr/lib",
+                            "/etc/ld.so.cache",
+                        ]
                     ]
-                ]
+                )
             )
             or getattr(data, "pid", None) == os.getpid()
+            # FIXME: Filter ourselves out in a better way
+            or getattr(data, "comm", None) == "duectl"
         ):
             return None
-
         return data
 
 
