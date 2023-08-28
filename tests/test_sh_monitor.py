@@ -17,6 +17,7 @@ def test_sh_monitor(sh_monitor):
     assert sh_monitor.auto_init
     assert sh_monitor.timeout
     sh_monitor.poll_all()
+    sh_monitor.shutdown()
     assert sh_monitor.summary()
 
 

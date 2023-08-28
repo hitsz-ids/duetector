@@ -144,6 +144,7 @@ def start(
                 m.poll_all()
         except KeyboardInterrupt:
             for m in monitors:
+                m.shutdown()
                 print(m.summary())
             exit()
 

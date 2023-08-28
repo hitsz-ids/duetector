@@ -108,6 +108,7 @@ def bcc_monitor(full_config):
 
 def test_bcc_monitor(bcc_monitor: MockMonitor):
     bcc_monitor.poll_all()
+    bcc_monitor.shutdown()
     assert bcc_monitor.summary()
     bcc_monitor.summary()["DBCollector"]["BccMockTracer"]["last"] == Tracking(
         tracer="BccMockTracer",

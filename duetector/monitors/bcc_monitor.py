@@ -79,8 +79,7 @@ class BccMonitor(Monitor):
         tracer.set_callback(host, _)
 
     def poll_all(self):
-        with ThreadPoolExecutor(max_workers=10) as e:
-            e.map(self.poll, self.tracers)
+        self._backend.map(self.poll, self.tracers)
 
     def poll(self, tracer: BccTracer):  # type: ignore
         tracer.get_poller(self.bpf_tracers[tracer])(**tracer.poll_args)

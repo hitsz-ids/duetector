@@ -15,10 +15,11 @@ class ShTracerHost:
     Host for ShellTracer
     """
 
-    def __init__(self, timeout=5):
+    def __init__(self, backend, timeout=5):
         self.tracers: Dict[ShellTracer, List[str]] = {}
         self.callbacks: Dict[ShellTracer, Callable[[NamedTuple], None]] = {}
         self.timeout = timeout
+        self.backend = backend
 
     def attach(self, tracer):
         self.tracers[tracer] = tracer.comm
@@ -55,8 +56,7 @@ class ShTracerHost:
         self.get_poller(tracer)()
 
     def poll_all(self):
-        with ThreadPoolExecutor(max_workers=10) as e:
-            e.map(self.poll, self.tracers)
+        self.backend.map(self.poll, self.tracers)
 
     def set_callback(self, tracer, callback):
         self.callbacks[tracer] = callback
@@ -83,7 +83,7 @@ class ShMonitor(Monitor):
         return int(self.config.timeout)
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
-        super().__init__(config=config)
+        super().__init__(config=config, *args, **kwargs)
         if self.disabled:
             logger.info("ShMonitor disabled")
             self.tracers = []
@@ -94,7 +94,7 @@ class ShMonitor(Monitor):
         self.tracers: List[ShellTracer] = TracerManager(config).init(tracer_type=ShellTracer)  # type: ignore
         self.filters: List[Callable] = FilterManager(config).init()
         self.collectors: List[Collector] = CollectorManager(config).init()
-        self.host = ShTracerHost(self.timeout)
+        self.host = ShTracerHost(self._backend, self.timeout)
         if self.auto_init:
             self.init()
 
@@ -110,6 +110,7 @@ class ShMonitor(Monitor):
                 data = filter(data)
                 if not data:
                     return
+
             for collector in self.collectors:
                 collector.emit(tracer, data)
 
