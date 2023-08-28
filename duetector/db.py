@@ -52,7 +52,7 @@ class SessionManager(Configuable):
     default_config = {
         "table_prefix": "duetector_tracking",
         "engine": {
-            "url": "sqlite:///",
+            "url": "sqlite:///:memory:",
         },
     }
 
@@ -86,6 +86,13 @@ class SessionManager(Configuable):
         config = self.config.engine.config_dict
         if self.debug:
             config["echo"] = True
+        db_url = config.get("url", "")
+        if ":memory:" in db_url:
+            config.setdefault("poolclass", sqlalchemy.StaticPool)
+
+        if "sqlite" in db_url:
+            config.setdefault("connect_args", {"check_same_thread": False})
+
         return config
 
     @property

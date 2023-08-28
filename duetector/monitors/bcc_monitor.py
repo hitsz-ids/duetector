@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, Optional
 
 from duetector.collectors.base import Collector
@@ -78,8 +79,8 @@ class BccMonitor(Monitor):
         tracer.add_callback(host, _)
 
     def poll_all(self):
-        for tracer in self.bpf_tracers.keys():
-            self.poll(tracer)
+        with ThreadPoolExecutor(max_workers=10) as e:
+            e.map(self.poll, self.tracers)
 
     def poll(self, tracer: BccTracer):  # type: ignore
         tracer.get_poller(self.bpf_tracers[tracer])(**tracer.poll_args)

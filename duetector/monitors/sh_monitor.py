@@ -1,4 +1,5 @@
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, NamedTuple, Optional
 
 from pytest import Collector
@@ -53,8 +54,8 @@ class ShTracerHost:
         self.get_poller(tracer)()
 
     def poll_all(self):
-        for tracer in self.tracers:
-            self.poll(tracer)
+        with ThreadPoolExecutor(max_workers=10) as e:
+            e.map(self.poll, self.tracers)
 
     def add_callback(self, tracer, callback):
         self.callbacks.setdefault(tracer, []).append(callback)

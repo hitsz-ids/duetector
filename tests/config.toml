@@ -32,7 +32,7 @@ id = "unittest"
 table_prefix = "duetector_tracking"
 
 [collector.dbcollector.db.engine]
-url = "sqlite:///"
+url = "sqlite:///:memory:"
 
 [collector.dequecollector]
 disabled = true
