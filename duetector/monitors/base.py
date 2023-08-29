@@ -64,6 +64,6 @@ class Monitor(Configuable):
     def shutdown(self):
         self.poller.shutdown()
         self.poller.wait()
-        self._backend.shutdown(cancel_futures=True)
+        self._backend.shutdown()
         for c in self.collectors:
             c.shutdown()
