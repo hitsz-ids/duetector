@@ -5,8 +5,9 @@ FROM dataucon/ubuntu-bcc:${BCC_VERSION}
 RUN apt-get update && apt-get install -y tini \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /duetector
+RUN pip install jupyterlab
 
+COPY . /duetector
 RUN pip install -e /duetector --no-cache-dir
 
 
@@ -25,7 +26,7 @@ ENTRYPOINT [ "/start.sh" ]
 # docker build -t duetector:dev -f docker/Dockerfile.dev .
 
 # Current kernel build with CONFIG_IKHEADERS=m
-# docker run -it --rm --cap-add=sys_admin -v /sys/kernel/kheaders.tar.xz:/sys/kernel/kheaders.tar.xz -v /sys/kernel/debug:/sys/kernel/debug duetector:dev bash
+# docker run -it --rm -p 8888:8888 --cap-add=sys_admin -v /sys/kernel/kheaders.tar.xz:/sys/kernel/kheaders.tar.xz -v /sys/kernel/debug:/sys/kernel/debug duetector:dev
 
 # Currnet kernel installed with headers
-# docker run -it --rm --cap-add=sys_admin -v /usr/lib/modules:/usr/lib/modules -v /sys/kernel/debug:/sys/kernel/debug duetector:dev bash
+# docker run -it --rm -p 8888:8888 --cap-add=sys_admin -v /usr/lib/modules:/usr/lib/modules -v /sys/kernel/debug:/sys/kernel/debug duetector:dev

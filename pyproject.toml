@@ -15,6 +15,7 @@ dependencies = [
     "tomli-w",
     "SQLAlchemy>=2",
     "click",
+    "psutil"
 ]
 dynamic = ["version", ]
 classifiers = [
@@ -33,6 +34,7 @@ test = [
 
 [project.scripts]
 duectl = "duetector.cli.main:cli"
+duectl-daemon = "duetector.cli.daemon:cli"
 
 
 [[project.authors]]

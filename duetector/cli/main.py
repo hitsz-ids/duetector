@@ -1,5 +1,6 @@
 import os
 import shutil
+import signal
 import time
 from pathlib import Path
 from typing import List
@@ -7,6 +8,7 @@ from typing import List
 import click
 
 from duetector.config import CONFIG_PATH, ConfigLoader
+from duetector.log import logger
 from duetector.monitors import BccMonitor, ShMonitor
 from duetector.monitors.base import Monitor
 from duetector.tools.config_generator import ConfigGenerator
@@ -137,16 +139,20 @@ def start(
     if enable_sh_monitor:
         monitors.append(ShMonitor(c))
 
-    while True:
-        try:
-            time.sleep(0.5)
-            for m in monitors:
-                m.poll_all()
-        except KeyboardInterrupt:
-            for m in monitors:
-                m.shutdown()
-                print(m.summary())
-            exit()
+    for m in monitors:
+        m.start_polling()
+
+    def _shutdown(sig=None, frame=None):
+        for m in monitors:
+            m.shutdown()
+
+    signal.signal(signal.SIGINT, _shutdown)
+    signal.signal(signal.SIGTERM, _shutdown)
+    logger.info("Waiting for KeyboardInterrupt or SIGTERM...")
+    signal.pause()
+    logger.info("Exiting...Get summary...")
+    for m in monitors:
+        logger.info(m.summary())
 
 
 @click.group()

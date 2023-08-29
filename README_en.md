@@ -61,7 +61,7 @@ pip install duetector
 
 Currently, the code relies on [BCC](https://github.com/iovisor/bcc) for on-the-fly compilation of eBPF code, we recommend [installing the latest BCC compiler](https://github.com/iovisor/bcc/blob/master/INSTALL.md)
 
-Or use the Docker image that we provide
+Or use the Docker image that we provide, which uses [JupyterLab](https://github.com/jupyterlab/jupyterlab) as the **example** user application, or you can modify the [Dockerfile](./docker/Dockerfile) and [startup script](./docker/start.sh) to customize the user application.
 
 ```bash
 docker pull dataucon/duetector:latest
@@ -89,10 +89,16 @@ Press `CRTL+C` to exit monitoring and you will see a summary output on the scree
 {'DBCollector': {'OpenTracer': {'count': 31, 'first at': 249920233249912, 'last': Tracking(tracer='OpenTracer', pid=641616, uid=1000, gid= 1000, comm='node', cwd=None, fname='SOME-FILE', timestamp=249923762308577, extended={})}}}
 ```
 
+Enable `DEBUG` log
+
+```bash
+sudo DUETECTOR_LOG_LEVEL=DEBUG duectl start
+```
+
 At startup, the configuration file will be automatically generated at `~/.config/duetector`, and you can specify the configuration file to use with `--config`.
 
 ```bash
-sudo duectl start --config <config-file-path
+sudo duectl start --config <config-file-path>
 ```
 
 When using a plugin, the default configuration file will not contain the plugin's configuration, use the dynamically-generated configuration directive to generate a configuration file with the plugin's configuration, this directive also supports merging existing configuration files and environment variables.
@@ -105,6 +111,22 @@ Use `generate-config` to restore the default state in case of configuration file
 
 ```bash
 duectl generate-config
+```
+
+Going a step further, running in the background you can use the `duectl-daemon start` command, which will run a daemon in the background, which you can stop using `duectl-daemon stop`
+
+```bash
+$ duectl-daemon --help
+
+Usage: duectl-daemon [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  start   Start a daemon of command `duectl start`, All arguments after...
+  status  Status of daemon Determined by the existence of pid file in...
+  stop    Stop daemon Determined by the existence of pid file in `workdir`
 ```
 
 More documentation and examples can be found [here](. /docs/).

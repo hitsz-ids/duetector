@@ -12,6 +12,7 @@ There are two options:
 
 ```Bash
 docker run -it --rm --privileged \
+-p 8888:8888 \
 -v /sys/kernel/kheaders.tar.xz:/sys/kernel/kheaders.tar.xz \
 -v /sys/kernel/debug:/sys/kernel/debug \
 dataucon/duetector
@@ -25,6 +26,7 @@ dataucon/duetector
 
 ```Bash
 docker run -it --rm --privileged \
+-p 8888:8888 \
 -v /usr/lib/modules:/usr/lib/modules \
 -v /sys/kernel/debug:/sys/kernel/debug \
 dataucon/duetector

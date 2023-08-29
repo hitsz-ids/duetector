@@ -67,7 +67,7 @@ pip install duetector
 
 目前，代码依赖[BCC](https://github.com/iovisor/bcc)对eBPF代码进行即时编译，推荐[安装最新的BCC编译器](https://github.com/iovisor/bcc/blob/master/INSTALL.md)
 
-或使用我们提供的Docker镜像
+或使用我们提供的Docker镜像，其使用[JupyterLab](https://github.com/jupyterlab/jupyterlab)作为**示例**用户应用，您也可以自行修改[Dockerfile](./docker/Dockerfile)和[启动脚本](./docker/start.sh)来自定义用户程序
 
 ```bash
 docker pull dataucon/duetector:latest
@@ -95,6 +95,12 @@ sudo duectl start
 {'DBCollector': {'OpenTracer': {'count': 31, 'first at': 249920233249912, 'last': Tracking(tracer='OpenTracer', pid=641616, uid=1000, gid=1000, comm='node', cwd=None, fname='SOME-FILE', timestamp=249923762308577, extended={})}}}
 ```
 
+启动 `DEBUG`日志
+
+```bash
+sudo DUETECTOR_LOG_LEVEL=DEBUG duectl start
+```
+
 启动时，配置文件将自动生成，对应路径为 `~/.config/duetector` ，可以使用 `--config`指定使用的配置文件
 
 ```bash
@@ -111,6 +117,21 @@ duectl generate-dynamic-config --help
 
 ```bash
 duectl generate-config
+```
+
+更进一步的，后台运行可以使用 `duectl-daemon start`命令，这将会在后台运行一个守护进程，你可以使用 `duectl-daemon stop`来停止它
+
+```bash
+duectl-daemon --help
+Usage: duectl-daemon [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  start   Start a daemon of command `duectl start`, All arguments after...
+  status  Status of daemon Determined by the existence of pid file in...
+  stop    Stop daemon Determined by the existence of pid file in `workdir`
 ```
 
 更多文档和例子可以在[这里](./docs/)找到。

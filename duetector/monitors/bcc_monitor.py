@@ -78,9 +78,6 @@ class BccMonitor(Monitor):
 
         tracer.set_callback(host, _)
 
-    def poll_all(self):
-        self._backend.map(self.poll, self.tracers)
-
     def poll(self, tracer: BccTracer):  # type: ignore
         tracer.get_poller(self.bpf_tracers[tracer])(**tracer.poll_args)
 
@@ -91,9 +88,11 @@ class BccMonitor(Monitor):
 if __name__ == "__main__":
     m = BccMonitor()
     print(m)
+    r = None
     while True:
         try:
             m.poll_all()
+            pass
         except KeyboardInterrupt:
             print(m.summary())
             exit()
