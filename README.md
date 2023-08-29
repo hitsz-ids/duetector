@@ -119,6 +119,22 @@ duectl generate-dynamic-config --help
 duectl generate-config
 ```
 
+更进一步的，后台运行可以使用`duectl-daemon start`命令，这将会在后台运行一个守护进程，你可以使用`duectl-daemon stop`来停止它
+
+```bash
+$ duectl-daemon --help
+
+Usage: duectl-daemon [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  start   Start a daemon of command `duectl start`, All arguments after...
+  status  Status of daemon Determined by the existence of pid file in...
+  stop    Stop daemon Determined by the existence of pid file in `workdir`
+```
+
 更多文档和例子可以在[这里](./docs/)找到。
 
 ## API文档与配置文档

@@ -113,6 +113,22 @@ Use `generate-config` to restore the default state in case of configuration file
 duectl generate-config
 ```
 
+Going a step further, running in the background you can use the `duectl-daemon start` command, which will run a daemon in the background, which you can stop using `duectl-daemon stop`
+
+```bash
+$ duectl-daemon --help
+
+Usage: duectl-daemon [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  start   Start a daemon of command `duectl start`, All arguments after...
+  status  Status of daemon Determined by the existence of pid file in...
+  stop    Stop daemon Determined by the existence of pid file in `workdir`
+```
+
 More documentation and examples can be found [here](. /docs/).
 
 ## API documentation

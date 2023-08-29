@@ -54,8 +54,8 @@ def start(ctx, workdir, loglevel, rotate_log):
 )
 def status(workdir):
     """
-    Status of daemon
-    Determined by the existence of pid file in `workdir`
+    Status of daemon.
+    Determined by the existence of pid file in `workdir`.
     """
     if Daemon(
         workdir=workdir,
@@ -73,8 +73,8 @@ def status(workdir):
 )
 def stop(workdir):
     """
-    Stop daemon
-    Determined by the existence of pid file in `workdir`
+    Stop daemon.
+    Determined by the existence of pid file in `workdir`.
     """
     Daemon(
         workdir=workdir,
