@@ -19,12 +19,12 @@ from duetector.tools.daemon import Daemon
 @click.option(
     "--rotate_log",
     default=True,
-    help="Rotate log file when daemon started, default: True",
+    help="Rotate log file when process started, default: True",
 )
 @click.pass_context
 def start(ctx, workdir, loglevel, rotate_log):
     """
-    Start a daemon of command `duectl start`,
+    Start a background process of command `duectl start`,
     All arguments after `--` will be passed to `duectl start`,
     e.g. `duectl-daemon start -- --config /path/to/config`
     """
@@ -36,7 +36,7 @@ def start(ctx, workdir, loglevel, rotate_log):
         f"Start duetector daemon with command: {' '.join(cmd)}, \n"
         f"workdir: {workdir}, \n"
         f"loglevel: {loglevel}, \n"
-        f"rotate_log: {rotate_log}\n"
+        f"rotate_log: {rotate_log}"
     )
     Daemon(
         cmd=cmd,

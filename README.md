@@ -119,11 +119,10 @@ duectl generate-dynamic-config --help
 duectl generate-config
 ```
 
-更进一步的，后台运行可以使用`duectl-daemon start`命令，这将会在后台运行一个守护进程，你可以使用`duectl-daemon stop`来停止它
+更进一步的，后台运行可以使用 `duectl-daemon start`命令，这将会在后台运行一个守护进程，你可以使用 `duectl-daemon stop`来停止它
 
 ```bash
-$ duectl-daemon --help
-
+duectl-daemon --help
 Usage: duectl-daemon [OPTIONS] COMMAND [ARGS]...
 
 Options:
