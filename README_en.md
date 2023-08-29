@@ -89,10 +89,16 @@ Press `CRTL+C` to exit monitoring and you will see a summary output on the scree
 {'DBCollector': {'OpenTracer': {'count': 31, 'first at': 249920233249912, 'last': Tracking(tracer='OpenTracer', pid=641616, uid=1000, gid= 1000, comm='node', cwd=None, fname='SOME-FILE', timestamp=249923762308577, extended={})}}}
 ```
 
+Enable `DEBUG` log
+
+```bash
+sudo DUETECTOR_LOG_LEVEL=DEBUG duectl start
+```
+
 At startup, the configuration file will be automatically generated at `~/.config/duetector`, and you can specify the configuration file to use with `--config`.
 
 ```bash
-sudo duectl start --config <config-file-path
+sudo duectl start --config <config-file-path>
 ```
 
 When using a plugin, the default configuration file will not contain the plugin's configuration, use the dynamically-generated configuration directive to generate a configuration file with the plugin's configuration, this directive also supports merging existing configuration files and environment variables.

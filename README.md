@@ -95,6 +95,12 @@ sudo duectl start
 {'DBCollector': {'OpenTracer': {'count': 31, 'first at': 249920233249912, 'last': Tracking(tracer='OpenTracer', pid=641616, uid=1000, gid=1000, comm='node', cwd=None, fname='SOME-FILE', timestamp=249923762308577, extended={})}}}
 ```
 
+启动 `DEBUG`日志
+
+```bash
+sudo DUETECTOR_LOG_LEVEL=DEBUG duectl start
+```
+
 启动时，配置文件将自动生成，对应路径为 `~/.config/duetector` ，可以使用 `--config`指定使用的配置文件
 
 ```bash
