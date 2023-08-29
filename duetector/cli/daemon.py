@@ -17,17 +17,12 @@ from duetector.tools.daemon import Daemon
 )
 @click.option("--loglevel", default="INFO", help="Log level, default: INFO")
 @click.option(
-    "--auto_restart",
-    default=True,
-    help="Auto restart when daemon crashed, default: True",
-)
-@click.option(
     "--rotate_log",
     default=True,
     help="Rotate log file when daemon started, default: True",
 )
 @click.pass_context
-def start(ctx, workdir, auto_restart, loglevel, rotate_log):
+def start(ctx, workdir, loglevel, rotate_log):
     """
     Start a daemon of command `duectl start`,
     All arguments after `--` will be passed to `duectl start`,
@@ -41,14 +36,12 @@ def start(ctx, workdir, auto_restart, loglevel, rotate_log):
         f"Start duetector daemon with command: {' '.join(cmd)}, \n"
         f"workdir: {workdir}, \n"
         f"loglevel: {loglevel}, \n"
-        f"auto_restart: {auto_restart}\n"
         f"rotate_log: {rotate_log}\n"
     )
     Daemon(
         cmd=cmd,
         workdir=workdir,
         env_dict={"DUETECTOR_LOG_LEVEL": loglevel},
-        auto_restart=auto_restart,
         rotate_log=rotate_log,
     ).start()
 

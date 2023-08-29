@@ -15,7 +15,6 @@ class Daemon:
         workdir: Union[str, Path],
         cmd: Optional[List[str]] = None,
         env_dict: Optional[Dict[str, str]] = None,
-        auto_restart: bool = True,
         rotate_log: bool = True,
     ):
         self.cmd: List[str] = cmd or []
@@ -26,7 +25,6 @@ class Daemon:
         if env_dict:
             self.env_dict.update(env_dict)
 
-        self.auto_restart: bool = auto_restart
         self.rotate_log: bool = rotate_log
 
     @property
