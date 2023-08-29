@@ -54,7 +54,7 @@ class ShTracerHost:
         self.get_poller(tracer)()
 
     def poll_all(self):
-        self.backend.map(self.poll, self.tracers)
+        return [self.backend.submit(self.poll, tracer) for tracer in self.tracers]
 
     def set_callback(self, tracer, callback):
         self.callbacks[tracer] = callback

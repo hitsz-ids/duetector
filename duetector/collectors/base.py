@@ -57,7 +57,7 @@ class Collector(Configuable):
         raise NotImplementedError
 
     def shutdown(self):
-        self._backend.shutdown()
+        self._backend.shutdown(cancel_futures=True)
 
 
 class DequeCollector(Collector):

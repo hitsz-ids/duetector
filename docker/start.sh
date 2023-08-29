@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-cd /root
-exec duectl start 2>&1 &
+duectl-daemon start --log-level=DEBUG
 
 cd /home/application
-exec su "application"
+export PATH=/home/application/.local/bin:$PATH
+exec su "application" -c "jupyter-lab"

@@ -67,7 +67,7 @@ pip install duetector
 
 目前，代码依赖[BCC](https://github.com/iovisor/bcc)对eBPF代码进行即时编译，推荐[安装最新的BCC编译器](https://github.com/iovisor/bcc/blob/master/INSTALL.md)
 
-或使用我们提供的Docker镜像
+或使用我们提供的Docker镜像，其使用[JupyterLab](https://github.com/jupyterlab/jupyterlab)作为**示例**用户应用，您也可以自行修改[Dockerfile](./docker/Dockerfile)和[启动脚本](./docker/start.sh)来自定义用户程序
 
 ```bash
 docker pull dataucon/duetector:latest

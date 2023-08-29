@@ -6,6 +6,7 @@ ARG DUETECTOR_VERSION
 
 RUN apt-get update && apt-get install -y tini \
     && rm -rf /var/lib/apt/lists/*
+RUN pip install jupyterlab
 
 RUN pip install duetector==${DUETECTOR_VERSION} --no-cache-dir
 

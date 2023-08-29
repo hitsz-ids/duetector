@@ -61,7 +61,7 @@ pip install duetector
 
 Currently, the code relies on [BCC](https://github.com/iovisor/bcc) for on-the-fly compilation of eBPF code, we recommend [installing the latest BCC compiler](https://github.com/iovisor/bcc/blob/master/INSTALL.md)
 
-Or use the Docker image that we provide
+Or use the Docker image that we provide, which uses [JupyterLab](https://github.com/jupyterlab/jupyterlab) as the **example** user application, or you can modify the [Dockerfile](./docker/Dockerfile) and [startup script](./docker/start.sh) to customize the user application.
 
 ```bash
 docker pull dataucon/duetector:latest
