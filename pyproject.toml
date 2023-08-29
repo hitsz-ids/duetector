@@ -15,6 +15,7 @@ dependencies = [
     "tomli-w",
     "SQLAlchemy>=2",
     "click",
+    "psutil"
 ]
 dynamic = ["version", ]
 classifiers = [

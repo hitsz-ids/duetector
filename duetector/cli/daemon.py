@@ -1,29 +1,92 @@
 import click
 
+from duetector.log import logger
+from duetector.tools.daemon import Daemon
+
+
+@click.command(
+    context_settings=dict(
+        ignore_unknown_options=True,
+        allow_extra_args=True,
+    )
+)
+@click.option(
+    "--workdir",
+    default="/tmp/duetector",
+    help="Log file and pid file will be stored in working directory, default: /tmp/duetector",
+)
+@click.option("--loglevel", default="INFO", help="Log level, default: INFO")
+@click.option(
+    "--auto_restart",
+    default=True,
+    help="Auto restart when daemon crashed, default: True",
+)
+@click.option(
+    "--rotate_log",
+    default=True,
+    help="Rotate log file when daemon started, default: True",
+)
+@click.pass_context
+def start(ctx, workdir, auto_restart, loglevel, rotate_log):
+    """
+    Start a daemon of command `duectl start`,
+    All arguments after `--` will be passed to `duectl start`,
+    e.g. `duectl-daemon start -- --config /path/to/config`
+    """
+    cmd = ["duectl", "start"]
+    cmd_args = ctx.args
+    if cmd_args:
+        cmd.extend(cmd_args)
+    logger.info(
+        f"Start duetector daemon with command: {' '.join(cmd)}, \n"
+        f"workdir: {workdir}, \n"
+        f"loglevel: {loglevel}, \n"
+        f"auto_restart: {auto_restart}\n"
+        f"rotate_log: {rotate_log}\n"
+    )
+    Daemon(
+        cmd=cmd,
+        workdir=workdir,
+        env_dict={"DUETECTOR_LOG_LEVEL": loglevel},
+        auto_restart=auto_restart,
+        rotate_log=rotate_log,
+    ).start()
+
 
 @click.command()
-def start():
-    """
-    Start daemon
-    """
-    pass
-
-
-@click.command()
-def status():
+@click.option(
+    "--workdir",
+    default="/tmp/duetector",
+    help="Log file and pid file will be stored in working directory, default: /tmp/duetector",
+)
+def status(workdir):
     """
     Status of daemon
     Determined by the existence of pid file in `workdir`
     """
-    pass
+    if Daemon(
+        workdir=workdir,
+    ).poll():
+        click.echo("Running")
+    else:
+        click.echo("Stopped")
 
 
 @click.command()
-def stop():
+@click.option(
+    "--workdir",
+    default="/tmp/duetector",
+    help="Log file and pid file will be stored in working directory, default: /tmp/duetector",
+)
+def stop(workdir):
     """
     Stop daemon
+    Determined by the existence of pid file in `workdir`
     """
-    pass
+    Daemon(
+        workdir=workdir,
+    ).stop()
+    click.echo("Daemon stopped.")
 
 
 @click.group()
