@@ -1,0 +1,141 @@
+from collections import namedtuple
+from typing import Callable, NamedTuple
+
+from duetector.extension.tracer import hookimpl
+from duetector.tracers.base import BccTracer
+
+
+class TcpconnectTracer(BccTracer):
+    """
+    A tracer for openat2 syscall
+    """
+
+    attach_type = "kprobe"
+    attatch_args = {"fn_name": "do_trace", "event": "tcp_v4_connect"}
+    poll_fn = "ring_buffer_poll"
+    poll_args = {}
+    data_t = namedtuple("TcpTracking", ["pid", "comm", "saddr", "daddr", "dport"])
+
+    # define BPF program
+    prog = """
+    #include <uapi/linux/ptrace.h>
+    #include <net/sock.h>
+    #include <bcc/proto.h>
+    #define TASK_COMM_LEN 16
+
+    BPF_RINGBUF_OUTPUT(buffer, 1 << 4);
+    BPF_HASH(currsock, u32, struct sock *);
+
+    struct event {
+        u32 dport;
+        u32 saddr;
+        u32 daddr;
+        u32 pid;
+        char comm[TASK_COMM_LEN];
+    };
+    int do_trace(struct pt_regs *ctx, struct sock *sk)
+    {
+	    u32 pid = bpf_get_current_pid_tgid();
+
+	    // stash the sock ptr for lookup on return
+	    currsock.update(&pid, &sk);
+
+	    return 0;
+    }
+
+    int do_return(struct pt_regs *ctx)
+    {
+	    int ret = PT_REGS_RC(ctx);
+	    u32 pid = bpf_get_current_pid_tgid();
+        struct event event= {};
+
+	    struct sock **skpp;
+	    skpp = currsock.lookup(&pid);
+	    if (skpp == 0) {
+		    return 0;	// missed entry
+	    }
+
+	    if (ret != 0) {
+		    // failed to send SYNC packet, may not have populated
+		    // socket __sk_common.{skc_rcv_saddr, ...}
+		    currsock.delete(&pid);
+		    return 0;
+	    }
+
+	    // pull in details
+	    struct sock *skp = *skpp;
+	    u32 saddr = skp->__sk_common.skc_rcv_saddr;
+	    u32 daddr = skp->__sk_common.skc_daddr;
+	    u16 dport = skp->__sk_common.skc_dport;
+        event.saddr = saddr;
+        event.daddr = daddr;
+        event.dport = dport;
+        event.pid = pid;
+        bpf_get_current_comm(&event.comm, sizeof(event.comm));
+	    // output
+	    buffer.ringbuf_output(&event, sizeof(event), 0);
+	    //bpf_trace_printk("trace_tcp4connect %x %x %d\\n", saddr, daddr, ntohs(dport));
+
+	    currsock.delete(&pid);
+
+	    return 0;
+    }
+    """
+
+    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+        def _(ctx, data, size):
+            event = host["buffer"].event(data)
+            return callback(self._convert_data(event))  # type: ignore
+
+        host["buffer"].open_ring_buffer(_)
+
+
+class TcpconnectRetTracer(BccTracer):
+    """
+    A tracer for openat2 syscall
+    """
+
+    attach_type = "kretprobe"
+    attatch_args = {"fn_name": "do_return", "event": "tcp_v4_connect"}
+    poll_fn = "ring_buffer_poll"
+    poll_args = {}
+    data_t = namedtuple("TcpTracking", ["pid", "comm", "saddr", "daddr", "dport"])
+
+
+# define BPF program
+
+
+@hookimpl
+def init_tracer(config):
+    return TcpconnectTracer(config)
+
+
+def inet_ntoa(addr):
+    dq = b""
+    for i in range(0, 4):
+        dq = dq + str(addr & 0xFF).encode()
+        if i != 3:
+            dq = dq + b"."
+        addr = addr >> 8
+    return dq
+
+
+if __name__ == "__main__":
+    from bcc import BPF
+
+    b = BPF(text=TcpconnectTracer.prog)
+    tracer = TcpconnectTracer()
+    rettracer = TcpconnectRetTracer()
+    tracer.attach(b)
+    rettracer.attach(b)
+
+    def print_callback(data: NamedTuple):
+        print(f"[{data.comm} ({data.pid})] TCP_CONNECT SADDR:{inet_ntoa(data.saddr)} DADDR: {inet_ntoa(data.daddr)} DPORT:{data.dport}")  # type: ignore
+
+    tracer.set_callback(b, print_callback)
+    poller = tracer.get_poller(b)
+    while True:
+        try:
+            poller()
+        except KeyboardInterrupt:
+            exit()
