@@ -10,6 +10,10 @@ from duetector.monitors import BccMonitor, ShMonitor
 
 
 def _recursive_load(config_scope: str, config_dict: dict, default_config: dict):
+    """
+    Support .(dot) separated config_scope
+
+    """
     *prefix, config_scope = config_scope.lower().split(".")
     last = config_dict
     for p in prefix:
@@ -48,7 +52,6 @@ class ConfigGenerator:
                     c.default_config,
                 )
 
-        # Support .(dot) separated config_scope
         for m in self.monitors:
             _recursive_load(m.config_scope, self.dynamic_config, m.default_config)
 
@@ -80,6 +83,6 @@ class ConfigGenerator:
 
 if __name__ == "__main__":
     _HERE = Path(__file__).parent
-    c = ConfigGenerator(load=False)
+    c = ConfigGenerator(load=False, load_env=False)
     config_path = _HERE / ".." / "static/config.toml"
     c.generate(config_path)

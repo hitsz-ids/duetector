@@ -48,6 +48,9 @@ def generate_dynamic_config(load_current_config, path, load_env, dump_path):
 
     c = ConfigGenerator(load=load_current_config, path=path, load_env=load_env)
     if path.as_posix() == Path(dump_path).expanduser().absolute().as_posix():
+        logger.info(
+            f"Dump path is same as origin path, rename {path} to {path.with_suffix('.old')}"
+        )
         shutil.move(path, path.with_suffix(".old"))
     c.generate(dump_path)
 
