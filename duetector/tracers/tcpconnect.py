@@ -112,21 +112,21 @@ def init_tracer(config):
 
 if __name__ == "__main__":
     from bcc import BPF
-    
+
     b = BPF(text=TcpconnectTracer.prog)
     tracer = TcpconnectTracer()
     rettracer = TcpconnectRetTracer()
     tracer.attach(b)
     rettracer.attach(b)
-    
+
     def inet_ntoa(addr):
-      dq = b""
-      for i in range(0, 4):
-          dq = dq + str(addr & 0xFF).encode()
-          if i != 3:
-              dq = dq + b"."
-          addr = addr >> 8
-      return dq
+        dq = b""
+        for i in range(0, 4):
+            dq = dq + str(addr & 0xFF).encode()
+            if i != 3:
+                dq = dq + b"."
+            addr = addr >> 8
+        return dq
 
     def print_callback(data: NamedTuple):
         print(f"[{data.comm} ({data.pid})] TCP_CONNECT SADDR:{inet_ntoa(data.saddr)} DADDR: {inet_ntoa(data.daddr)} DPORT:{data.dport}")  # type: ignore
