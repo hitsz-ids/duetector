@@ -91,9 +91,6 @@ class BccMonitor(Monitor):
     def poll(self, tracer: BccTracer):  # type: ignore
         tracer.get_poller(self.bpf_tracers[tracer])(**tracer.poll_args)
 
-    def summary(self):
-        return {collector.__class__.__name__: collector.summary() for collector in self.collectors}
-
 
 if __name__ == "__main__":
     m = BccMonitor()

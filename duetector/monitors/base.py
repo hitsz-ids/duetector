@@ -55,7 +55,11 @@ class Monitor(Configuable):
         raise NotImplementedError
 
     def summary(self) -> Dict:
-        return {collector.__class__.__name__: collector.summary() for collector in self.collectors}
+        return {
+            self.__class__.__name__: {
+                collector.__class__.__name__: collector.summary() for collector in self.collectors
+            }
+        }
 
     def start_polling(self):
         logger.info(f"Start polling {self.__class__.__name__}")
