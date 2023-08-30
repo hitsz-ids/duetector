@@ -143,16 +143,18 @@ def start(
         m.start_polling()
 
     def _shutdown(sig=None, frame=None):
+        logger.info("Exiting...")
         for m in monitors:
             m.shutdown()
+        for m in monitors:
+            logger.info(m.summary())
+        exit(0)
 
     signal.signal(signal.SIGINT, _shutdown)
     signal.signal(signal.SIGTERM, _shutdown)
     logger.info("Waiting for KeyboardInterrupt or SIGTERM...")
-    signal.pause()
-    logger.info("Exiting...Get summary...")
-    for m in monitors:
-        logger.info(m.summary())
+    while True:
+        signal.pause()
 
 
 @click.group()
