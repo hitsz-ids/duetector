@@ -32,12 +32,23 @@ exclude_gid = [
 [tracer]
 disabled = false
 
+[tracer.clonetracer]
+disabled = false
+attach_event = "__x64_sys_clone"
+poll_timeout = 10
+
+[tracer.tcpconnecttracer]
+disabled = false
+poll_timeout = 10
+
 [tracer.unametracer]
 disabled = false
 enable_cache = true
 
 [tracer.opentracer]
 disabled = false
+attach_event = "do_sys_openat2"
+poll_timeout = 10
 
 [collector]
 disabled = false

@@ -10,10 +10,25 @@ class OpenTracer(BccTracer):
     A tracer for openat2 syscall
     """
 
+    default_config = {
+        **BccTracer.default_config,
+        "attach_event": "do_sys_openat2",
+        "poll_timeout": 10,
+    }
+
     attach_type = "kprobe"
+
+    @property
+    def attatch_args(self):
+        return {"fn_name": "do_trace", "event": self.config.attach_event}
+
     attatch_args = {"fn_name": "trace_entry", "event": "do_sys_openat2"}
     poll_fn = "ring_buffer_poll"
-    poll_args = {}
+
+    @property
+    def poll_args(self):
+        return {"timeout": int(self.config.poll_timeout)}
+
     data_t = namedtuple("OpenTracking", ["pid", "uid", "gid", "comm", "fname", "timestamp"])
 
     prog = """
@@ -72,6 +87,6 @@ if __name__ == "__main__":
     poller = tracer.get_poller(b)
     while True:
         try:
-            poller()
+            poller(**tracer.poll_args)
         except KeyboardInterrupt:
             exit()

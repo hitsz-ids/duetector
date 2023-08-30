@@ -10,10 +10,19 @@ class TcpconnectTracer(BccTracer):
     A tracer for openat2 syscall
     """
 
+    default_config = {
+        **BccTracer.default_config,
+        "poll_timeout": 10,
+    }
+
     attach_type = "kprobe"
     attatch_args = {"fn_name": "do_trace", "event": "tcp_v4_connect"}
     poll_fn = "ring_buffer_poll"
-    poll_args = {}
+
+    @property
+    def poll_args(self):
+        return {"timeout": int(self.config.poll_timeout)}
+
     data_t = namedtuple("TcpTracking", ["pid", "comm", "saddr", "daddr", "dport"])
 
     # define BPF program
@@ -135,6 +144,6 @@ if __name__ == "__main__":
     poller = tracer.get_poller(b)
     while True:
         try:
-            poller()
+            poller(**tracer.poll_args)
         except KeyboardInterrupt:
             exit()

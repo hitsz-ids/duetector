@@ -10,10 +10,23 @@ class CloneTracer(BccTracer):
     A tracer for clone syscall
     """
 
+    default_config = {
+        **BccTracer.default_config,
+        "attach_event": "__x64_sys_clone",
+        "poll_timeout": 10,
+    }
     attach_type = "kprobe"
-    attatch_args = {"fn_name": "do_trace", "event": "__x64_sys_clone"}
+
+    @property
+    def attatch_args(self):
+        return {"fn_name": "do_trace", "event": self.config.attach_event}
+
     poll_fn = "perf_buffer_poll"
-    poll_args = {}
+
+    @property
+    def poll_args(self):
+        return {"timeout": int(self.config.poll_timeout)}
+
     data_t = namedtuple("CloneTracking", ["pid", "timestamp", "comm"])
     prog = """
     #include <linux/sched.h>
@@ -73,6 +86,6 @@ if __name__ == "__main__":
     poller = tracer.get_poller(b)
     while True:
         try:
-            poller()
+            poller(**tracer.poll_args)
         except KeyboardInterrupt:
             exit()
