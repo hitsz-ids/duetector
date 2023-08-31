@@ -3,6 +3,7 @@ from typing import Callable, NamedTuple
 
 from duetector.extension.tracer import hookimpl
 from duetector.tracers.base import BccTracer
+from duetector.utils import inet_ntoa
 
 
 class TcpconnectTracer(BccTracer):
@@ -99,33 +100,11 @@ class TcpconnectTracer(BccTracer):
     }
     """
 
-    def inet_ntoa(self, addr) -> bytes:
-        dq = b""
-        for i in range(0, 4):
-            dq = dq + str(addr & 0xFF).encode()
-            if i != 3:
-                dq = dq + b"."
-            addr = addr >> 8
-        return dq
-
     def _convert_data(self, data) -> NamedTuple:
-        args = {}
-        for k in self.data_t._fields:  # type: ignore
-            v = getattr(data, k)
-            if isinstance(v, bytes):
-                v = v.decode("utf-8")
-            elif k == "saddr" or k == "daddr":
-                dq = b""
-                for i in range(0, 4):
-                    dq = dq + str(v & 0xFF).encode()
-                    if i != 3:
-                        dq = dq + b"."
-                    v = v >> 8
-                v = dq
-
-            args[k] = v
-
-        return self.data_t(**args)  # type: ignore
+        data = super()._convert_data(data)
+        return data._replace(
+            saddr=inet_ntoa(data.saddr).decode("utf-8"), daddr=inet_ntoa(data.daddr).decode("utf-8")
+        )  # type: ignore
 
     def set_callback(self, host, callback: Callable[[NamedTuple], None]):
         def _(ctx, data, size):
