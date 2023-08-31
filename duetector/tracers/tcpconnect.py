@@ -21,12 +21,8 @@ class TcpconnectTracer(BccTracer):
     ]
 
     poll_fn = "ring_buffer_poll"
-
-    @property
-    def poll_args(self):
-        return {"timeout": int(self.config.poll_timeout)}
-
-    data_t = namedtuple("TcpTracking", ["pid", "comm", "saddr", "daddr", "dport"])
+    poll_args = {}
+    data_t = namedtuple("TcpTracking", ["pid", "uid", "gid", "comm", "saddr", "daddr", "dport"])
 
     # define BPF program
     prog = """
@@ -43,6 +39,8 @@ class TcpconnectTracer(BccTracer):
         u32 saddr;
         u32 daddr;
         u32 pid;
+        u32 uid;
+        u32 gid;
         char comm[TASK_COMM_LEN];
     };
     int do_trace(struct pt_regs *ctx, struct sock *sk)
@@ -59,6 +57,7 @@ class TcpconnectTracer(BccTracer):
     {
 	    int ret = PT_REGS_RC(ctx);
 	    u32 pid = bpf_get_current_pid_tgid();
+
         struct event event= {};
 
 	    struct sock **skpp;
@@ -83,6 +82,8 @@ class TcpconnectTracer(BccTracer):
         event.daddr = daddr;
         event.dport = dport;
         event.pid = pid;
+        event.uid = bpf_get_current_uid_gid();
+        event.gid = bpf_get_current_uid_gid() >> 32;
         bpf_get_current_comm(&event.comm, sizeof(event.comm));
 	    // output
 	    buffer.ringbuf_output(&event, sizeof(event), 0);
@@ -124,7 +125,7 @@ if __name__ == "__main__":
         return dq
 
     def print_callback(data: NamedTuple):
-        print(f"[{data.comm} ({data.pid})] TCP_CONNECT SADDR:{inet_ntoa(data.saddr)} DADDR: {inet_ntoa(data.daddr)} DPORT:{data.dport}")  # type: ignore
+        print(f"[{data.comm} ({data.pid}) {data.uid} {data.gid}] TCP_CONNECT SADDR:{inet_ntoa(data.saddr)} DADDR: {inet_ntoa(data.daddr)} DPORT:{data.dport}")  # type: ignore
 
     tracer.set_callback(b, print_callback)
     poller = tracer.get_poller(b)

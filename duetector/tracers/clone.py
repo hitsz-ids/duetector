@@ -34,6 +34,8 @@ class CloneTracer(BccTracer):
     // define output data structure in C
     struct data_t {
         u32 pid;
+        u32 uid;
+        u32 gid;
         u64 timestamp;
         char comm[TASK_COMM_LEN];
     };
@@ -43,6 +45,8 @@ class CloneTracer(BccTracer):
         struct data_t data = {};
 
         data.pid = bpf_get_current_pid_tgid();
+        data.uid = bpf_get_current_uid_gid();
+        data.gid = bpf_get_current_uid_gid() >> 32;
         data.timestamp = bpf_ktime_get_ns();
         bpf_get_current_comm(&data.comm, sizeof(data.comm));
 
@@ -79,7 +83,7 @@ if __name__ == "__main__":
         if start == 0:
             print(f"[{data.comm} ({data.pid})] 0 ")
         else:
-            print(f"[{data.comm} ({data.pid})]  {(data.timestamp-start)/1000000000}")  # type: ignore
+            print(f"[{data.comm} ({data.pid}) {data.gid} {data.uid}]  {(data.timestamp-start)/1000000000}")  # type: ignore
         start = data.timestamp
 
     tracer.set_callback(b, print_callback)
