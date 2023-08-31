@@ -5,83 +5,86 @@ from duetector.extension.tracer import hookimpl
 from duetector.tracers.base import BccTracer
 
 
-class OpenTracer(BccTracer):
+class CloneTracer(BccTracer):
     """
-    A tracer for openat2 syscall
+    A tracer for clone syscall
     """
 
     default_config = {
         **BccTracer.default_config,
-        "attach_event": "do_sys_openat2",
+        "attach_event": "__x64_sys_clone",
         "poll_timeout": 10,
     }
-
     attach_type = "kprobe"
 
     @property
     def attatch_args(self):
         return {"fn_name": "do_trace", "event": self.config.attach_event}
 
-    attatch_args = {"fn_name": "trace_entry", "event": "do_sys_openat2"}
-    poll_fn = "ring_buffer_poll"
+    poll_fn = "perf_buffer_poll"
 
     @property
     def poll_args(self):
         return {"timeout": int(self.config.poll_timeout)}
 
-    data_t = namedtuple("OpenTracking", ["pid", "uid", "gid", "comm", "fname", "timestamp"])
-
+    data_t = namedtuple("CloneTracking", ["pid", "timestamp", "comm"])
     prog = """
     #include <linux/sched.h>
-    #include <linux/fs_struct.h>
 
+    // define output data structure in C
     struct data_t {
         u32 pid;
         u32 uid;
         u32 gid;
-        char comm[TASK_COMM_LEN];
-        char fname[NAME_MAX];
-
         u64 timestamp;
+        char comm[TASK_COMM_LEN];
     };
+    BPF_PERF_OUTPUT(events);
 
-    BPF_RINGBUF_OUTPUT(buffer, 1 << 4);
-
-    int trace_entry(struct pt_regs *ctx, int dfd, const char __user *filename, struct open_how *how) {
+    int do_trace(struct pt_regs *ctx) {
         struct data_t data = {};
+
         data.pid = bpf_get_current_pid_tgid();
         data.uid = bpf_get_current_uid_gid();
         data.gid = bpf_get_current_uid_gid() >> 32;
         data.timestamp = bpf_ktime_get_ns();
         bpf_get_current_comm(&data.comm, sizeof(data.comm));
-        bpf_probe_read_user_str(&data.fname, sizeof(data.fname), filename);
-        buffer.ringbuf_output(&data, sizeof(data), 0);
+
+        events.perf_submit(ctx, &data, sizeof(data));
+
         return 0;
     }
     """
 
     def set_callback(self, host, callback: Callable[[NamedTuple], None]):
         def _(ctx, data, size):
-            event = host["buffer"].event(data)
+            event = host["events"].event(data)
             return callback(self._convert_data(event))  # type: ignore
 
-        host["buffer"].open_ring_buffer(_)
+        host["events"].open_perf_buffer(_)
 
 
 @hookimpl
 def init_tracer(config):
-    return OpenTracer(config)
+    return CloneTracer(config)
 
 
 if __name__ == "__main__":
     from bcc import BPF
 
-    b = BPF(text=OpenTracer.prog)
-    tracer = OpenTracer()
+    b = BPF(text=CloneTracer.prog)
+
+    tracer = CloneTracer()
     tracer.attach(b)
+    start = 0
 
     def print_callback(data: NamedTuple):
-        print(f"[{data.comm} ({data.pid})] {data.timestamp} OPEN {data.fname}")  # type: ignore
+        global start
+        if start == 0:
+            print(f"[{data.comm} ({data.pid})] 0 ")
+        else:
+            print(f"[{data.comm} ({data.pid}) {data.gid} {data.uid}]  {(data.timestamp-start)/1000000000}")  # type: ignore
+        start = data.timestamp
 
     tracer.set_callback(b, print_callback)
     poller = tracer.get_poller(b)
