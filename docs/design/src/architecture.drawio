@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="71-AI3Yj6Bn5oummquvE" name="第 1 页">
-        <mxGraphModel dx="658" dy="1562" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="575" dy="1417" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -19,7 +19,7 @@
                 <mxCell id="20" value="TracerManager" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="280" y="390" width="110" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="25" value="PollingMonitor" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                <mxCell id="25" value="ShMonitor" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
                     <mxGeometry x="460" y="310" width="170" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="26" value="FilterManager" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
@@ -76,7 +76,7 @@
                 <mxCell id="56" value="bcc" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="1" vertex="1">
                     <mxGeometry x="285" y="340" width="45" height="25" as="geometry"/>
                 </mxCell>
-                <mxCell id="58" value="Analyzer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;dashed=1;" vertex="1" parent="1">
+                <mxCell id="58" value="Analyzer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;dashed=1;" parent="1" vertex="1">
                     <mxGeometry x="640" y="310" width="60" height="140" as="geometry"/>
                 </mxCell>
             </root>

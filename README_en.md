@@ -1,4 +1,4 @@
-<h2 align="center">duetector🔍: Data Usage eBPF detector </h2>
+<h2 align="center">duetector🔍: Data Usage Extensible detector </h2>
 <p align="center">
 <a href="https://github.com/hitsz-ids/duetector/actions"><img alt="Actions Status" src="https://github.com/hitsz-ids/duetector/actions/workflows/python-package.yml/badge.svg"></a>
 <a href="https://github.com/hitsz-ids/duetector/blob/main/LICENSE"><img alt="LICENSE" src="https://img.shields.io/github/license/hitsz-ids/duetector"></a>
@@ -15,7 +15,7 @@
 
 > duetector is one of the components in the DataUCON project, which is designed to provide support for data usage control. [Intro DataUCON](https://dataucon.idslab.io/).
 
-duetector🔍 is an eBPF-based data usage control probe that provides support for data usage control by probing for data usage behavior in the Linux kernel.
+duetector🔍 is an extensible data usage control detector that provides support for data usage control by probing for data usage behavior in the Linux kernel(based on eBPF).
 
 **🐛🐞🧪 The project is under heavy development, looking forward to any bug reports, feature requests, pull requests!**
 
@@ -45,11 +45,14 @@ In the [ABAUC control model](https://github.com/hitsz-ids/dataucon), duetector c
 - [ ] eBPF-based data usage probes
   - [X] File Open Operation
   - [ ] ......
+- [ ] Shell command probes
+  - [X] Kernel Information Probe
+  - [ ] ......
 - [X] Data collector with SQL database support
 - [X] CLI Tools
 - [ ] PIP Service
 
-The eBPF probe requires kernel support, see [Kernel Support](./docs/kernel_config.md)
+The eBPF program requires kernel support, see [Kernel Support](./docs/kernel_config.md)
 
 ## Installation
 
@@ -101,6 +104,22 @@ At startup, the configuration file will be automatically generated at `~/.config
 sudo duectl start --config <config-file-path>
 ```
 
+Configuration using environment variables is also supported:
+
+```bash
+Usage: duectl start [OPTIONS]
+
+  Start A bcc monitor and wait for KeyboardInterrupt
+
+Options:
+  ...
+  --load_env BOOLEAN            Weather load env variables,Prefix: DUETECTOR_,
+                                Separator:__, e.g. DUETECTOR_config__a means
+                                config.a, default: True
+  ...
+```
+
+
 When using a plugin, the default configuration file will not contain the plugin's configuration, use the dynamically-generated configuration directive to generate a configuration file with the plugin's configuration, this directive also supports merging existing configuration files and environment variables.
 
 ```bash
@@ -115,18 +134,18 @@ duectl generate-config
 
 Going a step further, running in the background you can use the `duectl-daemon start` command, which will run a daemon in the background, which you can stop using `duectl-daemon stop`
 
-```bash
-$ duectl-daemon --help
+Use `duectl-daemon --help` for more details:
 
+```bash
 Usage: duectl-daemon [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --help  Show this message and exit.
 
 Commands:
-  start   Start a daemon of command `duectl start`, All arguments after...
-  status  Status of daemon Determined by the existence of pid file in...
-  stop    Stop daemon Determined by the existence of pid file in `workdir`
+  start   Start a background process of command `duectl start`.
+  status  Show status of process.
+  stop    Stop the process.
 ```
 
 More documentation and examples can be found [here](. /docs/).

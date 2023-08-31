@@ -33,7 +33,10 @@ def check_privileges():
 @click.option(
     "--load_env",
     default=True,
-    help=f"Weather load env variables when load current config, default True, Prefix: {ConfigLoader.ENV_PREFIX}, Separator:{ConfigLoader.ENV_SEP}, eg. {ConfigLoader.ENV_PREFIX}config{ConfigLoader.ENV_SEP}a means config.a",
+    help=f"Weather load env variables,"
+    f"Prefix: {ConfigLoader.ENV_PREFIX}, Separator:{ConfigLoader.ENV_SEP}, "
+    f"e.g. {ConfigLoader.ENV_PREFIX}config{ConfigLoader.ENV_SEP}a means config.a, "
+    f"default: True",
 )
 @click.option(
     "--dump_path",
@@ -94,7 +97,10 @@ def generate_config(path):
 @click.option(
     "--load_env",
     default=True,
-    help=f"Weather load env variables, Prefix: {ConfigLoader.ENV_PREFIX}, Separator:{ConfigLoader.ENV_SEP}, eg. {ConfigLoader.ENV_PREFIX}config{ConfigLoader.ENV_SEP}a means config.a",
+    help=f"Weather load env variables,"
+    f"Prefix: {ConfigLoader.ENV_PREFIX}, Separator:{ConfigLoader.ENV_SEP}, "
+    f"e.g. {ConfigLoader.ENV_PREFIX}config{ConfigLoader.ENV_SEP}a means config.a, "
+    f"default: True",
 )
 @click.option(
     "--dump_when_load",

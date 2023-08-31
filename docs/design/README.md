@@ -6,18 +6,18 @@ Key Components and Features:
 
 - [ ] **HTTP / RPC Server**: PIP Server, providing API for PDP to get data usage information.
 - [ ] **Analyzer**: Analyze data usage information and generate data usage behavior.
-- [x] **CLI**: CLI for administrator to manage duetector.
-- [x] **BccMonitor**: Monitor data usage behavior in kernel space. Use BCC to implement.
-- [ ] **PollingMonitor**: A general monitor for custom command. Polling the output of command.
-- [x] **TracerManager**: Manage tracers, support plugin.
-    - [x] **OpenTracer**: A `bcc` tracer, trace `open` syscall.
-    - [ ] ...
-- [x] **FilterManager**: Manage filters, support plugin.
-    - [x] **DefaultFilter**: Filtering some meaningless information
-    - [ ] ...
-- [x] **CollectorManager**: Manage collectors, support plugin.
-    - [x] **DBCollector**: Collect filted trackings and store them into database.
-    - [ ] ...
+- [X] **CLI**: CLI for administrator to manage duetector.
+- [X] **BccMonitor**: Monitor data usage behavior in kernel space. Use BCC to implement.
+- [X] **ShMonitor**: A general monitor for custom command. Polling the output of command.
+- [X] **TracerManager**: Manage tracers, support plugin.
+  - [X] **OpenTracer**: A `bcc` tracer, trace `open` syscall.
+  - [ ] ...
+- [X] **FilterManager**: Manage filters, support plugin.
+  - [X] **DefaultFilter**: Filtering some meaningless information
+  - [ ] ...
+- [X] **CollectorManager**: Manage collectors, support plugin.
+  - [X] **DBCollector**: Collect filted trackings and store them into database.
+  - [ ] ...
 
 # Data Flow
 

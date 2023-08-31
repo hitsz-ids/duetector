@@ -24,9 +24,10 @@ from duetector.tools.daemon import Daemon
 @click.pass_context
 def start(ctx, workdir, loglevel, rotate_log):
     """
-    Start a background process of command `duectl start`,
-    All arguments after `--` will be passed to `duectl start`,
-    e.g. `duectl-daemon start -- --config /path/to/config`
+    Start a background process of command `duectl start`.
+
+    All arguments after `--` will be passed to `duectl start`
+        e.g. `duectl-daemon start -- --config /path/to/config`
     """
     cmd = ["duectl", "start"]
     cmd_args = ctx.args
@@ -54,7 +55,8 @@ def start(ctx, workdir, loglevel, rotate_log):
 )
 def status(workdir):
     """
-    Status of daemon.
+    Show status of process.
+
     Determined by the existence of pid file in `workdir`.
     """
     if Daemon(
@@ -73,7 +75,8 @@ def status(workdir):
 )
 def stop(workdir):
     """
-    Stop daemon.
+    Stop the process.
+
     Determined by the existence of pid file in `workdir`.
     """
     Daemon(

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+mount -t debugfs debugfs /sys/kernel/debug # enable debugfs
 duectl-daemon start --loglevel=DEBUG
 
 cd /home/application
