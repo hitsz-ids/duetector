@@ -69,7 +69,6 @@ def test_load_env(config_loader: ConfigLoader, monkeypatch):
 
 
 def test_generate(config_generator: ConfigGenerator, tmpdir):
-    tmpdir.join("config-generated.toml")
     generated_file = tmpdir.join("config-generated.toml")
     config_generator.generate(generated_file)
     assert generated_file.exists()

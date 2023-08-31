@@ -120,9 +120,6 @@ class ShMonitor(Monitor):
     def poll(self, tracer: ShellTracer):  # type: ignore
         return self.host.poll(tracer)
 
-    def summary(self):
-        return {collector.__class__.__name__: collector.summary() for collector in self.collectors}
-
 
 if __name__ == "__main__":
     m = ShMonitor()

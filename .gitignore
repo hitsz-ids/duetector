@@ -570,4 +570,6 @@ dmypy.json
 cython_debug/
 
 .idea/**
-duetector-dbcollector.sqlite3
+duetector-dbcollector.sqlite3*
+dev-tools/duetector-dbcollector.sqlite3*
+dev-tools/config.toml
