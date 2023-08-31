@@ -66,7 +66,7 @@ class BccTracer(Tracer):
         **Tracer.default_config,
     }
 
-    attach_type: str
+    attach_type: Optional[str] = None
     attatch_args: Dict[str, str] = {}
     many_attatchs: List[Tuple[str, Dict[str, str]]] = []
     poll_fn: str
@@ -86,6 +86,8 @@ class BccTracer(Tracer):
         return self.data_t(**args)  # type: ignore
 
     def _attatch(self, host, attatch_type, attatch_args):
+        if not attatch_type:
+            return
         attatcher = getattr(host, f"attach_{attatch_type}")
         # Prevent AttributeError
         attatch_args = attatch_args or {}
@@ -94,11 +96,6 @@ class BccTracer(Tracer):
     def attach(self, host):
         if self.disabled:
             raise TreacerDisabledError("Tracer is disabled")
-
-        if not self.attach_type:
-            # No need to attach, in this case, function name indicates
-            # More: https://github.com/iovisor/bcc/blob/master/docs/reference_guide.md
-            return
 
         attatch_list = [*self.many_attatchs, (self.attach_type, self.attatch_args)]
 
