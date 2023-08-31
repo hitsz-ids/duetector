@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-import toml
+import tomli
 
 from duetector.config import ConfigLoader
 from duetector.tools.config_generator import ConfigGenerator
@@ -17,7 +17,7 @@ def test_repo_config_uptodate(tmpdir):
     config_generator.generate(GENERATED_CONFIG)
     assert GENERATED_CONFIG.exists()
 
-    generated_config = toml.loads(GENERATED_CONFIG.read_text(encoding="utf-8"))
+    generated_config = tomli.loads(GENERATED_CONFIG.read_text(encoding="utf-8"))
     repo_config = ConfigLoader(
         path=CONFIG_IN_REPO,
         load_env=False,
