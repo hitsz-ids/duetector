@@ -1,6 +1,6 @@
 from collections import namedtuple
 from threading import Lock
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from duetector.config import Config, Configuable
 from duetector.exceptions import TracerError, TreacerDisabledError
@@ -45,12 +45,18 @@ class BccTracer(Tracer):
     """
     A Tracer use bcc.BPF host
 
-    attatch_type: str  attatch type for bcc.BPF, e.g. kprobe, kretprobe, etc.
+    attatch_type: str attatch type for bcc.BPF, e.g. kprobe, kretprobe, etc.
     attatch_args: Dict[str, str]  args for attatch function
+    many_attatchs: List[Tuple[str, Dict[str, str]]] list of attatch function name and args
     poll_fn: str  poll function name in bcc.BPF
     poll_args: Dict[str, str]  args for poll function
     prog: str  bpf program
     data_t: NamedTuple  data type for this tracer
+
+    For simple tracers, you can just set `attach_type`, `attatch_args` to attatch to bcc.BPF
+    equal to `bcc.BPF(prog).attatch_{attatch_type}(**attatch_args)`
+
+    For those tracers need to attatch multiple times, you can set `many_attatchs` to attatch multiple times
 
     set_callback should attatch callback to bpf, translate raw data to data_t then call the callback
     # FIXME: Maybe it's hard for using? Maybe we should use a more simple way to implement this?
@@ -62,6 +68,7 @@ class BccTracer(Tracer):
 
     attach_type: str
     attatch_args: Dict[str, str] = {}
+    many_attatchs: List[Tuple[str, Dict[str, str]]] = []
     poll_fn: str
     poll_args: Dict[str, str] = {}
     prog: str
@@ -78,16 +85,25 @@ class BccTracer(Tracer):
 
         return self.data_t(**args)  # type: ignore
 
+    def _attatch(self, host, attatch_type, attatch_args):
+        attatcher = getattr(host, f"attach_{attatch_type}")
+        # Prevent AttributeError
+        attatch_args = attatch_args or {}
+        return attatcher(**attatch_args)
+
     def attach(self, host):
         if self.disabled:
             raise TreacerDisabledError("Tracer is disabled")
 
-        if not self.attach_type or self.disabled:
+        if not self.attach_type:
             # No need to attach, in this case, function name indicates
             # More: https://github.com/iovisor/bcc/blob/master/docs/reference_guide.md
             return
-        attatcher = getattr(host, f"attach_{self.attach_type}")
-        return attatcher(**self.attatch_args)
+
+        attatch_list = [*self.many_attatchs, (self.attach_type, self.attatch_args)]
+
+        for attatch_type, attatch_args in attatch_list:
+            self._attatch(host, attatch_type, attatch_args)
 
     def detach(self, host):
         if self.disabled:
