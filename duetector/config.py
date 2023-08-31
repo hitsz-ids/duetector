@@ -1,3 +1,4 @@
+import copy
 import os
 import shutil
 from pathlib import Path
@@ -167,7 +168,7 @@ class Configuable:
         if self.config_scope:
             for score in self.config_scope.split("."):
                 config = config.get(score.lower(), {})
-        c = self.default_config.copy()
+        c = copy.deepcopy(self.default_config)
 
         def _recursive_update(c, config):
             for k, v in config.items():

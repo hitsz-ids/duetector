@@ -52,6 +52,8 @@ class BccMonitor(Monitor):
         # Prevrent ImportError for CI testing without bcc
         from bcc import BPF  # noqa
 
+        err_tracers = []
+
         for tracer in self.tracers:
             try:
                 bpf = BPF(text=tracer.prog)
@@ -59,6 +61,10 @@ class BccMonitor(Monitor):
                 logger.error(f"Failed to compile {tracer.__class__.__name__}")
                 logger.exception(e)
                 if self.continue_on_exception:
+                    logger.info(
+                        f"Continuing on exception. {tracer.__class__.__name__} will be disabled."
+                    )
+                    err_tracers.append(tracer)
                     continue
                 else:
                     raise e
@@ -66,6 +72,10 @@ class BccMonitor(Monitor):
             self._set_callback(bpf, tracer)
             self.bpf_tracers[tracer] = bpf
             logger.info(f"Tracer {tracer.__class__.__name__} attached")
+
+        # Remove tracers that failed to compile
+        for tracer in err_tracers:
+            self.tracers.remove(tracer)
 
     def _set_callback(self, host, tracer):
         def _(data):
@@ -80,9 +90,6 @@ class BccMonitor(Monitor):
 
     def poll(self, tracer: BccTracer):  # type: ignore
         tracer.get_poller(self.bpf_tracers[tracer])(**tracer.poll_args)
-
-    def summary(self):
-        return {collector.__class__.__name__: collector.summary() for collector in self.collectors}
 
 
 if __name__ == "__main__":
