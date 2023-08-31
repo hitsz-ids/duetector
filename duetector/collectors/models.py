@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, NamedTuple, Optional
+from typing import Any, Dict, NamedTuple, Optional
 
 import pydantic
 
@@ -23,7 +23,7 @@ class Tracking(pydantic.BaseModel):
     fname: Optional[str] = None
     timestamp: Optional[int] = None
 
-    extended: Dict[str, str] = {}
+    extended: Dict[str, Any] = {}
 
     @staticmethod
     def from_namedtuple(tracer, data: NamedTuple) -> Tracking:  # type: ignore
