@@ -15,8 +15,11 @@ class TcpconnectTracer(BccTracer):
         "poll_timeout": 10,
     }
 
-    attach_type = "kprobe"
-    attatch_args = {"fn_name": "do_trace", "event": "tcp_v4_connect"}
+    many_attatchs = [
+        ("kprobe", {"fn_name": "do_trace", "event": "tcp_v4_connect"}),
+        ("kretprobe", {"fn_name": "do_return", "event": "tcp_v4_connect"}),
+    ]
+
     poll_fn = "ring_buffer_poll"
 
     @property
@@ -99,21 +102,6 @@ class TcpconnectTracer(BccTracer):
         host["buffer"].open_ring_buffer(_)
 
 
-class TcpconnectRetTracer(BccTracer):
-    """
-    A tracer for openat2 syscall
-    """
-
-    attach_type = "kretprobe"
-    attatch_args = {"fn_name": "do_return", "event": "tcp_v4_connect"}
-    poll_fn = "ring_buffer_poll"
-    poll_args = {}
-    data_t = namedtuple("TcpTracking", ["pid", "comm", "saddr", "daddr", "dport"])
-
-
-# define BPF program
-
-
 @hookimpl
 def init_tracer(config):
     return TcpconnectTracer(config)
@@ -124,9 +112,7 @@ if __name__ == "__main__":
 
     b = BPF(text=TcpconnectTracer.prog)
     tracer = TcpconnectTracer()
-    rettracer = TcpconnectRetTracer()
     tracer.attach(b)
-    rettracer.attach(b)
 
     def inet_ntoa(addr):
         dq = b""
