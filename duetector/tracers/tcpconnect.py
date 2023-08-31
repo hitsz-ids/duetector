@@ -21,7 +21,11 @@ class TcpconnectTracer(BccTracer):
     ]
 
     poll_fn = "ring_buffer_poll"
-    poll_args = {}
+
+    @property
+    def poll_args(self):
+        return {"timeout": int(self.config.poll_timeout)}
+
     data_t = namedtuple("TcpTracking", ["pid", "uid", "gid", "comm", "saddr", "daddr", "dport"])
 
     # define BPF program
