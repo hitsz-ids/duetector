@@ -80,6 +80,14 @@ class BccTracer(Tracer):
             v = getattr(data, k)
             if isinstance(v, bytes):
                 v = v.decode("utf-8")
+            elif k == "saddr" or k == "daddr":
+                dq = b""
+                for i in range(0, 4):
+                    dq = dq + str(v & 0xFF).encode()
+                    if i != 3:
+                        dq = dq + b"."
+                    v = v >> 8
+                v = dq
 
             args[k] = v
 

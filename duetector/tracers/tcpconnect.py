@@ -7,7 +7,7 @@ from duetector.tracers.base import BccTracer
 
 class TcpconnectTracer(BccTracer):
     """
-    A tracer for openat2 syscall
+    A tracer for tcpconnect syscall
     """
 
     default_config = {
@@ -119,17 +119,8 @@ if __name__ == "__main__":
     tracer = TcpconnectTracer()
     tracer.attach(b)
 
-    def inet_ntoa(addr):
-        dq = b""
-        for i in range(0, 4):
-            dq = dq + str(addr & 0xFF).encode()
-            if i != 3:
-                dq = dq + b"."
-            addr = addr >> 8
-        return dq
-
     def print_callback(data: NamedTuple):
-        print(f"[{data.comm} ({data.pid}) {data.uid} {data.gid}] TCP_CONNECT SADDR:{inet_ntoa(data.saddr)} DADDR: {inet_ntoa(data.daddr)} DPORT:{data.dport}")  # type: ignore
+        print(f"[{data.comm} ({data.pid}) {data.uid} {data.gid}] TCP_CONNECT SADDR:{data.saddr} DADDR: {data.daddr} DPORT:{data.dport}")  # type: ignore
 
     tracer.set_callback(b, print_callback)
     poller = tracer.get_poller(b)
