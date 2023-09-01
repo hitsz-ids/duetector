@@ -9,7 +9,7 @@ from duetector.managers import CollectorManager
 
 @pytest.fixture
 def config(full_config):
-    yield CollectorManager(full_config).config.config_dict
+    yield CollectorManager(full_config).config._config_dict
 
 
 @pytest.fixture

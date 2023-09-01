@@ -38,7 +38,7 @@ class TracerManager(Manager):
             return []
 
         objs = []
-        for f in self.pm.hook.init_tracer(config=self.config.config_dict):
+        for f in self.pm.hook.init_tracer(config=self.config._config_dict):
             if not f or (f.disabled and ignore_disabled):
                 logger.debug(f"Tracer {f.__class__.__name__} is not available (None or Disabled)")
                 continue

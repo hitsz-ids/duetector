@@ -38,7 +38,7 @@ class CollectorManager(Manager):
             return []
 
         objs = []
-        for f in self.pm.hook.init_collector(config=self.config.config_dict):
+        for f in self.pm.hook.init_collector(config=self.config):
             if not f:
                 continue
             if f.disabled and ignore_disabled:

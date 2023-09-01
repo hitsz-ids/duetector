@@ -12,7 +12,7 @@ data_t = namedtuple(
 
 @pytest.fixture
 def config(full_config):
-    yield FilterManager(full_config).config.config_dict
+    yield FilterManager(full_config).config._config_dict
 
 
 @pytest.fixture

@@ -23,21 +23,21 @@ class Config:
     def __init__(self, config_dict: Optional[Dict[str, Any]] = None):
         if not config_dict:
             config_dict = {}
-        self.config_dict: Dict[str, Any] = config_dict
+        self._config_dict: Dict[str, Any] = config_dict
 
     def __repr__(self) -> str:
-        return str(self.config_dict)
+        return str(self._config_dict)
 
     def __getattr__(self, name):
         # All config keys are lower case
         name = name.lower()
-        if isinstance(self.config_dict.get(name), dict):
-            return Config(self.config_dict[name])
+        if isinstance(self._config_dict.get(name), dict):
+            return Config(self._config_dict[name])
 
-        return self.config_dict.get(name, None)
+        return self._config_dict.get(name, None)
 
     def __bool__(self):
-        return bool(self.config_dict)
+        return bool(self._config_dict)
 
 
 class ConfigLoader:
@@ -163,7 +163,7 @@ class Configuable:
         if not config:
             config = {}
         elif isinstance(config, Config):
-            config = config.config_dict
+            config = config._config_dict
 
         if self.config_scope:
             for score in self.config_scope.split("."):
