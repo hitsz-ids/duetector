@@ -35,14 +35,14 @@ class PatternFilter(Filter):
         return bool(self.config.enable_customize_exclude)
 
     def customize_exclude(self, data: NamedTuple) -> bool:
-        for k in self.config.config_dict:
+        for k in self.config._config_dict:
             if k.startswith("exclude_"):
                 field = k.replace("exclude_", "")
-                if getattr(data, field, None) in self.config.config_dict[k]:
+                if getattr(data, field, None) in self.config._config_dict[k]:
                     return True
             if k.startswith("re_exclude_"):
                 field = k.replace("re_exclude_", "")
-                if self.re_exclude(getattr(data, field, None), self.config.config_dict[k]):
+                if self.re_exclude(getattr(data, field, None), self.config._config_dict[k]):
                     return True
         return False
 

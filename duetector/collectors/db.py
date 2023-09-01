@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Optional
 
 from sqlalchemy import select  # type: ignore
@@ -29,14 +30,14 @@ class DBCollector(Collector):
     }
 
     def __repr__(self):
-        config_without_db = self.config.config_dict.copy()
+        config_without_db = copy.deepcopy(self.config._config_dict)
         config_without_db.pop("db", None)
         return f"<[DBCollector {self.sm}] {config_without_db}>"
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         # Init as a submodel
-        self.sm = SessionManager(self.config.config_dict)
+        self.sm = SessionManager(self.config._config_dict)
 
     def _emit(self, t: Tracking):
         m = self.sm.get_tracking_model(t.tracer, self.id)

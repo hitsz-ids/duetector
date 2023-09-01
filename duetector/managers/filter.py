@@ -37,7 +37,7 @@ class FilterManager(Manager):
             logger.info("FilterManager disabled.")
             return []
         objs = []
-        for f in self.pm.hook.init_filter(config=self.config.config_dict):
+        for f in self.pm.hook.init_filter(config=self.config._config_dict):
             if not f:
                 continue
             if f.disabled and ignore_disabled:

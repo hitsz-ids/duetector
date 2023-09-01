@@ -69,7 +69,7 @@ class MockMonitor(Monitor):
         self.mock_cls = mock_cls
         super().__init__(config=config)
 
-        tracer_config = TracerManager(config).config.config_dict
+        tracer_config = TracerManager(config).config._config_dict
 
         self.tracers = [mock_tracer(tracer_config)]
         self.filters = FilterManager(config).init()

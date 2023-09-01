@@ -37,8 +37,8 @@ class Monitor(Configuable):
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config=config)
-        self._backend = self._backend_imp(**self.backend_args.config_dict)
-        self.poller = Poller(self.config.config_dict)
+        self._backend = self._backend_imp(**self.backend_args._config_dict)
+        self.poller = Poller(self.config._config_dict)
 
     @property
     def disabled(self):

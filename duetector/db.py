@@ -83,7 +83,7 @@ class SessionManager(Configuable):
 
     @property
     def engine_config(self) -> Dict[str, Any]:
-        config = self.config.engine.config_dict
+        config = self.config.engine._config_dict
         if self.debug:
             config["echo"] = True
         db_url = config.get("url", "")
@@ -145,7 +145,7 @@ class SessionManager(Configuable):
             return self._tracking_models[tracer]
 
     def get_all_model(self) -> Dict[str, type]:
-        return self._tracking_models.copy()
+        return self._tracking_models
 
     def _init_tracking_model(self, tracking_model: type) -> type:
         if not sqlalchemy.inspect(self.engine).has_table(tracking_model.__tablename__):

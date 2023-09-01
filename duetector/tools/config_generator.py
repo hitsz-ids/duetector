@@ -1,3 +1,4 @@
+import copy
 from pathlib import Path
 from typing import Dict
 
@@ -18,7 +19,7 @@ def _recursive_load(config_scope: str, config_dict: dict, default_config: dict):
     last = config_dict
     for p in prefix:
         last = last.setdefault(p, {})
-    last[config_scope] = default_config.copy()
+    last[config_scope] = copy.deepcopy(default_config)
 
 
 class ConfigGenerator:
