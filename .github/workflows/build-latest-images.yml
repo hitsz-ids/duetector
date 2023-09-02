@@ -3,10 +3,6 @@ name: Build latest images manually
 on:
     workflow_dispatch: {}
 
-
-permissions:
-  contents: write
-
 jobs:
   deploy:
     strategy:
