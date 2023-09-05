@@ -37,7 +37,7 @@ docker run -it --rm --privileged \
 dataucon/duetector
 ```
 
-Sometimes `/lib/modules/{kernel-version}` is a symbol link of `/usr/src/{kernel-version}`, so you need to mount `/usr/src` also.
+(**Debian/Ubuntu**) Sometimes `/lib/modules/{kernel-version}/build` is a symbol link of `/usr/src/linux-headers-{kernel-version}`, so you need to mount `/usr/src` also.
 
 ```Bash
 docker run -it --rm --privileged \
