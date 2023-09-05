@@ -71,9 +71,16 @@ sudo nerdctl run \
 -it \
 -p 8888:8888 \
 --runtime=io.containerd.kata.v2 \
+--cap-add=sys_admin \
 --entrypoint bash \
 --rm \
 dataucon/duetector
+```
+
+If use `bash` as entrypoint, you need to mount debugfs manually
+
+```bash
+mount -t debugfs debugfs /sys/kernel/debug
 ```
 
 More information about tracking mlflow with duetector, please refer to [usercases](../usercases/tracking-mljob-in-kata-containers/README.md)

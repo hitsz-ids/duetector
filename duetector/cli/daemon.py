@@ -1,7 +1,12 @@
+import os
+
 import click
 
 from duetector.log import logger
 from duetector.tools.daemon import Daemon
+
+WORKDIR_ENV = "DUETECTOR_DAEMON_WORKDIR"
+DEFAULT_WORKDIR = "/tmp/duetector"
 
 
 @click.command(
@@ -12,7 +17,7 @@ from duetector.tools.daemon import Daemon
 )
 @click.option(
     "--workdir",
-    default="/tmp/duetector",
+    default=os.getenv(WORKDIR_ENV, DEFAULT_WORKDIR),
     help="Log file and pid file will be stored in working directory, default: /tmp/duetector",
 )
 @click.option("--loglevel", default="INFO", help="Log level, default: INFO")
@@ -50,7 +55,7 @@ def start(ctx, workdir, loglevel, rotate_log):
 @click.command()
 @click.option(
     "--workdir",
-    default="/tmp/duetector",
+    default=os.getenv(WORKDIR_ENV, DEFAULT_WORKDIR),
     help="Log file and pid file will be stored in working directory, default: /tmp/duetector",
 )
 def status(workdir):
@@ -70,7 +75,7 @@ def status(workdir):
 @click.command()
 @click.option(
     "--workdir",
-    default="/tmp/duetector",
+    default=os.getenv(WORKDIR_ENV, DEFAULT_WORKDIR),
     help="Log file and pid file will be stored in working directory, default: /tmp/duetector",
 )
 def stop(workdir):
