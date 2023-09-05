@@ -573,3 +573,5 @@ cython_debug/
 duetector-dbcollector.sqlite3*
 dev-tools/duetector-dbcollector.sqlite3*
 dev-tools/config.toml
+docs/usercases/tracking-mljob-in-kata-containers/cifar-10-batches-py/*
+docs/usercases/tracking-mljob-in-kata-containers/cifar-10-python.tar.gz

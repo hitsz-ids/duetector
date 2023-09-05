@@ -1,4 +1,4 @@
-<h2 align="center">duetector🔍: 基于eBPF的数据使用探测器</h2>
+<h2 align="center">duetector🔍: 支持eBPF的可扩展数据使用探测器</h2>
 <p align="center">
 <a href="https://github.com/hitsz-ids/duetector/actions"><img alt="Actions Status" src="https://github.com/hitsz-ids/duetector/actions/workflows/python-package.yml/badge.svg"></a>
 <a href="https://results.pre-commit.ci/latest/github/hitsz-ids/duetector/main"><img alt="pre-commit.ci status" src="https://results.pre-commit.ci/badge/github/hitsz-ids/duetector/main.svg"></a>
@@ -21,11 +21,11 @@
 >
 > [深入了解并部署DataUCON](https://github.com/hitsz-ids/dataucon)
 
-duetector🔍是一个基于eBPF的数据使用探测器，它可以在Linux内核中对数据使用行为进行探测，从而为数据使用控制提供支持。
+duetector🔍是一个基于可扩展的的数据使用探测器，它可以在Linux内核中对数据使用行为进行探测（基于eBPF），从而为数据使用控制提供支持。
 
 **🐛🐞🧪 项目正在大力开发中，期待任何Bug报告、功能请求、合并请求**
 
-在[ABAUC控制模型](https://github.com/hitsz-ids/dataucon)当中，duetector可作为PIP（Policy Information Point）来获取数据使用行为，从而为PDP（Policy Decision Point）提供数据使用行为的信息。
+在[ABAUC控制模型](https://github.com/hitsz-ids/dataucon)当中，duetector可作为PIP（Policy Information Point）来获取数据使用行为，从而为PDP（Policy Decision Point）提供数据使用行为的信息。[快速了解用户案例](./docs/usercases/)
 
 ## 目录
 
@@ -51,11 +51,14 @@ duetector🔍是一个基于eBPF的数据使用探测器，它可以在Linux内�
 - [ ] 基于eBPF的数据使用探测器
   - [X] 文件打开操作
   - [ ] ……
+- [ ] 基于Shell命令的探测器
+  - [X] 内核信息探测
+  - [ ] ……
 - [X] 支持SQL数据库的数据收集器
 - [X] CLI工具
 - [ ] PIP服务
 
-eBPF探测器需要内核支持，详见[内核支持](./docs/kernel_config.md)
+eBPF程序需要内核支持，详见[内核支持](./docs/kernel_config.md)
 
 ## 安装
 
@@ -101,10 +104,25 @@ sudo duectl start
 sudo DUETECTOR_LOG_LEVEL=DEBUG duectl start
 ```
 
-启动时，配置文件将自动生成，对应路径为 `~/.config/duetector` ，可以使用 `--config`指定使用的配置文件
+启动时，配置文件将自动生成，对应路径为 `~/.config/duetector` ，修改这个配置文件可以修改数据库地址等内容，可以使用 `--config`指定使用的配置文件
 
 ```bash
 sudo duectl start --config <config-file-path>
+```
+
+也支持使用环境变量进行配置:
+
+```bash
+Usage: duectl start [OPTIONS]
+
+  Start A bcc monitor and wait for KeyboardInterrupt
+
+Options:
+  ...
+  --load_env BOOLEAN            Weather load env variables,Prefix: DUETECTOR_,
+                                Separator:__, e.g. DUETECTOR_config__a means
+                                config.a, default: True
+  ...
 ```
 
 当使用插件时，默认的配置文件不会包含插件的配置内容，使用动态生成配置的指令生成带有插件配置的配置文件，这个指令也支持合并当前已有的配置文件和环境变量
@@ -121,17 +139,18 @@ duectl generate-config
 
 更进一步的，后台运行可以使用 `duectl-daemon start`命令，这将会在后台运行一个守护进程，你可以使用 `duectl-daemon stop`来停止它
 
+使用 `duectl-daemon --help` 获取更多细节：
+
 ```bash
-duectl-daemon --help
 Usage: duectl-daemon [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --help  Show this message and exit.
 
 Commands:
-  start   Start a daemon of command `duectl start`, All arguments after...
-  status  Status of daemon Determined by the existence of pid file in...
-  stop    Stop daemon Determined by the existence of pid file in `workdir`
+  start   Start a background process of command `duectl start`.
+  status  Show status of process.
+  stop    Stop the process.
 ```
 
 更多文档和例子可以在[这里](./docs/)找到。
@@ -146,11 +165,18 @@ WIP 这一部分内容是PIP相关的，目前还没有完成，完成后将包�
 
 ## 如何贡献
 
-非常欢迎你的加入！[提一个 Issue](https://github.com/hitsz-ids/duetector/issues/new) 或者提交一个 Pull Request。
+非常欢迎您的加入！[我们欢迎任何类型的Issue](https://github.com/hitsz-ids/duetector/issues/new)，同时也期待您的PR
 
-开发环境配置和其他注意事项请参考[开发者文档](./CONTRIBUTING.md)。
+我们提供了以下资料让您更快了解项目
 
-在这里了解本项目的设计思路和架构：[设计文档](./docs/design/README.md)
+- 开发环境配置和其他注意事项请参考：[开发者文档](./CONTRIBUTING.md)
+- 在这里了解本项目的设计思路和架构：[设计文档](./docs/design/README.md)
+
+# 如何开发插件
+
+目前，tracer、filter、collector都支持自定义插件开发，以Python包作为单个插件或多个插件，可以查看[自定义插件示例](./examples/)了解开发步骤
+
+TODO: 提供一个插件的cookiecutter模板
 
 ## 许可证
 

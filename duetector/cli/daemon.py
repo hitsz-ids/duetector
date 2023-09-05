@@ -1,7 +1,12 @@
+import os
+
 import click
 
 from duetector.log import logger
 from duetector.tools.daemon import Daemon
+
+WORKDIR_ENV = "DUETECTOR_DAEMON_WORKDIR"
+DEFAULT_WORKDIR = "/tmp/duetector"
 
 
 @click.command(
@@ -12,7 +17,7 @@ from duetector.tools.daemon import Daemon
 )
 @click.option(
     "--workdir",
-    default="/tmp/duetector",
+    default=os.getenv(WORKDIR_ENV, DEFAULT_WORKDIR),
     help="Log file and pid file will be stored in working directory, default: /tmp/duetector",
 )
 @click.option("--loglevel", default="INFO", help="Log level, default: INFO")
@@ -24,9 +29,10 @@ from duetector.tools.daemon import Daemon
 @click.pass_context
 def start(ctx, workdir, loglevel, rotate_log):
     """
-    Start a background process of command `duectl start`,
-    All arguments after `--` will be passed to `duectl start`,
-    e.g. `duectl-daemon start -- --config /path/to/config`
+    Start a background process of command `duectl start`.
+
+    All arguments after `--` will be passed to `duectl start`
+        e.g. `duectl-daemon start -- --config /path/to/config`
     """
     cmd = ["duectl", "start"]
     cmd_args = ctx.args
@@ -49,12 +55,13 @@ def start(ctx, workdir, loglevel, rotate_log):
 @click.command()
 @click.option(
     "--workdir",
-    default="/tmp/duetector",
+    default=os.getenv(WORKDIR_ENV, DEFAULT_WORKDIR),
     help="Log file and pid file will be stored in working directory, default: /tmp/duetector",
 )
 def status(workdir):
     """
-    Status of daemon.
+    Show status of process.
+
     Determined by the existence of pid file in `workdir`.
     """
     if Daemon(
@@ -68,12 +75,13 @@ def status(workdir):
 @click.command()
 @click.option(
     "--workdir",
-    default="/tmp/duetector",
+    default=os.getenv(WORKDIR_ENV, DEFAULT_WORKDIR),
     help="Log file and pid file will be stored in working directory, default: /tmp/duetector",
 )
 def stop(workdir):
     """
-    Stop daemon.
+    Stop the process.
+
     Determined by the existence of pid file in `workdir`.
     """
     Daemon(
