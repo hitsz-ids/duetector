@@ -8,20 +8,25 @@ from duetector.filters import Filter
 
 class PatternFilter(Filter):
     """
-    A Filter support regex pattern to filter data
+    A Filter support regex pattern to filter data.
 
-    Usage:
-        There are following config build-in:
-            - re_exclude_fname: Regex pattern to filter out `fname` field
-            - re_exclude_comm: Regex pattern to filter out `comm` field
-            - exclude_pid: Filter out `pid` field
-            - exclude_uid: Filter out `uid` field
-            - exclude_gid: Filter out `gid` field
+    There are following config build-in:
+            - ``re_exclude_fname``: Regex pattern to filter out ``fname`` field
+            - ``re_exclude_comm``: Regex pattern to filter out ``comm`` field
+            - ``exclude_pid``: Filter out ``pid`` field
+            - ``exclude_uid``: Filter out ``uid`` field
+            - ``exclude_gid``: Filter out ``gid`` field
 
-        Customize exclude is also supported
-        e.g.:
-            - re_exclude_custom: Regex pattern to filter out `custom`
-            - exclude_custom: Filter out `custom` field
+    Customize exclude is also supported:
+        - ``re_exclude_custom``: Regex pattern to filter out ``custom`` field
+        - ``exclude_custom``: Filter out ``custom`` field
+
+        You can change ``custom`` to any field you want to filter out.
+
+        Config ``enable_customize_exclude`` to enable customize exclude, default is ``True``.
+
+    Use ``(?!…)`` for include pattern:
+        - ``re_exclude_custom``: ``["(?!/proc/)"]`` will include ``/proc`` but exclude others.
     """
 
     default_config = {
@@ -45,13 +50,25 @@ class PatternFilter(Filter):
             0,
         ],
     }
+    """
+    Default config for ``PatternFilter``
+    """
     _re_cache = {}
+    """
+    Cache for re pattern
+    """
 
     @property
     def enable_customize_exclude(self) -> bool:
+        """
+        If enable customize exclude
+        """
         return bool(self.config.enable_customize_exclude)
 
     def customize_exclude(self, data: NamedTuple) -> bool:
+        """
+        Customize exclude function, return ``True`` to drop data, return ``False`` to keep data.
+        """
         for k in self.config._config_dict:
             if k.startswith("exclude_"):
                 field = k.replace("exclude_", "")
@@ -64,6 +81,9 @@ class PatternFilter(Filter):
         return False
 
     def re_exclude(self, field: Optional[str], re_list: Union[str, List[str]]) -> bool:
+        """
+        Check if field match any pattern in re_list
+        """
         if not field:
             return False
         if isinstance(re_list, str):
@@ -77,6 +97,10 @@ class PatternFilter(Filter):
         return any(_cached_search(pattern, field) for pattern in re_list)
 
     def filter(self, data: NamedTuple) -> Optional[NamedTuple]:
+        """
+        Filter data, return ``None`` to drop data, return data to keep data.
+        """
+
         if getattr(data, "pid", None) == os.getpid():
             return
         if self.re_exclude(getattr(data, "fname", None), self.config.re_exclude_fname):

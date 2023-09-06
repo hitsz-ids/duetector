@@ -9,7 +9,8 @@ from duetector.log import logger
 from duetector.managers import Manager
 from duetector.tracers.base import Tracer
 
-hookspec = pluggy.HookspecMarker(project_name)
+PROJECT_NAME = project_name  #: Default project name for pluggy
+hookspec = pluggy.HookspecMarker(PROJECT_NAME)
 
 
 @hookspec
@@ -22,17 +23,33 @@ def init_tracer(config) -> Optional[Tracer]:
 
 
 class TracerManager(Manager):
+    """
+    Manager for all tracers.
+
+    Tracers are initialized from config, and can be ``disabled`` by config.
+    """
+
     config_scope = "tracer"
+    """
+    Config scope for ``TracerManager``.
+    """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
-        self.pm = pluggy.PluginManager(project_name)
+        self.pm = pluggy.PluginManager(PROJECT_NAME)
         self.pm.add_hookspecs(sys.modules[__name__])
-        self.pm.load_setuptools_entrypoints(project_name)
+        self.pm.load_setuptools_entrypoints(PROJECT_NAME)
         self.register(duetector.tracers)
 
     def init(self, tracer_type=Tracer, ignore_disabled=True) -> List[Tracer]:
+        """
+        Initialize all tracers from config.
+
+        Args:
+            tracer_type: Only return tracers of this type
+            ignore_disabled: Ignore disabled tracers
+        """
         if self.disabled:
             logger.info("TracerManager disabled.")
             return []

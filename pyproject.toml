@@ -27,7 +27,7 @@ classifiers = [
 ]
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov", "pytype"]
-docs = ["Sphinx", "sphinx-rtd-theme"]
+docs = ["Sphinx", "sphinx-rtd-theme", "sphinx-click"]
 
 [project.scripts]
 duectl = "duetector.cli.main:cli"

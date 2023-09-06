@@ -23,25 +23,25 @@ def check_privileges():
 @click.option(
     "--load_current_config",
     default=True,
-    help=f"Wheather load current config file, if True, will use --path as origin config file path, default True.",
+    help=f"Wheather load current config file, if ``True``, will use ``--path`` as origin config file path, default: ``True``.",
 )
 @click.option(
     "--path",
     default=CONFIG_PATH,
-    help=f"Origin config file path, default: {CONFIG_PATH}",
+    help=f"Origin config file path, default: ``{CONFIG_PATH}``",
 )
 @click.option(
     "--load_env",
     default=True,
-    help=f"Weather load env variables,"
-    f"Prefix: {ConfigLoader.ENV_PREFIX}, Separator:{ConfigLoader.ENV_SEP}, "
-    f"e.g. {ConfigLoader.ENV_PREFIX}config{ConfigLoader.ENV_SEP}a means config.a, "
-    f"default: True",
+    help=f"Weather load env variables, "
+    f"Prefix: ``{ConfigLoader.ENV_PREFIX}``, Separator:``{ConfigLoader.ENV_SEP}``, "
+    f"e.g. ``{ConfigLoader.ENV_PREFIX}config{ConfigLoader.ENV_SEP}a`` means ``config.a``, "
+    f"default: ``True``.",
 )
 @click.option(
     "--dump_path",
     default=CONFIG_PATH,
-    help=f"File path to dump, default: {CONFIG_PATH}",
+    help=f"File path to dump, default: ``{CONFIG_PATH}``.",
 )
 def generate_dynamic_config(load_current_config, path, load_env, dump_path):
     """
@@ -62,12 +62,12 @@ def generate_dynamic_config(load_current_config, path, load_env, dump_path):
 @click.option(
     "--path",
     default=CONFIG_PATH,
-    help=f"Origin config file path, default: {CONFIG_PATH}",
+    help=f"Origin config file path, default: ``{CONFIG_PATH}``.",
 )
 @click.option(
     "--dump_path",
     default=CONFIG_PATH,
-    help=f"File path to dump, default: {CONFIG_PATH}",
+    help=f"File path to dump, default: ``{CONFIG_PATH}``.",
 )
 def make_config(path, dump_path):
     """
@@ -83,7 +83,7 @@ def make_config(path, dump_path):
 @click.option(
     "--path",
     default=CONFIG_PATH,
-    help=f"Generated config file path, default: {CONFIG_PATH}",
+    help=f"Generated config file path, default: ``{CONFIG_PATH}``.",
 )
 def generate_config(path):
     """
@@ -93,19 +93,21 @@ def generate_config(path):
 
 
 @click.command()
-@click.option("--config", default=CONFIG_PATH, help=f"Config file path, default: {CONFIG_PATH}")
+@click.option(
+    "--config", default=CONFIG_PATH, help=f"Config file path, default: ``{CONFIG_PATH}``."
+)
 @click.option(
     "--load_env",
     default=True,
-    help=f"Weather load env variables,"
-    f"Prefix: {ConfigLoader.ENV_PREFIX}, Separator:{ConfigLoader.ENV_SEP}, "
-    f"e.g. {ConfigLoader.ENV_PREFIX}config{ConfigLoader.ENV_SEP}a means config.a, "
+    help=f"Weather load env variables, "
+    f"Prefix: ``{ConfigLoader.ENV_PREFIX}``, Separator:``{ConfigLoader.ENV_SEP}``, "
+    f"e.g. ``{ConfigLoader.ENV_PREFIX}config{ConfigLoader.ENV_SEP}a`` means ``config.a``, "
     f"default: True",
 )
 @click.option(
     "--dump_when_load",
     default=True,
-    help=f"Weather dump config when load, default: True",
+    help=f"Weather dump config when load, default: ``True``.",
 )
 @click.option(
     "--config_dump_dir",
@@ -115,12 +117,12 @@ def generate_config(path):
 @click.option(
     "--enable_bcc_monitor",
     default=True,
-    help=f"Set false or False to disable bcc monitor, default: true",
+    help=f"Set false or False to disable bcc monitor, default: ``True``.",
 )
 @click.option(
     "--enable_sh_monitor",
     default=True,
-    help=f"Set false or False to disable shell monitor, default: true",
+    help=f"Set false or False to disable shell monitor, default: ``True``.",
 )
 def start(
     config,
