@@ -18,5 +18,5 @@ entry point for the polling, filtering and collecting of the data.
    :maxdepth: 1
    :caption: Avaliable Monitor
 
-   Bcc Manager <bcc>
-   Shell Manager <sh>
+   Bcc Monitor <bcc>
+   Shell Monitor <sh>
