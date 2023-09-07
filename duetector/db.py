@@ -17,6 +17,10 @@ from duetector.config import Configuable
 
 
 class TrackingMixin:
+    """
+    A mixin for sqlalchemy model to track process
+    """
+
     id: Mapped[int] = mapped_column(
         primary_key=True,
         autoincrement=True,
@@ -41,9 +45,19 @@ class SessionManager(Configuable):
     """
     A wrapper for sqlalchemy session
 
-    Config:
-        - table_prefix: str  prefix for all table names
-        - engine: Dict[str, Any]  config for sqlalchemy.create_engine
+    Special config:
+        table_prefix (str): prefix for all table names
+        engine (Dict[str, Any]): config for sqlalchemy.create_engine
+
+    Example:
+
+    .. code-block:: python
+
+        from duetector.db import SessionManager
+        sessionmanager = SessionManager()
+        with sessionmanager.begin() as session:
+            session.add(...)
+
 
     """
 
@@ -79,10 +93,17 @@ class SessionManager(Configuable):
 
     @property
     def table_prefix(self):
+        """
+        Prefix for all table names
+        """
+
         return self.config.table_prefix
 
     @property
     def engine_config(self) -> Dict[str, Any]:
+        """
+        Config for sqlalchemy.create_engine
+        """
         config = self.config.engine._config_dict
         if self.debug:
             config["echo"] = True
@@ -97,23 +118,49 @@ class SessionManager(Configuable):
 
     @property
     def engine(self):
+        """
+        A sqlalchemy engine
+        """
         if not self._engine:
             self._engine = sqlalchemy.create_engine(**self.engine_config)
         return self._engine
 
     @property
     def sessionmaker(self):
+        """
+        A sessionmaker for sqlalchemy session
+        """
         if not self._sessionmaker:
             self._sessionmaker = sessionmaker(bind=self.engine)
         return self._sessionmaker
 
     @contextmanager
     def begin(self) -> Generator[Session, None, None]:
+        """
+        Get a sqlalchemy session.
+
+        Example:
+
+        .. code-block:: python
+
+            with session_manager.begin() as session:
+                session.add(...)
+        """
         with self.sessionmaker.begin() as session:
             yield session
 
     def get_tracking_model(self, tracer: str = "unknown", collector_id: str = "") -> type:
-        # For thread safety
+        """
+        Get a sqlalchemy model for tracking, each tracer will create a table in database.
+
+        Args:
+            tracer (str): name of tracer
+            collector_id (str): id of collector
+
+        Returns:
+            type: a sqlalchemy model for tracking
+        """
+
         with self.mutex:
             if tracer in self._tracking_models:
                 return self._tracking_models[tracer]

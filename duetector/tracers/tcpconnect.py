@@ -29,7 +29,6 @@ class TcpconnectTracer(BccTracer):
 
     data_t = namedtuple("TcpTracking", ["pid", "uid", "gid", "comm", "saddr", "daddr", "dport"])
 
-    # define BPF program
     prog = """
     #include <uapi/linux/ptrace.h>
     #include <net/sock.h>

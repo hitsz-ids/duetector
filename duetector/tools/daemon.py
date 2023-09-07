@@ -1,3 +1,9 @@
+#  Modified from https://github.com/Wh1isper/sparglim/blob/0.1.4/sparglim/server/daemon.py
+#  Original license:
+#    Copyright (c) 2023 Wh1isper
+#    Licensed under the BSD 3-Clause License
+
+
 import os
 import subprocess
 from datetime import datetime
@@ -10,6 +16,28 @@ from duetector.log import logger
 
 
 class Daemon:
+    """
+    Start a daemon process and record pid.
+
+    Args:
+        workdir (str, Path): Working directory for daemon process.
+        cmd (List[str]): Command to start daemon process.
+        env_dict (Dict[str, str]): Environment variables for daemon process.
+        rotate_log (bool): Rotate log file or not.
+
+    Example:
+        >>> d = Daemon(
+        ...     cmd=["sleep", "100"],
+        ...     workdir="/tmp/duetector",
+        ...     env_dict={"DUETECTOR_LOG_LEVEL": "DEBUG"},
+        ...     auto_restart=True,
+        ...     rotate_log=True,
+        ... )
+        >>> d.start()
+        >>> d.poll()
+        >>> d.stop()
+    """
+
     def __init__(
         self,
         workdir: Union[str, Path],
@@ -29,14 +57,23 @@ class Daemon:
 
     @property
     def pid_file(self):
+        """
+        Path to pid file.
+        """
         return self.workdir / "pid"
 
     @property
     def log_file(self):
+        """
+        Path to log file.
+        """
         return self.workdir / "log"
 
     @property
     def pid(self):
+        """
+        Pid of daemon process.
+        """
         if not self.pid_file.exists():
             return None
 
@@ -44,12 +81,18 @@ class Daemon:
             return int(f.read())
 
     def _rotate_log(self):
+        """
+        Rotate log file.
+        """
         now = datetime.now()
         new_log_file = self.log_file.with_suffix(f".{now:%Y%m%d%H%M%S}")
         logger.info(f"Rotate log file to {new_log_file}")
         self.log_file.rename(new_log_file)
 
     def start(self):
+        """
+        Start daemon process.
+        """
         if not self.cmd:
             raise RuntimeError("cmd is empty, nothing to start")
 
@@ -73,6 +116,9 @@ class Daemon:
         assert self.pid
 
     def stop(self):
+        """
+        Stop daemon process.
+        """
         if not self.pid:
             return
         pid = self.pid
@@ -93,6 +139,9 @@ class Daemon:
         self.pid_file.unlink(missing_ok=True)
 
     def poll(self) -> bool:
+        """
+        Poll daemon process.
+        """
         if not self.pid:
             logger.info("Daemon is not running")
             return False

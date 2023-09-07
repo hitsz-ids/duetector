@@ -18,6 +18,10 @@ CONFIG_PATH = "~/.config/duetector/config.toml"
 class Config:
     """
     A wrapper for config dict
+
+    All config keys are lower case.
+
+    Access config by ``config.key`` and get all config by ``config._config_dict``.
     """
 
     def __init__(self, config_dict: Optional[Dict[str, Any]] = None):
@@ -42,9 +46,14 @@ class Config:
 
 class ConfigLoader:
     """
-    A loader for config file and environment variables
+    A loader for config file and environment variables.
 
-    User should use CLI for this
+    Attributes:
+        config_path (Path): Path to config file.
+        load_env (bool): Load environment variables or not.
+        dump_when_load (bool): Dump current config to a tmp file when load config.
+        config_dump_dir (str): Directory to dump config.
+        generate_config (bool): Generate config file if not exists.
     """
 
     ENV_PREFIX = "DUETECTOR_"
@@ -86,7 +95,9 @@ class ConfigLoader:
         shutil.copy(DEFAULT_CONFIG, self.config_path)
 
     def normalize_config(self, config_dict: Dict[str, Any]) -> Dict[str, Any]:
-        # Make sure all config keys are lower case
+        """
+        Make sure all config keys are lower case.
+        """
         for k in list(config_dict.keys()):
             v = config_dict[k]
             if isinstance(v, dict):
@@ -97,6 +108,9 @@ class ConfigLoader:
         return config_dict
 
     def load_config(self) -> Dict[str, Any]:
+        """
+        Load config from config file and environment variables.
+        """
         logger.info(f"Loading config from {self.config_path}")
         if not self.config_path.exists():
             raise ConfigFileNotFoundError(f"Config file:{self.config_path} not found.")
@@ -123,6 +137,11 @@ class ConfigLoader:
             raise e
 
     def load_env_config(self, config_dict: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Load config from environment variables.
+
+        Called by ``load_config``.
+        """
         logger.info(
             f"Loading config from environment variables, prefix: `{self.ENV_PREFIX}`, sep: `{self.ENV_SEP}`"
         )
@@ -140,6 +159,10 @@ class ConfigLoader:
         return config_dict
 
     def dump_config(self, config_dict: Dict[str, Any], path: Union[str, Path]):
+        """
+        Dump config to a file.
+        """
+
         dump_path = Path(path).expanduser().resolve()
         dump_path.parent.mkdir(parents=True, exist_ok=True)
         with dump_path.open("wb") as f:
@@ -151,9 +174,10 @@ class Configuable:
     """
     A base class for all configuable classes
 
-    default_config: Dict[str, Any]  default config for this class
-    config_scope: str
-        config scope for this class, e.g. tracer, collector
+
+    Attributes:
+        default_config (Dict[str, Any]): default config for this class
+        config_scope (str): config scope for this class, e.g. ``tracer``, ``collector``
     """
 
     default_config = {}

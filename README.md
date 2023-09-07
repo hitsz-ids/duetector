@@ -1,6 +1,7 @@
 <h2 align="center">duetector🔍: 支持eBPF的可扩展数据使用探测器</h2>
 <p align="center">
 <a href="https://github.com/hitsz-ids/duetector/actions"><img alt="Actions Status" src="https://github.com/hitsz-ids/duetector/actions/workflows/python-package.yml/badge.svg"></a>
+<a href='https://duetector.readthedocs.io/en/latest/?badge=latest'><img src='https://readthedocs.org/projects/duetector/badge/?version=latest' alt='Documentation Status' /></a>
 <a href="https://results.pre-commit.ci/latest/github/hitsz-ids/duetector/main"><img alt="pre-commit.ci status" src="https://results.pre-commit.ci/badge/github/hitsz-ids/duetector/main.svg"></a>
 <a href="https://github.com/hitsz-ids/duetector/blob/main/LICENSE"><img alt="LICENSE" src="https://img.shields.io/github/license/hitsz-ids/duetector"></a>
 <a href="https://github.com/hitsz-ids/duetector/releases/"><img alt="Releases" src="https://img.shields.io/github/v/release/hitsz-ids/duetector"></a>
@@ -157,7 +158,7 @@ Commands:
 
 ## API文档与配置文档
 
-WIP 这一部分内容是PIP相关的，目前还没有完成，完成后将包括可配置的类的内容，以及如何使用duetector作为PIP的内容。
+我们在readthedocs上为开发者和用户提供了API与配置文档，你可以在[这里](https://duetector.readthedocs.io/)查看
 
 ## 维护者
 

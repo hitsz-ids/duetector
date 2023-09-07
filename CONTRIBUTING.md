@@ -17,6 +17,8 @@ Pre-commit will automatically format the code before each commit, It can also be
 pre-commit run --all-files
 ```
 
+Comment style is [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings).
+
 ## Install Locally with Test Dependencies
 
 ```bash
@@ -33,6 +35,35 @@ pytest --cov=duetector # Generate coverage reports
 ```
 
 Run unit-test before PR, **ensure that new features are covered by unit tests**
+
+## Generating config
+
+Use script to generate config after add tracer/filter...
+
+```bash
+python duetector/tools/config_generator.py
+```
+
+## Build Docs
+
+Install docs dependencies
+
+```bash
+pip install -e .[docs]
+```
+
+Build docs
+
+```bash
+make clean && make html
+```
+
+Use [start-docs-host.sh](dev-tools/start-docs-host.sh) to deploy a local http server to view the docs
+
+```bash
+cd ./dev-tools && ./start-docs-host.sh
+```
+Access `http://localhost:8080` for docs.
 
 ## Typing
 

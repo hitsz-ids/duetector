@@ -1,6 +1,6 @@
-from .base import BccTracer
+from .base import BccTracer, ShellTracer, Tracer
 
-__all__ = ["BccTracer"]
+__all__ = ["Tracer", "BccTracer", "ShellTracer"]
 
 # Expose for plugin system
 from . import clone, openat2, tcpconnect, uname

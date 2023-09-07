@@ -19,7 +19,10 @@ class DummyBPF:
 
 
 class DummyTracer(BccTracer):
-    # Fake a tracer that does nothing for testing
+    """
+    Fake a tracer that does nothing for testing.
+    """
+
     attach_type = "dummy"
     poll_fn = "poll_dummy"
     prog = "This is not a runnable program"

@@ -29,10 +29,12 @@ DEFAULT_WORKDIR = "/tmp/duetector"
 @click.pass_context
 def start(ctx, workdir, loglevel, rotate_log):
     """
-    Start a background process of command `duectl start`.
+    Start a background process of command ``duectl start``.
 
-    All arguments after `--` will be passed to `duectl start`
-        e.g. `duectl-daemon start -- --config /path/to/config`
+    All arguments after ``--`` will be passed to ``duectl start``.
+
+    Example:
+        ``duectl-daemon start -- --config /path/to/config``
     """
     cmd = ["duectl", "start"]
     cmd_args = ctx.args
@@ -62,7 +64,7 @@ def status(workdir):
     """
     Show status of process.
 
-    Determined by the existence of pid file in `workdir`.
+    Determined by the existence of pid file in ``workdir``.
     """
     if Daemon(
         workdir=workdir,
@@ -82,7 +84,7 @@ def stop(workdir):
     """
     Stop the process.
 
-    Determined by the existence of pid file in `workdir`.
+    Determined by the existence of pid file in ``workdir``.
     """
     Daemon(
         workdir=workdir,

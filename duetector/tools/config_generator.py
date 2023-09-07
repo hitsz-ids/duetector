@@ -14,6 +14,10 @@ def _recursive_load(config_scope: str, config_dict: dict, default_config: dict):
     """
     Support .(dot) separated config_scope
 
+    Example:
+        >>> _recursive_load("monitor.bcc", {}, {"auto_init": True})
+        {'monitor': {'bcc': {'auto_init': True}}}
+
     """
     *prefix, config_scope = config_scope.lower().split(".")
     last = config_dict
@@ -24,7 +28,13 @@ def _recursive_load(config_scope: str, config_dict: dict, default_config: dict):
 
 class ConfigGenerator:
     """
-    Tools for generate config file by inspecting all modules
+    Tools for generate config file by inspecting all modules.
+
+    Args:
+        load (bool): Load config file or not.
+        path (str): Path to config file.
+        load_env (bool): Load environment variables or not.
+        include_extension (bool): Include extensions or not.
     """
 
     HEADLINES = """# This is a auto generated config file for duetector🔍
@@ -37,14 +47,27 @@ class ConfigGenerator:
 """
 
     managers = [FilterManager, TracerManager, CollectorManager]
-    monitors = [BccMonitor, ShMonitor]
+    """
+    All managers to inspect.
+    """
 
-    def __init__(self, load=True, path=None, load_env=True):
+    monitors = [BccMonitor, ShMonitor]
+    """
+    All monitors to inspect.
+    """
+
+    def __init__(
+        self,
+        load: bool = True,
+        path: bool = None,
+        load_env: bool = True,
+        include_extension: bool = True,
+    ):
         # dynamic_config containers all default config for all modules, including extensions
         self.dynamic_config = {}
 
         for manager in self.managers:
-            m = manager()
+            m = manager(include_extension=include_extension)
             _recursive_load(m.config_scope, self.dynamic_config, m.default_config)
             for c in m.init(ignore_disabled=False):
                 _recursive_load(
@@ -72,6 +95,9 @@ class ConfigGenerator:
             _recursive_update(self.dynamic_config, self.loaded_config)
 
     def generate(self, dump_path):
+        """
+        Generate config file to dump_path.
+        """
         dump_path = Path(dump_path).expanduser().absolute()
         logger.info(f"Dumping dynamic config to {dump_path}")
 
@@ -84,6 +110,6 @@ class ConfigGenerator:
 
 if __name__ == "__main__":
     _HERE = Path(__file__).parent
-    c = ConfigGenerator(load=False, load_env=False)
+    c = ConfigGenerator(load=False, load_env=False, include_extension=False)
     config_path = _HERE / ".." / "static/config.toml"
     c.generate(config_path)

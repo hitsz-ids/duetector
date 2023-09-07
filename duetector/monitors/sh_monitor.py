@@ -10,7 +10,9 @@ from duetector.tracers.base import ShellTracer
 
 class ShTracerHost:
     """
-    Host for ShellTracer
+    Host for Shell, provide a way to poll shell command.
+
+    Use ``subprocess.Popen`` to run shell command.
     """
 
     def __init__(self, backend, timeout=5):
@@ -28,16 +30,16 @@ class ShTracerHost:
 
     def get_poller(self, tracer) -> Callable[[None], None]:
         """
-        Combine tracers' comm and callback
-        Once poller is called,
-        it will call tracers' comm and pass its results to all tracers' callback
+        Provide a callback function for ``Poller``.
+
+        Use ``subprocess.Popen`` to run shell command, pipe stdout to callback.
         """
         comm = self.tracers[tracer]
         enable_cache = tracer.enable_cache
 
         def _():
             p = subprocess.Popen(comm, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            p.wait()
+            p.wait(self.timeout)
             output = p.stdout.read().decode("utf-8")
             if enable_cache:
                 if output == tracer.get_cache():
@@ -51,33 +53,59 @@ class ShTracerHost:
         return _
 
     def poll(self, tracer):
+        """
+        Poll a tracer.
+        """
         self.get_poller(tracer)()
 
     def poll_all(self):
+        """
+        Poll all tracers.
+        """
         return [self.backend.submit(self.poll, tracer) for tracer in self.tracers]
 
     def set_callback(self, tracer, callback):
+        """
+        Set callback for tracer.
+        """
         self.callbacks[tracer] = callback
 
 
 class ShMonitor(Monitor):
-    # A monitor for shell command
-    # Start shell tracers, daemon them
-    # Bring tracers, filters, collections together
+    """
+    A monitor for shell command.
+    """
 
     config_scope = "monitor.sh"
+    """
+    Config scope for this monitor.
+    """
+
     default_config = {
         **Monitor.default_config,
         "auto_init": True,
-        "timeout": 5,
+        "timeout": 30,
     }
+    """
+    Default config for this monitor.
+
+    Two sub-configs are available:
+        - auto_init: Auto init tracers when init monitor.
+        - timeout: Timeout for shell command.
+    """
 
     @property
     def auto_init(self):
+        """
+        Auto init tracers when init monitor.
+        """
         return self.config.auto_init
 
     @property
     def timeout(self):
+        """
+        Timeout for shell command.
+        """
         return int(self.config.timeout)
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
