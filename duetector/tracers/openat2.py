@@ -7,7 +7,7 @@ from duetector.tracers.base import BccTracer
 
 class OpenTracer(BccTracer):
     """
-    A tracer for openat2 syscall
+    A tracer for openat2 syscall.
     """
 
     default_config = {

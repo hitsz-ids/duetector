@@ -1,3 +1,5 @@
+from typing import Any, Dict, Optional
+
 import pluggy
 
 from duetector.config import Configuable
@@ -18,10 +20,28 @@ class Manager(Configuable):
     PluginManager instance
     """
 
-    default_config = {"disabled": False}
+    default_config = {
+        "disabled": False,
+        "include_extension": True,
+    }
     """
     Default config for ``Manager``
     """
+
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
+
+        # Allow disable extensions when instantiate
+        self._include_extension = kwargs.get("disable_extensions")
+
+    @property
+    def include_extension(self):
+        """
+        If include extensions
+        """
+        if self._include_extension is not None:
+            return self._include_extension
+        return self.config.include_extension
 
     def register(self, subpackage):
         """

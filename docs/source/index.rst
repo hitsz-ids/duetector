@@ -10,7 +10,7 @@ Reference
 ========================================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Reference Documentation:
 
    CLI <cli/index>
@@ -22,10 +22,11 @@ Reference
    Filters <filters/index>
    Collectors <collectors/index>
 
-   Database utilities <db>
    Exceptions <exceptions>
-   Config utilities <config>
 
+   Database utilities <db>
+   Config utilities <config>
+   Tools utilities <tools/index>
 
 
 Indices and tables

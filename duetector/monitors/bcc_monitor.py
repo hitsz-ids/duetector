@@ -12,8 +12,9 @@ class BccMonitor(Monitor):
     """
     A monitor use bcc.BPF host
 
-    Config:
-        - auto_init: Init tracers on init
+    Special config:
+        - auto_init: Auto init tracers when init monitor.
+        - continue_on_exception: Continue on exception when init tracers.
     """
 
     config_scope = "monitor.bcc"
@@ -25,10 +26,16 @@ class BccMonitor(Monitor):
 
     @property
     def continue_on_exception(self):
+        """
+        Continue on exception when init tracers.
+        """
         return self.config.continue_on_exception
 
     @property
     def auto_init(self):
+        """
+        Auto init tracers when init monitor.
+        """
         return self.config.auto_init
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
@@ -49,6 +56,10 @@ class BccMonitor(Monitor):
             self.init()
 
     def init(self):
+        """
+        Init all tracers
+        """
+
         # Prevrent ImportError for CI testing without bcc
         from bcc import BPF  # noqa
 
@@ -78,6 +89,10 @@ class BccMonitor(Monitor):
             self.tracers.remove(tracer)
 
     def _set_callback(self, host, tracer):
+        """
+        Wrap tracer callback with filters and collectors.
+        """
+
         def _(data):
             for filter in self.filters:
                 data = filter(data)
@@ -89,6 +104,9 @@ class BccMonitor(Monitor):
         tracer.set_callback(host, _)
 
     def poll(self, tracer: BccTracer):  # type: ignore
+        """
+        Implement poll method for bcc tracers.
+        """
         tracer.get_poller(self.bpf_tracers[tracer])(**tracer.poll_args)
 
 

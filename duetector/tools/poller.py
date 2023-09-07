@@ -6,10 +6,24 @@ from duetector.log import logger
 
 
 class Poller(Configuable):
+    """
+    A wrapper for ``threading.Thread``
+
+    Special config:
+        - interval_ms: Polling interval in milliseconds
+    """
+
     config_scope = "poller"
+    """
+    Config scope for this poller.
+    """
+
     default_config = {
         "interval_ms": 500,
     }
+    """
+    Default config for this poller.
+    """
 
     def __init__(
         self,
@@ -23,9 +37,18 @@ class Poller(Configuable):
 
     @property
     def interval_ms(self):
+        """
+        Polling interval in milliseconds
+        """
         return self.config.interval_ms
 
     def start(self, func, *args, **kwargs):
+        """
+        Start a poller thread, until ``shutdown`` is called.
+
+        Exceptions:
+            - RuntimeError: If poller thread is already started.
+        """
         if self._thread:
             raise RuntimeError("Poller thread is already started, try shutdown and wait first.")
 
@@ -39,9 +62,19 @@ class Poller(Configuable):
         self._thread.start()
 
     def shutdown(self):
+        """
+        Shutdown poller thread. It's safe to call this method multiple times.
+
+        After shutdown, ``wait`` should be called to wait for the thread to exit.
+        """
         self.shutdown_event.set()
 
     def wait(self, timeout_ms=None):
+        """
+        Wait for poller thread to exit.
+
+        Call this method after ``shutdown``.
+        """
         if not self._thread:
             return
 

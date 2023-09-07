@@ -12,7 +12,7 @@ Managers provides a way to get instances of both built-in implementations and ex
 
 .. toctree::
    :maxdepth: 1
-   :caption: Manager Documentation
+   :caption: Avaliable Manager
 
    Collector Manager <collector>
    Filter Manager <filter>

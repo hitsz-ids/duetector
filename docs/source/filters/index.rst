@@ -5,7 +5,7 @@ Filter
 
 .. toctree::
    :maxdepth: 2
-   :caption: Filter Documentation
+   :caption: Avaliable Filter
 
    Base Filter <base>
    Pattern Filter <pattern>

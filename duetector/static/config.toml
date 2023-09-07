@@ -7,6 +7,7 @@
 
 [filter]
 disabled = false
+include_extension = true
 
 [filter.patternfilter]
 disabled = false
@@ -31,6 +32,7 @@ exclude_gid = [
 
 [tracer]
 disabled = false
+include_extension = true
 
 [tracer.clonetracer]
 disabled = false
@@ -52,6 +54,7 @@ poll_timeout = 10
 
 [collector]
 disabled = false
+include_extension = true
 
 [collector.dbcollector]
 disabled = false
@@ -88,7 +91,7 @@ interval_ms = 500
 [monitor.sh]
 disabled = false
 auto_init = true
-timeout = 5
+timeout = 30
 
 [monitor.sh.backend_args]
 max_workers = 10

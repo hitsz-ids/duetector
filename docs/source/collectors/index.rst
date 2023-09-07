@@ -6,7 +6,7 @@ and store them in a somewhere.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Collector Documentation
+   :caption: Avaliable Collector
 
    Base Collectors <base>
    DB Collectors <db>

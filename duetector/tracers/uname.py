@@ -3,6 +3,10 @@ from duetector.tracers.base import ShellTracer
 
 
 class UnameTracer(ShellTracer):
+    """
+    A tracer for uname command.
+    """
+
     comm = ["uname", "-a"]
 
 

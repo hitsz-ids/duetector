@@ -7,7 +7,7 @@ from duetector.tracers.base import BccTracer
 
 class CloneTracer(BccTracer):
     """
-    A tracer for clone syscall
+    A tracer for clone syscall.
     """
 
     default_config = {
