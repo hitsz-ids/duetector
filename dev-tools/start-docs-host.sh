@@ -7,5 +7,5 @@ set -e
 docker run --rm \
 -it \
 -p 8080:80 \
--v $(pwd)/../docs/build/:/usr/share/nginx/:ro \
+-v $(pwd)/../docs/build/html:/usr/share/nginx/html:ro \
 nginx
