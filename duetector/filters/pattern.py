@@ -1,6 +1,7 @@
 import os
 import re
-from typing import List, NamedTuple, Optional, Union
+from ast import literal_eval
+from typing import List, NamedTuple, Optional, Set, Union
 
 from duetector.extension.filter import hookimpl
 from duetector.filters import Filter
@@ -27,6 +28,17 @@ class PatternFilter(Filter):
 
     Use ``(?!…)`` for include pattern:
         - ``re_exclude_custom``: ``["(?!/proc/)"]`` will include ``/proc`` but exclude others.
+
+    Note:
+        - We using python literal to parse config, so you can use environment variable to pass list:
+            - Recommended: ``{PREFIX...}RE_EXCLUDE_FNAME="['/proc*', '/sys*']"``.
+            - Remember to quote the value, otherwise it will be parsed as a expression, e.g. ``{PREFIX...}RE_EXCLUDE_FNAME=[/proc*]`` will cause SyntaxError or ValueError.
+              and will fallback to split by comma.
+        So either use python literal or string split by comma:
+            - Recommended: ``{PREFIX...}RE_EXCLUDE_FNAME="['/proc*', '/sys*']"``
+            - It's OK: ``{PREFIX...}RE_EXCLUDE_FNAME="/proc*, /sys*"``
+            - Wrong: ``{PREFIX...}RE_EXCLUDE_FNAME=[/proc*, /sys*]``, this will be converted to a list of ``"[/proc*"`` and ``"/sys*]"``.
+
     """
 
     default_config = {
@@ -65,18 +77,55 @@ class PatternFilter(Filter):
         """
         return bool(self.config.enable_customize_exclude)
 
-    def customize_exclude(self, data: NamedTuple) -> bool:
+    @staticmethod
+    def _wrap_exclude_list(value: Union[str, List[str]]) -> Set[str]:
+        """
+        Wrap exclude list to list if it's not a list
+        """
+        if isinstance(value, list):
+            return set(str(v).strip() for v in value)
+        if not isinstance(value, str):
+            raise TypeError(f"Type of {value} should be str or list, got {type(value)}")
+
+        try:
+            # Use ast.literal_eval to parse python literal
+            value = literal_eval(value)
+        except (SyntaxError, ValueError):
+            # If value is not a valid python literal, fallback to split by comma
+            # e.g. "/proc/a*"
+            value = value.split(",")
+
+        try:
+            return set(str(v).strip() for v in value)
+        except TypeError:
+            return set(str(value).strip())
+
+    def is_exclude(self, data: NamedTuple, enable_customize_exclude=False) -> bool:
         """
         Customize exclude function, return ``True`` to drop data, return ``False`` to keep data.
         """
         for k in self.config._config_dict:
+            if not enable_customize_exclude and k not in self.default_config:
+                # If not enable_customize_exclude, only use default config
+                continue
+
             if k.startswith("exclude_"):
                 field = k.replace("exclude_", "")
-                if getattr(data, field, None) in self.config._config_dict[k]:
+                value = getattr(data, field, None)
+                if value is None:
+                    continue
+
+                if str(value).strip() in self._wrap_exclude_list(self.config._config_dict[k]):
                     return True
             if k.startswith("re_exclude_"):
                 field = k.replace("re_exclude_", "")
-                if self.re_exclude(getattr(data, field, None), self.config._config_dict[k]):
+                value = getattr(data, field, None)
+                if value is None:
+                    continue
+                if self.re_exclude(
+                    str(value).strip(),
+                    self._wrap_exclude_list(self.config._config_dict[k]),
+                ):
                     return True
         return False
 
@@ -103,19 +152,8 @@ class PatternFilter(Filter):
 
         if getattr(data, "pid", None) == os.getpid():
             return
-        if self.re_exclude(getattr(data, "fname", None), self.config.re_exclude_fname):
-            return
-        if self.re_exclude(getattr(data, "comm", None), self.config.re_exclude_comm):
-            return
 
-        if getattr(data, "pid", None) in self.config.exclude_pid:
-            return
-        if getattr(data, "uid", None) in self.config.exclude_uid:
-            return
-        if getattr(data, "gid", None) in self.config.exclude_gid:
-            return
-
-        if self.enable_customize_exclude and self.customize_exclude(data):
+        if self.is_exclude(data, enable_customize_exclude=self.enable_customize_exclude):
             return
 
         return data
