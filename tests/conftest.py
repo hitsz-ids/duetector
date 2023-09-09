@@ -1,3 +1,8 @@
+import os
+
+os.environ["DUETECTOR_LOG_LEVEL"] = "DEBUG"
+
+
 from pathlib import Path
 
 import pytest

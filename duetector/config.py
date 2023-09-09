@@ -190,8 +190,8 @@ class Configuable:
             config = config._config_dict
 
         if self.config_scope:
-            for score in self.config_scope.split("."):
-                config = config.get(score.lower(), {})
+            for scope in self.config_scope.split("."):
+                config = config.get(scope.lower(), {})
         c = copy.deepcopy(self.default_config)
 
         def _recursive_update(c, config):
