@@ -1,7 +1,7 @@
 import os
 import re
 from ast import literal_eval
-from typing import List, NamedTuple, Optional, Union
+from typing import List, NamedTuple, Optional, Set, Union
 
 from duetector.extension.filter import hookimpl
 from duetector.filters import Filter
@@ -78,7 +78,7 @@ class PatternFilter(Filter):
         return bool(self.config.enable_customize_exclude)
 
     @staticmethod
-    def _wrap_exclude_list(value: Union[str, List[str]]) -> set[str]:
+    def _wrap_exclude_list(value: Union[str, List[str]]) -> Set[str]:
         """
         Wrap exclude list to list if it's not a list
         """
