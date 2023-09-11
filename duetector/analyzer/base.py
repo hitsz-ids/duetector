@@ -1,5 +1,7 @@
-from typing import List
+from datetime import datetime
+from typing import List, Optional
 
+from duetector.analyzer.models import AnalyzerBrief, Tracking
 from duetector.config import Configuable
 
 
@@ -37,3 +39,31 @@ class Analyzer(Configuable):
             List[str]: List of collector id.
         """
         raise NotImplementedError
+
+    def query(
+        self,
+        tracer: Optional[str] = None,
+        collector_id: Optional[str] = None,
+        start_datetime: Optional[datetime] = None,
+        end_datetime: Optional[datetime] = None,
+        start: int = 0,
+        limit: int = 20,
+    ) -> List[Tracking]:
+        """
+        Query tracking data from storage.
+        """
+        raise NotImplementedError
+
+    def brief(
+        self,
+        start_datetime: Optional[datetime] = None,
+        end_datetime: Optional[datetime] = None,
+    ) -> AnalyzerBrief:
+        """
+        Get brief of analyzer.
+        """
+        raise NotImplementedError
+
+    def analyze(self):
+        # TODO: Not design yet.
+        pass

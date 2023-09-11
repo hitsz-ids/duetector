@@ -92,10 +92,10 @@ class DBAnalyzer(Analyzer):
             collector_id (Optional[str], optional): Collector id. Defaults to None, all collector id will be queried.
             start_datetime (Optional[datetime], optional): Start time. Defaults to None.
             end_datetime (Optional[datetime], optional): End time. Defaults to None.
-            start (Optional[int], optional): Start index. Defaults to 0.
+            start (int, optional): Start index. Defaults to 0.
             limit (int, optional): Limit of records. Defaults to 20. ``0`` means no limit.
         Returns:
-            List[Tracking]: List of tracking records.
+            List[duetector.analyzer.models.Tracking]: List of tracking records.
 
         """
 

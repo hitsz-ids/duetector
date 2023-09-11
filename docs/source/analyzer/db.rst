@@ -3,7 +3,7 @@ DBAnalyzer
 
 ``DBAnalyzer``
 
-.. autoclass:: duetector.analyzer.db.DBAnalyzer
+.. automodule:: duetector.analyzer.db
    :members:
    :undoc-members:
    :private-members:
