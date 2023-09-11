@@ -10,9 +10,12 @@ Managers provides a way to get instances of both built-in implementations and ex
    :inherited-members:
    :show-inheritance:
 
+
+Avaliable Manager
+-------------------------------------------
+
 .. toctree::
-   :maxdepth: 1
-   :caption: Avaliable Manager
+   :maxdepth: 2
 
    Collector Manager <collector>
    Filter Manager <filter>

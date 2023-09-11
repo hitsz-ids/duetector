@@ -7,9 +7,11 @@ Tracer
    :inherited-members:
 
 
+Avaliable Tracer
+--------------------------------------
+
 .. toctree::
-   :maxdepth: 1
-   :caption: Avaliable Tracer
+   :maxdepth: 2
 
    CloneTracer <clone>
    OpenTracer <openat2>

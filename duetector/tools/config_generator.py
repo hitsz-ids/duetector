@@ -4,6 +4,7 @@ from typing import Dict
 
 import tomli_w
 
+from duetector.analyzer.db import DBAnalyzer
 from duetector.config import ConfigLoader
 from duetector.log import logger
 from duetector.managers import CollectorManager, FilterManager, TracerManager
@@ -56,6 +57,11 @@ class ConfigGenerator:
     All monitors to inspect.
     """
 
+    analyzer = [DBAnalyzer]
+    """
+    All analyzers to inspect.
+    """
+
     def __init__(
         self,
         load: bool = True,
@@ -79,6 +85,8 @@ class ConfigGenerator:
         for m in self.monitors:
             _recursive_load(m.config_scope, self.dynamic_config, m.default_config)
 
+        for a in self.analyzer:
+            _recursive_load(a.config_scope, self.dynamic_config, a.default_config)
         # This will generate default config file if not exists
         if load:
             self.loaded_config = ConfigLoader(path, load_env, dump_when_load=False).load_config()
