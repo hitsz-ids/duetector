@@ -56,7 +56,7 @@ class DBCollector(Collector):
                     .first()[0]
                     .to_tracking(),
                 }
-                for tracer, m in self.sm.get_all_model().items()
+                for tracer, m in self.sm.get_all_models().items()
             }
 
 

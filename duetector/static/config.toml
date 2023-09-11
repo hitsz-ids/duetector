@@ -91,7 +91,7 @@ interval_ms = 500
 [monitor.sh]
 disabled = false
 auto_init = true
-timeout = 30
+timeout = 5
 
 [monitor.sh.backend_args]
 max_workers = 10

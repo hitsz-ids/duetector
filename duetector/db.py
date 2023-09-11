@@ -54,9 +54,21 @@ class SessionManager(Configuable):
     .. code-block:: python
 
         from duetector.db import SessionManager
+        from duetector.collectors.models import Tracking
         sessionmanager = SessionManager()
+        t = Tracking(
+            tracer="t",
+        )
+        m = sessionmanager.get_tracking_model(t.tracer, "id")
+
         with sessionmanager.begin() as session:
-            session.add(...)
+            session.add(m(**t.model_dump(exclude=["tracer"])))
+            session.commit()
+
+        assert sessionmanager.inspect_all_tables() == [
+            sessionmanager.get_table_names("t", "id")
+        ]
+        assert sessionmanager.inspect_all_tables("not-exist") == []
 
 
     """
@@ -149,6 +161,15 @@ class SessionManager(Configuable):
         with self.sessionmaker.begin() as session:
             yield session
 
+    def get_table_names(self, tracer: str = "unknown", collector_id: str = "") -> str:
+        return f"{self.table_prefix}:{tracer}@{collector_id}"
+
+    def table_name_to_tracer(self, table_name: str) -> str:
+        return table_name.split(":")[1].split("@")[0]
+
+    def table_name_to_collector_id(self, table_name: str) -> str:
+        return table_name.split(":")[1].split("@")[1]
+
     def get_tracking_model(self, tracer: str = "unknown", collector_id: str = "") -> type:
         """
         Get a sqlalchemy model for tracking, each tracer will create a table in database.
@@ -169,7 +190,7 @@ class SessionManager(Configuable):
                 pass
 
             class TrackingModel(Base, TrackingMixin):
-                __tablename__ = f"{self.table_prefix}:{tracer}@{collector_id}"
+                __tablename__ = self.get_table_names(tracer, collector_id)
 
                 def to_tracking(self) -> Tracking:
                     return Tracking(
@@ -191,8 +212,24 @@ class SessionManager(Configuable):
                 raise
             return self._tracking_models[tracer]
 
-    def get_all_model(self) -> Dict[str, type]:
+    def get_all_models(self) -> Dict[str, type]:
         return self._tracking_models
+
+    def inspect_all_tables(
+        self, tracer: Optional[str] = None, collector_id: Optional[str] = None
+    ) -> str:
+        def _filter(t):
+            if tracer and self.table_name_to_tracer(t) != tracer:
+                return False
+            if collector_id and self.table_name_to_collector_id(t) != collector_id:
+                return False
+            return True
+
+        return [
+            t
+            for t in sqlalchemy.inspect(self.engine).get_table_names()
+            if t.startswith(self.table_prefix) and _filter(t)
+        ]
 
     def _init_tracking_model(self, tracking_model: type) -> type:
         if not sqlalchemy.inspect(self.engine).has_table(tracking_model.__tablename__):
@@ -201,4 +238,15 @@ class SessionManager(Configuable):
 
 
 if __name__ == "__main__":
-    print(SessionManager())
+    sessionmanager = SessionManager()
+    t = Tracking(
+        tracer="t",
+    )
+    m = sessionmanager.get_tracking_model(t.tracer, "id")
+
+    with sessionmanager.begin() as session:
+        session.add(m(**t.model_dump(exclude=["tracer"])))
+        session.commit()
+
+    assert sessionmanager.inspect_all_tables() == [sessionmanager.get_table_names("t", "id")]
+    assert sessionmanager.inspect_all_tables("not-exist") == []
