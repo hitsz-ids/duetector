@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from threading import Lock
-from typing import Any, Dict, Generator, Optional
+from typing import Any, Dict, Generator, List, Optional
 
 import sqlalchemy  # type: ignore
 from sqlalchemy.orm import (  # type: ignore
@@ -230,6 +230,12 @@ class SessionManager(Configuable):
             for t in sqlalchemy.inspect(self.engine).get_table_names()
             if t.startswith(self.table_prefix) and _filter(t)
         ]
+
+    def inspect_all_tracers(self) -> List[str]:
+        return list(set(self.table_name_to_tracer(t) for t in self.inspect_all_tables()))
+
+    def inspect_all_collector_ids(self) -> List[str]:
+        return list(set(self.table_name_to_collector_id(t) for t in self.inspect_all_tables()))
 
     def _init_tracking_model(self, tracking_model: type) -> type:
         if not sqlalchemy.inspect(self.engine).has_table(tracking_model.__tablename__):

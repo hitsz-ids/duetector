@@ -1,3 +1,5 @@
+from typing import List
+
 from duetector.config import Configuable
 
 
@@ -6,18 +8,32 @@ class Analyzer(Configuable):
     A base class for all analyzers.
     """
 
-    default_config = {
-        "disabled": False,
-    }
+    default_config = {}
     """
     Default config for ``Analyzer``.
     """
 
     config_scope = "analyzer"
+    """
+    Config scope for this analyzer.
 
-    @property
-    def disabled(self):
+    Subclasses cloud override this.
+    """
+
+    def get_all_tracers(self) -> List[str]:
         """
-        If current analyzer is disabled.
+        Get all tracers from storage.
+
+        Returns:
+            List[str]: List of tracer's name.
         """
-        return self.config.disabled
+        raise NotImplementedError
+
+    def get_all_collector_ids(self) -> List[str]:
+        """
+        Get all collector id from storage.
+
+        Returns:
+            List[str]: List of collector id.
+        """
+        raise NotImplementedError
