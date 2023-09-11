@@ -34,9 +34,11 @@ def get_boot_time() -> datetime:
     raise RuntimeError("Could not find btime in /proc/stat")
 
 
-def get_datetime_duration_ns(ns) -> datetime:
-    return get_boot_time() + timedelta(seconds=ns / 1e9)
+def get_boot_time_duration_ns(ns) -> datetime:
+    ns = int(ns)
+    return get_boot_time() + timedelta(microseconds=ns / 1000)
 
 
 if __name__ == "__main__":
     print(get_boot_time())
+    print(get_boot_time_duration_ns("13205215231927"))

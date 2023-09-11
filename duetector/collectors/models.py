@@ -5,7 +5,7 @@ from typing import Any, Dict, NamedTuple, Optional
 
 import pydantic
 
-from duetector.utils import get_datetime_duration_ns
+from duetector.utils import get_boot_time_duration_ns
 
 
 class Tracking(pydantic.BaseModel):
@@ -60,7 +60,7 @@ class Tracking(pydantic.BaseModel):
     def normalize_field(cls, field, data):
         if field == "timestamp":
             field = "dt"
-            data = get_datetime_duration_ns(data)
+            data = get_boot_time_duration_ns(data)
         return field, data
 
     @staticmethod

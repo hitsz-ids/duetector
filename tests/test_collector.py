@@ -5,10 +5,10 @@ import pytest
 from duetector.collectors.db import DBCollector
 from duetector.collectors.models import Tracking
 from duetector.managers import CollectorManager
-from duetector.utils import get_datetime_duration_ns
+from duetector.utils import get_boot_time_duration_ns
 
 timestamp = 13205215231927
-datetime = get_datetime_duration_ns(timestamp)
+datetime = get_boot_time_duration_ns(timestamp)
 
 
 @pytest.fixture

@@ -7,10 +7,10 @@ from duetector.collectors.models import Tracking
 from duetector.managers import CollectorManager, FilterManager, TracerManager
 from duetector.monitors.bcc_monitor import BccMonitor, Monitor
 from duetector.tracers.base import BccTracer, Tracer
-from duetector.utils import get_datetime_duration_ns
+from duetector.utils import get_boot_time_duration_ns
 
 timestamp = 13205215231927
-datetime = get_datetime_duration_ns(timestamp)
+datetime = get_boot_time_duration_ns(timestamp)
 
 
 class MockTracer(Tracer):
