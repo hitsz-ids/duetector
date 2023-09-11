@@ -132,8 +132,8 @@ class DequeCollector(Collector):
         return {
             tracer: {
                 "count": len(trackings),
-                "first": trackings[0].timestamp,
-                "last": trackings[-1].timestamp,
+                "first": trackings[0].dt,
+                "last": trackings[-1].dt,
                 "most_recent": trackings[-1].model_dump(),
             }
             for tracer, trackings in self._trackings.items()

@@ -51,7 +51,7 @@ class DBCollector(Collector):
             return {
                 tracer: {
                     "count": len(session.execute(select(m)).fetchall()),
-                    "first at": session.execute(select(m)).first()[0].timestamp,
+                    "first at": session.execute(select(m)).first()[0].dt,
                     "last": session.execute(select(m).order_by(m.id.desc()))  # type: ignore
                     .first()[0]
                     .to_tracking(),

@@ -27,7 +27,10 @@ class TcpconnectTracer(BccTracer):
     def poll_args(self):
         return {"timeout": int(self.config.poll_timeout)}
 
-    data_t = namedtuple("TcpTracking", ["pid", "uid", "gid", "comm", "saddr", "daddr", "dport"])
+    data_t = namedtuple(
+        "TcpTracking",
+        ["pid", "uid", "gid", "comm", "saddr", "daddr", "dport", "timestamp"],
+    )
 
     prog = """
     #include <uapi/linux/ptrace.h>
@@ -45,6 +48,8 @@ class TcpconnectTracer(BccTracer):
         u32 pid;
         u32 uid;
         u32 gid;
+
+        u64 timestamp;
         char comm[TASK_COMM_LEN];
     };
     int do_trace(struct pt_regs *ctx, struct sock *sk)
@@ -88,6 +93,7 @@ class TcpconnectTracer(BccTracer):
         event.pid = pid;
         event.uid = bpf_get_current_uid_gid();
         event.gid = bpf_get_current_uid_gid() >> 32;
+        event.timestamp = bpf_ktime_get_ns();
         bpf_get_current_comm(&event.comm, sizeof(event.comm));
 	    // output
 	    buffer.ringbuf_output(&event, sizeof(event), 0);
@@ -102,7 +108,8 @@ class TcpconnectTracer(BccTracer):
     def _convert_data(self, data) -> NamedTuple:
         data = super()._convert_data(data)
         return data._replace(
-            saddr=inet_ntoa(data.saddr).decode("utf-8"), daddr=inet_ntoa(data.daddr).decode("utf-8")
+            saddr=inet_ntoa(data.saddr).decode("utf-8"),
+            daddr=inet_ntoa(data.daddr).decode("utf-8"),
         )  # type: ignore
 
     def set_callback(self, host, callback: Callable[[NamedTuple], None]):

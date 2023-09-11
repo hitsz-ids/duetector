@@ -5,6 +5,10 @@ import pytest
 from duetector.collectors.db import DBCollector
 from duetector.collectors.models import Tracking
 from duetector.managers import CollectorManager
+from duetector.utils import get_datetime_duration_ns
+
+timestamp = 13205215231927
+datetime = get_datetime_duration_ns(timestamp)
 
 
 @pytest.fixture
@@ -27,7 +31,7 @@ def data_t():
         gid=9999,
         comm="dummy",
         fname="dummy.file",
-        timestamp=13205215231927,
+        timestamp=timestamp,
         custom="dummy-xargs",
     )
 
@@ -38,7 +42,7 @@ def test_dbcollector(dbcollector: DBCollector, data_t):
     assert dbcollector.summary() == {
         "dummy": {
             "count": 1,
-            "first at": 13205215231927,
+            "first at": datetime,
             "last": Tracking(
                 tracer="dummy",
                 pid=9999,
@@ -47,7 +51,7 @@ def test_dbcollector(dbcollector: DBCollector, data_t):
                 comm="dummy",
                 cwd=None,
                 fname="dummy.file",
-                timestamp=13205215231927,
+                dt=datetime,
                 extended={"custom": "dummy-xargs"},
             ),
         }

@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from datetime import datetime
 from threading import Lock
 from typing import Any, Dict, Generator, List, Optional
 
@@ -29,7 +30,7 @@ class TrackingMixin:
     pid: Mapped[Optional[int]]
     uid: Mapped[Optional[int]]
     gid: Mapped[Optional[int]]
-    timestamp: Mapped[Optional[int]]
+    dt: Mapped[Optional[datetime]]
 
     comm: Mapped[Optional[str]]
     cwd: Mapped[Optional[str]]
@@ -38,7 +39,7 @@ class TrackingMixin:
     extended: Mapped[Dict[str, Any]] = mapped_column(type_=JSON, default={})
 
     def __repr__(self):
-        return f"<Tracking [{self.pid} {self.comm}] {self.timestamp}>"
+        return f"<Tracking [{self.pid} {self.comm}] {self.dt}>"
 
 
 class SessionManager(Configuable):
@@ -198,7 +199,7 @@ class SessionManager(Configuable):
                         pid=self.pid,
                         uid=self.uid,
                         gid=self.gid,
-                        timestamp=self.timestamp,
+                        dt=self.dt,
                         comm=self.comm,
                         cwd=self.cwd,
                         fname=self.fname,
