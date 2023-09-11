@@ -1,7 +1,7 @@
 Data Models
 ===============================
 
-.. .. autoclass:: duetector.collectors.models.Tracking
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+.. automodule:: duetector.analyzer.models
+   :members:
+   :undoc-members:
+   :show-inheritance:
