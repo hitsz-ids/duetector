@@ -63,6 +63,7 @@ Use [start-docs-host.sh](dev-tools/start-docs-host.sh) to deploy a local http se
 ```bash
 cd ./dev-tools && ./start-docs-host.sh
 ```
+
 Access `http://localhost:8080` for docs.
 
 ## Typing
@@ -72,3 +73,11 @@ Access `http://localhost:8080` for docs.
 ```
 pytype ./duetector
 ```
+
+
+## Contributing a new tracer/filter/collector
+
+1. Create a new file in `duetector/tracer`, `duetector/filter` or `duetector/collector` directory, with the name `{name}.py`
+2. Implement the new tracer/filter/collector
+3. Add the new tracer/filter/collector to `registers` list in `duetector/tracer/register.py`, `duetector/filter/register.py` or `duetector/collector/register.py`
+4. Test the new tracer/filter/collector

@@ -58,6 +58,9 @@ class Tracking(pydantic.BaseModel):
 
     @classmethod
     def normalize_field(cls, field, data):
+        """
+        Normalize field name and data
+        """
         if field == "timestamp":
             field = "dt"
             data = get_boot_time_duration_ns(data)

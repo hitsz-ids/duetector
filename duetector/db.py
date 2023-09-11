@@ -13,7 +13,8 @@ from sqlalchemy.orm import (  # type: ignore
 )
 from sqlalchemy.types import JSON  # type: ignore
 
-from duetector.collectors.models import Tracking
+from duetector.analyzer.models import Tracking as AT
+from duetector.collectors.models import Tracking as CT
 from duetector.config import Configuable
 
 
@@ -40,6 +41,24 @@ class TrackingMixin:
 
     def __repr__(self):
         return f"<Tracking [{self.pid} {self.comm}] {self.dt}>"
+
+
+class TrackingInterface:
+    """
+    A interface for tracking
+    """
+
+    def to_collector_tracking(self) -> CT:
+        """
+        Convert to collector's tracking model
+        """
+        raise NotImplementedError
+
+    def to_analyzer_tracking(self) -> AT:
+        """
+        Convert to analyzer's tracking model
+        """
+        raise NotImplementedError
 
 
 class SessionManager(Configuable):
@@ -171,7 +190,9 @@ class SessionManager(Configuable):
     def table_name_to_collector_id(self, table_name: str) -> str:
         return table_name.split(":")[1].split("@")[1]
 
-    def get_tracking_model(self, tracer: str = "unknown", collector_id: str = "") -> type:
+    def get_tracking_model(
+        self, tracer: str = "unknown", collector_id: str = ""
+    ) -> TrackingInterface:
         """
         Get a sqlalchemy model for tracking, each tracer will create a table in database.
 
@@ -190,11 +211,24 @@ class SessionManager(Configuable):
             class Base(DeclarativeBase):
                 pass
 
-            class TrackingModel(Base, TrackingMixin):
+            class TrackingModel(Base, TrackingMixin, TrackingInterface):
                 __tablename__ = self.get_table_names(tracer, collector_id)
 
-                def to_tracking(self) -> Tracking:
-                    return Tracking(
+                def to_collector_tracking(self) -> CT:
+                    return CT(
+                        tracer=tracer,
+                        pid=self.pid,
+                        uid=self.uid,
+                        gid=self.gid,
+                        dt=self.dt,
+                        comm=self.comm,
+                        cwd=self.cwd,
+                        fname=self.fname,
+                        extended=self.extended,
+                    )
+
+                def to_analyzer_tracking(self) -> AT:
+                    return AT(
                         tracer=tracer,
                         pid=self.pid,
                         uid=self.uid,
