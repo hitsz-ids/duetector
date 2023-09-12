@@ -69,62 +69,80 @@ with open("somefile", "r") as f:
 In host machine, you can find the tracking data in `./duetector-kata` dir. By default, the tracking data is saved in `./duetector-kata/duetector-dbcollector.sqlite3`.
 
 ```bash
-$sqlite3 ./duetector-kata/duetector-dbcollector.sqlite3
+cd ./duetector-kata/
+python
 ```
 
-`Duector` will create a table for each tracer, and the table name is `tracer_name@tracer_id`. At the time I wrote this document, we have tow tracers: `OpenTracer` and `UnameTracer`, so we have two tables. The default tracer id is `hostname`.
+We will create a table for each tracer, and the table name is `tracer_name@tracer_id`. At the time I wrote this document, we have tow tracers: `OpenTracer` and `UnameTracer`, so we have two tables. The default tracer id is `hostname`.
 
-```sql
-sqlite> .tables
-duetector_tracking:OpenTracer@a707be140e7d
-duetector_tracking:UnameTracer@a707be140e7d
+```python
+>>> from duetector.analyzer.db import DBAnalyzer
+>>> analyzer = DBAnalyzer()
+>>> analyzer.brief()
+
+Available tracers: {'UnameTracer', 'OpenTracer', 'TcpconnectTracer', 'CloneTracer'}
+Available collector ids: {'850732468c3e'}
+briefs:
+----------------
+CloneTracer@850732468c3e with 63 records
+from 2023-09-12 08:34:13.101249 to 2023-09-12 08:34:51.662181
+available fields: [pid: int, uid: int, gid: int, dt: datetime, comm: str, cwd: str, fname: str, extended: dict]
+----------------
+
+----------------
+OpenTracer@850732468c3e with 492 records
+from 2023-09-12 08:34:17.274420 to 2023-09-12 08:34:52.286982
+available fields: [pid: int, uid: int, gid: int, dt: datetime, comm: str, cwd: str, fname: str, extended: dict]
+----------------
+
+----------------
+TcpconnectTracer@850732468c3e with 97 records
+from 2023-09-12 08:34:16.018427 to 2023-09-12 08:34:51.747149
+available fields: [pid: int, uid: int, gid: int, dt: datetime, comm: str, cwd: str, fname: str, extended: dict]
+----------------
+
+----------------
+UnameTracer@850732468c3e with 1 records
+from None to None
+available fields: [pid: int, uid: int, gid: int, dt: datetime, comm: str, cwd: str, fname: str, extended: dict]
+----------------
 ```
 
 Now we count the number of `open` system call in the process we just created. Knowing that the `open` system call is traced by `OpenTracer`, we can query the `OpenTracer` table.
 
 And the user id of the process is `9999`, so we can query the `uid` column.
 
-```sql
-sqlite> select count(*) from "duetector_tracking:OpenTracer@a707be140e7d" where uid=9999 and comm="python3" or comm="python";
-
-136
+```python
+>>> query_args = {
+  "comm": "python3",
+  "uid": 9999
+}
+>>> len(analyzer.query(tracers=["OpenTracer"], where=query_args))
+126
 ```
 
 Let's take a look at the tracking data.
 
-```sql
-sqlite> select * from "duetector_tracking:OpenTracer@a707be140e7d" where uid=9999 and comm="python3" or comm="python";
-
-...
-319|30458|9999|9999|25675549302584|python3||/home/application/k6p5uj2b|{}
-320|30442|9999|9999|25675247583305|python3||/home/application/.ipython/profile_default/startup|{}
-321|30458|9999|9999|25675548978328|python3||/tmp/5tt86b7v|{}
-322|30463|9999|9999|25675198238774|python3||/home/application/.ipython/profile_default/history.sqlite|{}
-323|30442|9999|9999|25675247495558|python3||/usr/local/etc/ipython/startup|{}
-324|30442|9999|9999|25675247531323|python3||/usr/etc/ipython/startup|{}
-509|30442|9999|9999|25679688669178|python3||somefile|{}
-510|30442|9999|9999|25679689243005|python3||somefile|{}
-511|30463|9999|9999|25679689332885|python3||/home/application/.ipython/profile_default/history.sqlite-journal|{}
-512|30442|9999|9999|25679689641118|python3||somefile|{}
-513|30442|9999|9999|25679689549933|python3||somefile|{}
-514|30442|9999|9999|25679689706927|python3||somefile|{}
-515|30442|9999|9999|25679689383977|python3||somefile|{}
-516|30442|9999|9999|25679689962428|python3||somefile|{}
-517|30442|9999|9999|25679690089247|python3||somefile|{}
-518|30442|9999|9999|25679690151593|python3||somefile|{}
-519|30442|9999|9999|25679690276725|python3||somefile|{}
-520|30442|9999|9999|25679689169741|python3||somefile|{}
-521|30442|9999|9999|25679690339139|python3||somefile|{}
-522|30442|9999|9999|25679690403228|python3||somefile|{}
-...
+```python
+>>> analyzer.query(tracers=["OpenTracer"], where=query_args, start=15, limit=5)
+[Tracking(tracer='OpenTracer', pid=671246, uid=9999, gid=9999, comm='python3', cwd=None, fname='/tmp/5gc4mhvd', dt=datetime.datetime(2023, 9, 12, 8, 34, 41, 189646), extended={}),
+ Tracking(tracer='OpenTracer', pid=671250, uid=9999, gid=9999, comm='python3', cwd=None, fname='/home/application/.ipython/profile_default/history.sqlite-journal', dt=datetime.datetime(2023, 9, 12, 8, 34, 41, 190227), extended={}),
+ Tracking(tracer='OpenTracer', pid=671228, uid=9999, gid=9999, comm='python3', cwd=None, fname='somefile', dt=datetime.datetime(2023, 9, 12, 8, 34, 41, 191668), extended={}),
+ Tracking(tracer='OpenTracer', pid=671228, uid=9999, gid=9999, comm='python3', cwd=None, fname='somefile', dt=datetime.datetime(2023, 9, 12, 8, 34, 41, 195397), extended={}),
+ Tracking(tracer='OpenTracer', pid=671228, uid=9999, gid=9999, comm='python3', cwd=None, fname='somefile', dt=datetime.datetime(2023, 9, 12, 8, 34, 41, 195497), extended={})]
 ```
 
 Because we are using `JupyterLab` as user application, which use ipython as default shell, so we can see the `python3` also access some tmp file and ipython config file.
 
 Now we count the number of `open` system call for file `somefile`
 
-```bash
-sqlite> select count(*) from "duetector_tracking:OpenTracer@a707be140e7d" where uid=9999 and comm="python3" and fname="somefile";
+```python
+>>> query_args = {
+  "comm": "python3",
+  "uid": 9999,
+  "fname": "somefile"
+}
+>>> len(analyzer.query(tracers=["OpenTracer"], where=query_args))
 101
 ```
 
