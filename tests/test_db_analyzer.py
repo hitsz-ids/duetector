@@ -87,9 +87,10 @@ def test_query(db_analyzer: DBAnalyzer, a_tracking, collector_id):
     assert not db_analyzer.query(where={"pid": 1})
 
 
-# def test_brief(db_analyzer: DBAnalyzer, a_tracking, collector_id):
-#     assert db_analyzer.brief()
-#     # print(db_analyzer.brief())
+def test_brief(db_analyzer: DBAnalyzer, a_tracking, collector_id):
+    assert db_analyzer.brief()
+    assert db_analyzer.brief(with_details=False)
+    # print(db_analyzer.brief())
 
 
 if __name__ == "__main__":

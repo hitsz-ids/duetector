@@ -171,6 +171,7 @@ class DBAnalyzer(Analyzer):
         table_name: str,
         start_datetime: Optional[datetime] = None,
         end_datetime: Optional[datetime] = None,
+        inspect: bool = True,
     ) -> Brief:
         """
         Get a brief of a table.
@@ -183,6 +184,8 @@ class DBAnalyzer(Analyzer):
         """
         tracer = self.sm.table_name_to_tracer(table_name)
         collector_id = self.sm.table_name_to_collector_id(table_name)
+        if not inspect:
+            return Brief(tracer=tracer, collector_id=collector_id)
         m = self.sm.get_tracking_model(tracer, collector_id)
 
         start_statm = select(m).order_by(m.dt.asc())
@@ -209,15 +212,20 @@ class DBAnalyzer(Analyzer):
         self,
         start_datetime: Optional[datetime] = None,
         end_datetime: Optional[datetime] = None,
+        with_details: bool = True,
     ) -> AnalyzerBrief:
         """
         Get a brief of this analyzer.
 
         Returns:
             AnalyzerBrief: A brief of this analyzer.
+
+        TODO:
+            Support specify tracers/collector ids/(distinct)fields
         """
         briefs = [
-            self._table_brief(t, start_datetime, end_datetime) for t in self.sm.inspect_all_tables()
+            self._table_brief(t, start_datetime, end_datetime, inspect=with_details)
+            for t in self.sm.inspect_all_tables()
         ]
 
         return AnalyzerBrief(

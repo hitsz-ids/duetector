@@ -62,9 +62,9 @@ class Brief(pydantic.BaseModel):
 
     tracer: str
     collector_id: str
-    start: Optional[datetime]
-    end: Optional[datetime]
-    count: int
+    start: Optional[datetime] = None
+    end: Optional[datetime] = None
+    count: Optional[int] = None
     fields: Dict[str, Any] = {}
 
 
