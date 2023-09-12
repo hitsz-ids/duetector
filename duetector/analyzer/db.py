@@ -277,7 +277,7 @@ class DBAnalyzer(Analyzer):
         ]
 
         return AnalyzerBrief(
-            tracers=[brief.tracer for brief in briefs],
-            collector_ids=[brief.collector_id for brief in briefs],
+            tracers=set([brief.tracer for brief in briefs]),
+            collector_ids=set([brief.collector_id for brief in briefs]),
             briefs=briefs,
         )

@@ -7,6 +7,7 @@ from typing import List
 
 import click
 
+from duetector.analyzer.db import DBAnalyzer
 from duetector.config import CONFIG_PATH, ConfigLoader
 from duetector.log import logger
 from duetector.monitors import BccMonitor, ShMonitor
@@ -94,7 +95,9 @@ def generate_config(path):
 
 @click.command()
 @click.option(
-    "--config", default=CONFIG_PATH, help=f"Config file path, default: ``{CONFIG_PATH}``."
+    "--config",
+    default=CONFIG_PATH,
+    help=f"Config file path, default: ``{CONFIG_PATH}``.",
 )
 @click.option(
     "--load_env",
@@ -124,6 +127,11 @@ def generate_config(path):
     default=True,
     help=f"Set false or False to disable shell monitor, default: ``True``.",
 )
+@click.option(
+    "--brief",
+    default=True,
+    help=f"Print brief when exit, default: ``True``.",
+)
 def start(
     config,
     load_env,
@@ -131,6 +139,7 @@ def start(
     config_dump_dir,
     enable_bcc_monitor,
     enable_sh_monitor,
+    brief,
 ):
     """
     Start A bcc monitor and wait for KeyboardInterrupt
@@ -157,8 +166,14 @@ def start(
         logger.info("Exiting...")
         for m in monitors:
             m.shutdown()
-        for m in monitors:
-            logger.info(m.summary())
+        logger.info("All monitors shutdown.")
+        if brief:
+            try:
+                logger.info("Generating brief...")
+                logger.info(str(DBAnalyzer(c).brief()))
+            except Exception as e:
+                logger.error("Exception when generating brief")
+                logger.exception(e)
         exit(0)
 
     signal.signal(signal.SIGINT, _shutdown)

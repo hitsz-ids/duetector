@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 import pydantic
 
@@ -67,20 +67,46 @@ class Brief(pydantic.BaseModel):
     count: Optional[int] = None
     fields: Dict[str, Any] = {}
 
+    def __repr__(self):
+        fields_repr = ", ".join([f"{k}: {v.__name__}" for k, v in self.fields.items()])
+
+        s = f"""
+{self.tracer}@{self.collector_id} with {self.count} records
+from {self.start} to {self.end}
+available fields: [{fields_repr}]
+"""
+
+        return s
+
+    def __str__(self):
+        return self.__repr__()
+
 
 class AnalyzerBrief(pydantic.BaseModel):
     """
     Brief of analyzer.
     """
 
-    tracers: List[str]
+    tracers: Set[str]
     """
-    List of tracers
+    Set of tracers
     """
 
-    collector_ids: List[str]
+    collector_ids: Set[str]
     """
-    List of collector ids
+    Set of collector ids
     """
 
     briefs: List[Brief]
+
+    def __repr__(self):
+        briefs_repr = "\n".join([f"\n----------------{b}----------------" for b in self.briefs])
+        s = f"""
+Available tracers: {self.tracers}
+Available collector ids: {self.collector_ids}
+briefs: {briefs_repr}
+"""
+        return s
+
+    def __str__(self):
+        return self.__repr__()
