@@ -32,7 +32,7 @@ docs = ["Sphinx<=7.2.4", "sphinx-rtd-theme", "sphinx-click", "autodoc_pydantic"]
 [project.scripts]
 duectl = "duetector.cli.main:cli"
 duectl-daemon = "duetector.cli.daemon:cli"
-
+duectl-server = "duetector.cli.server:cli"
 
 [[project.authors]]
 name = "hitsz-ids"
