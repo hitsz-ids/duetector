@@ -82,7 +82,10 @@ class DBAnalyzer(Analyzer):
         start_datetime: Optional[datetime] = None,
         end_datetime: Optional[datetime] = None,
         start: int = 0,
-        limit: int = 20,
+        limit: int = 0,
+        columns: Optional[List[str]] = None,
+        where: Optional[Dict[str, Any]] = None,
+        distinct: bool = False,
     ) -> List[Tracking]:
         """
         Query all tracking records from database.
@@ -94,6 +97,8 @@ class DBAnalyzer(Analyzer):
             end_datetime (Optional[datetime], optional): End time. Defaults to None.
             start (int, optional): Start index. Defaults to 0.
             limit (int, optional): Limit of records. Defaults to 20. ``0`` means no limit.
+            columns (Optional[List[str]], optional): Columns to query. Defaults to None, all columns will be queried.
+            where (Optional[Dict[str, Any]], optional): Where clause. Defaults to None.
         Returns:
             List[duetector.analyzer.models.Tracking]: List of tracking records.
 
@@ -111,18 +116,28 @@ class DBAnalyzer(Analyzer):
             collector_id = self.sm.table_name_to_collector_id(t)
             m = self.sm.get_tracking_model(tracer, collector_id)
 
-            statm = select(m)
+            columns = columns or m.inspect_fields().keys()
+            statm = select(*[getattr(m, k) for k in columns]).offset(start)
+
             if start_datetime:
                 statm = statm.where(m.dt >= start_datetime)
             if end_datetime:
                 statm = statm.where(m.dt <= end_datetime)
-            if start:
-                statm = statm.offset(start)
             if limit:
                 statm = statm.limit(limit)
+            if where:
+                statm = statm.where(*[getattr(m, k) == v for k, v in where.items()])
+            if distinct:
+                statm = statm.distinct()
 
             with self.sm.begin() as session:
-                r.extend([t.to_analyzer_tracking() for t, *_ in session.execute(statm).fetchall()])
+                r.extend(
+                    [
+                        Tracking(tracer=tracer, **{k: v for k, v in zip(columns, r)})
+                        for r in session.execute(statm).fetchall()
+                    ]
+                )
+
         return r
 
     def get_all_tracers(self) -> List[str]:
@@ -179,6 +194,7 @@ class DBAnalyzer(Analyzer):
                 start=session.execute(start_statm).first()[0].dt,
                 end=session.execute(end_statm).first()[0].dt,
                 count=session.execute(count_statm).scalar(),
+                fields=m.inspect_fields(),
             )
 
     def brief(

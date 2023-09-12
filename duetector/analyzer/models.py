@@ -65,6 +65,7 @@ class Brief(pydantic.BaseModel):
     start: Optional[datetime]
     end: Optional[datetime]
     count: int
+    fields: Dict[str, Any] = {}
 
 
 class AnalyzerBrief(pydantic.BaseModel):

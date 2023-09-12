@@ -45,18 +45,25 @@ class TrackingMixin:
 
 class TrackingInterface:
     """
-    A interface for tracking
+    A interface for tracking.
     """
 
     def to_collector_tracking(self) -> CT:
         """
-        Convert to collector's tracking model
+        Convert to collector's tracking model.
         """
         raise NotImplementedError
 
     def to_analyzer_tracking(self) -> AT:
         """
-        Convert to analyzer's tracking model
+        Convert to analyzer's tracking model.
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def inspect_fields(cls) -> Dict[str, Any]:
+        """
+        Inspect fields of this model.
         """
         raise NotImplementedError
 
@@ -240,6 +247,12 @@ class SessionManager(Configuable):
                         extended=self.extended,
                     )
 
+                @classmethod
+                def inspect_fields(cls) -> Dict[str, Any]:
+                    return {
+                        c.name: c.type.python_type for c in cls.__table__.columns if c.name != "id"
+                    }
+
             try:
                 self._tracking_models[tracer] = self._init_tracking_model(TrackingModel)
             except Exception as e:
@@ -279,6 +292,8 @@ class SessionManager(Configuable):
 
 
 if __name__ == "__main__":
+    from duetector.collectors.models import Tracking
+
     sessionmanager = SessionManager()
     t = Tracking(
         tracer="t",

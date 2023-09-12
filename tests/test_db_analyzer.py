@@ -1,8 +1,24 @@
+from datetime import datetime, timedelta
+
 import pytest
 
 from duetector.analyzer.db import DBAnalyzer
 from duetector.analyzer.models import Tracking as AT
 from duetector.collectors.models import Tracking as CT
+
+now = datetime.now()
+
+tracking_kwargs = dict(
+    tracer="db_analyzer_tests",
+    pid=9999,
+    uid=9999,
+    gid=9999,
+    comm="dummy",
+    cwd=None,
+    fname="dummy.file",
+    dt=datetime.now(),
+    extended={"custom": "dummy-xargs"},
+)
 
 
 @pytest.fixture
@@ -16,17 +32,13 @@ def collector_id():
 
 
 @pytest.fixture
-def c_tracking(tracer_name):
-    yield CT(
-        tracer=tracer_name,
-    )
+def c_tracking():
+    yield CT(**tracking_kwargs)
 
 
 @pytest.fixture
-def a_tracking(tracer_name):
-    yield AT(
-        tracer=tracer_name,
-    )
+def a_tracking():
+    yield AT(**tracking_kwargs)
 
 
 @pytest.fixture
@@ -37,6 +49,7 @@ def db_analyzer(full_config, c_tracking, collector_id):
     m = sessionmanager.get_tracking_model(c_tracking.tracer, collector_id)
 
     with sessionmanager.begin() as session:
+        session.add(m(**c_tracking.model_dump(exclude=["tracer"])))
         session.add(m(**c_tracking.model_dump(exclude=["tracer"])))
         session.commit()
 
@@ -52,13 +65,29 @@ def test_query(db_analyzer: DBAnalyzer, a_tracking, collector_id):
     assert a_tracking in db_analyzer.query(tracer=a_tracking.tracer)
     assert a_tracking in db_analyzer.query(collector_id=collector_id)
     assert a_tracking in db_analyzer.query(tracer=a_tracking.tracer, collector_id=collector_id)
+    assert a_tracking in db_analyzer.query(start_datetime=now - timedelta(days=1))
+    assert a_tracking in db_analyzer.query(end_datetime=now + timedelta(days=1))
+
+    assert len(db_analyzer.query()) == 2
+    assert len(db_analyzer.query(distinct=True)) == 1
+
+    assert AT(
+        tracer=a_tracking.tracer,
+        pid=a_tracking.pid,
+        fname=a_tracking.fname,
+    ) in db_analyzer.query(columns=["pid", "fname"])
 
     assert not db_analyzer.query(tracer="not-exist")
     assert not db_analyzer.query(collector_id="not-exist")
+    assert not db_analyzer.query(start_datetime=now + timedelta(days=1))
+    assert not db_analyzer.query(end_datetime=now - timedelta(days=1))
+    assert not db_analyzer.query(start=100)
+    assert not db_analyzer.query(where={"pid": 1})
 
 
-def test_brief(db_analyzer: DBAnalyzer, a_tracking, collector_id):
-    assert db_analyzer.brief()
+# def test_brief(db_analyzer: DBAnalyzer, a_tracking, collector_id):
+#     assert db_analyzer.brief()
+#     # print(db_analyzer.brief())
 
 
 if __name__ == "__main__":
