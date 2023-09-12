@@ -86,6 +86,8 @@ class DBAnalyzer(Analyzer):
         columns: Optional[List[str]] = None,
         where: Optional[Dict[str, Any]] = None,
         distinct: bool = False,
+        order_by_asc: Optional[List[str]] = None,
+        order_by_desc: Optional[List[str]] = None,
     ) -> List[Tracking]:
         """
         Query all tracking records from database.
@@ -99,6 +101,9 @@ class DBAnalyzer(Analyzer):
             limit (int, optional): Limit of records. Defaults to 20. ``0`` means no limit.
             columns (Optional[List[str]], optional): Columns to query. Defaults to None, all columns will be queried.
             where (Optional[Dict[str, Any]], optional): Where clause. Defaults to None.
+            distinct (bool, optional): Distinct. Defaults to False.
+            order_by_asc (Optional[List[str]], optional): Order by asc. Defaults to None.
+            order_by_desc (Optional[List[str]], optional): Order by desc. Defaults to None.
         Returns:
             List[duetector.analyzer.models.Tracking]: List of tracking records.
 
@@ -118,7 +123,6 @@ class DBAnalyzer(Analyzer):
 
             columns = columns or m.inspect_fields().keys()
             statm = select(*[getattr(m, k) for k in columns]).offset(start)
-
             if start_datetime:
                 statm = statm.where(m.dt >= start_datetime)
             if end_datetime:
@@ -129,6 +133,10 @@ class DBAnalyzer(Analyzer):
                 statm = statm.where(*[getattr(m, k) == v for k, v in where.items()])
             if distinct:
                 statm = statm.distinct()
+            if order_by_asc:
+                statm = statm.order_by(*[getattr(m, k).asc() for k in order_by_asc])
+            if order_by_desc:
+                statm = statm.order_by(*[getattr(m, k).desc() for k in order_by_desc])
 
             with self.sm.begin() as session:
                 r.extend(

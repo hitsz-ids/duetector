@@ -67,6 +67,8 @@ def test_query(db_analyzer: DBAnalyzer, a_tracking, collector_id):
     assert a_tracking in db_analyzer.query(tracer=a_tracking.tracer, collector_id=collector_id)
     assert a_tracking in db_analyzer.query(start_datetime=now - timedelta(days=1))
     assert a_tracking in db_analyzer.query(end_datetime=now + timedelta(days=1))
+    assert a_tracking in db_analyzer.query(order_by_asc=["pid"])
+    assert a_tracking in db_analyzer.query(order_by_desc=["pid"])
 
     assert len(db_analyzer.query()) == 2
     assert len(db_analyzer.query(distinct=True)) == 1
