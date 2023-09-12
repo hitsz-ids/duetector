@@ -91,10 +91,16 @@ interval_ms = 500
 [monitor.sh]
 disabled = false
 auto_init = true
-timeout = 30
+timeout = 5
 
 [monitor.sh.backend_args]
 max_workers = 10
 
 [monitor.sh.poller]
 interval_ms = 500
+
+[db_analyzer.db]
+table_prefix = "duetector_tracking"
+
+[db_analyzer.db.engine]
+url = "sqlite:///duetector-dbcollector.sqlite3"

@@ -1,7 +1,7 @@
 import copy
 from typing import Any, Dict, Optional
 
-from sqlalchemy import select  # type: ignore
+from sqlalchemy import func, select  # type: ignore
 
 from duetector.collectors.base import Collector
 from duetector.collectors.models import Tracking
@@ -50,13 +50,13 @@ class DBCollector(Collector):
         with self.sm.begin() as session:
             return {
                 tracer: {
-                    "count": len(session.execute(select(m)).fetchall()),
-                    "first at": session.execute(select(m)).first()[0].timestamp,
+                    "count": session.execute(select(func.count()).select_from(m)).scalar(),
+                    "first at": session.execute(select(m)).first()[0].dt,
                     "last": session.execute(select(m).order_by(m.id.desc()))  # type: ignore
                     .first()[0]
-                    .to_tracking(),
+                    .to_collector_tracking(),
                 }
-                for tracer, m in self.sm.get_all_model().items()
+                for tracer, m in self.sm.get_all_models().items()
             }
 
 

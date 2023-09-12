@@ -20,7 +20,7 @@ re_exclude_fname = [
     "/run",
     "/usr/lib",
     "/etc/ld.so.cache",
-    "/re/*"
+    "/re/*",
 ]
 re_exclude_comm = []
 exclude_pid = []
@@ -61,8 +61,13 @@ maxlen = 1024
 disabled = false
 auto_init = true
 
-
 [monitor.sh]
 disabled = false
 auto_init = true
 timeout = 5
+
+[db_analyzer.db]
+table_prefix = "duetector_tracking"
+
+[db_analyzer.db.engine]
+url = "sqlite:///:memory:"

@@ -14,9 +14,11 @@ entry point for the polling, filtering and collecting of the data.
    :show-inheritance:
 
 
+Avaliable Monitor
+-------------------------------------------
+
 .. toctree::
-   :maxdepth: 1
-   :caption: Avaliable Monitor
+   :maxdepth: 2
 
    Bcc Monitor <bcc>
    Shell Monitor <sh>

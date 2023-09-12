@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 import pluggy
 
-import duetector.collectors
+import duetector.collectors.register
 from duetector.collectors.base import Collector
 from duetector.extension.collector import project_name
 from duetector.log import logger
@@ -42,7 +42,7 @@ class CollectorManager(Manager):
         self.pm = pluggy.PluginManager(PROJECT_NAME)
         self.pm.add_hookspecs(sys.modules[__name__])
         self.pm.load_setuptools_entrypoints(PROJECT_NAME)
-        self.register(duetector.collectors)
+        self.register(duetector.collectors.register)
 
     def init(self, ignore_disabled=True) -> List[Collector]:
         """

@@ -84,7 +84,7 @@ class ShMonitor(Monitor):
     default_config = {
         **Monitor.default_config,
         "auto_init": True,
-        "timeout": 30,
+        "timeout": 5,
     }
     """
     Default config for this monitor.

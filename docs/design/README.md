@@ -6,6 +6,7 @@ Key Components and Features:
 
 - [ ] **HTTP / RPC Server**: PIP Server, providing API for PDP to get data usage information.
 - [ ] **Analyzer**: Analyze data usage information and generate data usage behavior.
+  - [ ] **DBAnalyzer**: Analyze data usage information from database.
 - [X] **CLI**: CLI for administrator to manage duetector.
 - [X] **BccMonitor**: Monitor data usage behavior in kernel space. Use BCC to implement.
 - [X] **ShMonitor**: A general monitor for custom command. Polling the output of command.
@@ -32,5 +33,5 @@ Current data flow implementation:
 
 The following are not yet realized and may be subject to change.
 
-- [ ] **Collector** will get data from **Collector**.
-- [ ] **HTTP / RPC Server** will get data from **Collector**.
+- [ ] **Analyzer**'s data stracture and API.
+- [ ] **Query Service** will get data from **Analyzer**.

@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 import pluggy
 
-import duetector.tracers
+import duetector.tracers.register
 from duetector.extension.tracer import project_name
 from duetector.log import logger
 from duetector.managers import Manager
@@ -40,7 +40,7 @@ class TracerManager(Manager):
         self.pm = pluggy.PluginManager(PROJECT_NAME)
         self.pm.add_hookspecs(sys.modules[__name__])
         self.pm.load_setuptools_entrypoints(PROJECT_NAME)
-        self.register(duetector.tracers)
+        self.register(duetector.tracers.register)
 
     def init(self, tracer_type=Tracer, ignore_disabled=True) -> List[Tracer]:
         """

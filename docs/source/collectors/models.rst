@@ -1,7 +1,7 @@
 Models for collectors
 ====================================
 
-.. autoclass:: duetector.collectors.models.Tracking
+.. automodule:: duetector.collectors.models
    :members:
    :undoc-members:
    :show-inheritance:

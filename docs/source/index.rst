@@ -15,6 +15,7 @@ Reference
 
    CLI <cli/index>
 
+   Analyzer <analyzer/index>
    Monitors <monitors/index>
    Managers <managers/index>
 
@@ -22,11 +23,7 @@ Reference
    Filters <filters/index>
    Collectors <collectors/index>
 
-   Exceptions <exceptions>
-
-   Database utilities <db>
-   Config utilities <config>
-   Tools utilities <tools/index>
+   Utilities <utilities>
 
 
 Indices and tables

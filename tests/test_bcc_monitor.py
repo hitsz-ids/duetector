@@ -4,11 +4,13 @@ from typing import Any, Callable, Dict, NamedTuple, Optional, Type
 import pytest
 
 from duetector.collectors.models import Tracking
-from duetector.config import Configuable
 from duetector.managers import CollectorManager, FilterManager, TracerManager
 from duetector.monitors.bcc_monitor import BccMonitor, Monitor
 from duetector.tracers.base import BccTracer, Tracer
-from duetector.tracers.dummy import DummyBPF, DummyTracer
+from duetector.utils import get_boot_time_duration_ns
+
+timestamp = 13205215231927
+datetime = get_boot_time_duration_ns(timestamp)
 
 
 class MockTracer(Tracer):
@@ -24,7 +26,7 @@ class MockTracer(Tracer):
             gid=9999,
             comm="dummy",
             fname="dummy.file",
-            timestamp=13205215231927,
+            timestamp=timestamp,
             custom="dummy-xargs",
         )
 
@@ -118,7 +120,7 @@ def test_bcc_monitor(bcc_monitor: MockMonitor):
         comm="dummy",
         cwd=None,
         fname="dummy.file",
-        timestamp=13205215231927,
+        dt=datetime,
         extended={"custom": "dummy-xargs"},
     )
 

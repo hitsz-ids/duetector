@@ -18,9 +18,19 @@ and store them in a somewhere.
    :show-inheritance:
 
 
+Avaliable Collector
+---------------------------------------------------------
+
 .. toctree::
    :maxdepth: 2
-   :caption: Avaliable Collector and Data Models
 
    DB Collectors <db>
+
+
+Data Models
+---------------------------------------------------------
+
+.. toctree::
+   :maxdepth: 2
+
    Data Models <models>
