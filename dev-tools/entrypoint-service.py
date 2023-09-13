@@ -13,7 +13,6 @@ db_file = Path("./duetector-dbcollector.sqlite3")
 config_file = Path("./config.toml")
 
 if __name__ == "__main__":
-    db_file.unlink(missing_ok=True)
     sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
     sys.argv.append("start")
     sys.argv.extend(["--config", config_file.resolve().as_posix()])
