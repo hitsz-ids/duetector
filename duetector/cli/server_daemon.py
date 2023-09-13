@@ -5,9 +5,9 @@ import click
 from duetector.log import logger
 from duetector.tools.daemon import Daemon
 
-WORKDIR_ENV = "DUETECTOR_DAEMON_WORKDIR"
+WORKDIR_ENV = "DUETECTOR_SERVER_DAEMON_WORKDIR"
 DEFAULT_WORKDIR = "/tmp/duetector"
-APPLICATION = "duetector-daemon"
+APPLICATION = "duetector-server-daemon"
 
 
 @click.command(
@@ -30,14 +30,14 @@ APPLICATION = "duetector-daemon"
 @click.pass_context
 def start(ctx, workdir, loglevel, rotate_log):
     """
-    Start a background process of command ``duectl start``.
+    Start a background process of command ``duectl-server start``.
 
-    All arguments after ``--`` will be passed to ``duectl start``.
+    All arguments after ``--`` will be passed to ``duectl-server start``.
 
     Example:
-        ``duectl-daemon start -- --config /path/to/config``
+        ``duectl-server-daemon start -- --config /path/to/config``
     """
-    cmd = ["duectl", "start", "--config_dump_dir", workdir]
+    cmd = ["duectl-server", "start"]
     cmd_args = ctx.args
     if cmd_args:
         cmd.extend(cmd_args)

@@ -83,6 +83,10 @@ For more details on running with docker images see [here](./docs/how-to/run-with
 
 ## Quick start
 
+> More documentation and examples can be found [here](. /docs/).
+
+### Start detector
+
 Start monitor using the command line, since bcc requires root privileges, we use the `sudo` command, which will start all probes and collect the probes into the `duetector-dbcollector.sqlite3` file in the current directory
 
 ```bash
@@ -151,7 +155,51 @@ Commands:
   stop    Stop the process.
 ```
 
-More documentation and examples can be found [here](. /docs/).
+### Analyzing with analyzer
+
+We provide an [Analyzer](https://duetector.readthedocs.io/en/latest/analyzer/index.html) that can query the data in storage, here we provide a [user case](./docs/usercases/simplest-open-count/README.md)
+
+### Using duetector server
+
+We provide a Duetector Server as an external PIP service and control interface
+
+A Duetector Server can be started using `duectl-server` and will listen on `0.0.0.0:8120` by default, you can modify it using `--host` and `--port`.
+
+```bash
+$ duectl-server start --help
+Usage: duectl-server start [OPTIONS]
+
+  Start duetector server
+
+Options:
+  --config TEXT       Config file path, default:
+                      ``~/.config/duetector/config.toml``.
+  --load_env BOOLEAN  Weather load env variables, Prefix: ``DUETECTOR_``,
+                      Separator:``__``, e.g. ``DUETECTOR_config__a`` means
+                      ``config.a``, default: True
+  --workdir TEXT      Working directory, default: ``.``.
+  --host TEXT         Host to listen, default: ``0.0.0.0``.
+  --port INTEGER      Port to listen, default: ``8120``.
+  --workers INTEGER   Number of worker processes, default: ``1``.
+  --help              Show this message and exit.
+```
+
+After the service has started, visit `http://{ip}:{port}/docs` to see the API documentation.
+
+Similarly, using `duectl-server-daemon start` you can run a Duetector Server in the background, and you can stop it using `duectl-server-daemon stop`
+
+```bash
+$ duectl-server-daemon
+Usage: duectl-server-daemon [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  start   Start a background process of command ``duectl-server start``.
+  status  Show status of process.
+  stop    Stop the process.
+```
 
 ## API documentation
 

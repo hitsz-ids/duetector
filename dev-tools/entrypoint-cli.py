@@ -17,4 +17,4 @@ if __name__ == "__main__":
     sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
     sys.argv.append("start")
     sys.argv.extend(["--config", config_file.resolve().as_posix()])
-    sys.exit(load_entry_point("duetector", "console_scripts", "duectl")())
+    sys.exit(load_entry_point("duetector", "console_scripts", "duectl-server")())

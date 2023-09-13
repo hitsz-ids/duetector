@@ -87,6 +87,10 @@ docker pull dataucon/duetector:v0.0.1a
 
 ## 快速开始
 
+> 更多文档和例子可以在[这里](./docs/)找到。
+
+### 启动探测器
+
 使用命令行启动monitor，由于bcc需要root权限，所以我们使用 `sudo` 命令，这将启动所有的探测器，并将探测内容收集到当前目录下的 `duetector-dbcollector.sqlite3`文件中
 
 ```bash
@@ -154,7 +158,51 @@ Commands:
   stop    Stop the process.
 ```
 
-更多文档和例子可以在[这里](./docs/)找到。
+### 使用Analyzer进行分析
+
+我们提供了一个[Analyzer](https://duetector.readthedocs.io/en/latest/analyzer/index.html)，它可以对存储中的数据进行查询，在这里我们提供了一个[入门案例](./docs/usercases/simplest-open-count/README.md)
+
+### 使用Duetector Server
+
+我们提供了一个Duetector Server，作为外部PIP服务和控制接口
+
+使用`duectl-server`可以启动一个Duetector Server，默认将监听`0.0.0.0:8120`，你可以使用`--host`和`--port`来修改它。
+
+```bash
+$ duectl-server start --help
+Usage: duectl-server start [OPTIONS]
+
+  Start duetector server
+
+Options:
+  --config TEXT       Config file path, default:
+                      ``~/.config/duetector/config.toml``.
+  --load_env BOOLEAN  Weather load env variables, Prefix: ``DUETECTOR_``,
+                      Separator:``__``, e.g. ``DUETECTOR_config__a`` means
+                      ``config.a``, default: True
+  --workdir TEXT      Working directory, default: ``.``.
+  --host TEXT         Host to listen, default: ``0.0.0.0``.
+  --port INTEGER      Port to listen, default: ``8120``.
+  --workers INTEGER   Number of worker processes, default: ``1``.
+  --help              Show this message and exit.
+```
+
+在服务启动后，访问`http://{ip}:{port}/docs`可以查看API文档。
+
+同样的，使用`duectl-server-daemon start`可以在后台运行一个Duetector Server，你可以使用`duectl-server-daemon stop`来停止它
+
+```bash
+$ duectl-server-daemon
+Usage: duectl-server-daemon [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  start   Start a background process of command ``duectl-server start``.
+  status  Show status of process.
+  stop    Stop the process.
+```
 
 ## API文档与配置文档
 

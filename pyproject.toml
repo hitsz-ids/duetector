@@ -16,6 +16,9 @@ dependencies = [
     "SQLAlchemy>=2",
     "click",
     "psutil",
+    # Following are for web server
+    "fastapi",
+    "uvicorn[standard]",
 ]
 dynamic = ["version"]
 classifiers = [
@@ -33,6 +36,7 @@ docs = ["Sphinx<=7.2.4", "sphinx-rtd-theme", "sphinx-click", "autodoc_pydantic"]
 duectl = "duetector.cli.main:cli"
 duectl-daemon = "duetector.cli.daemon:cli"
 duectl-server = "duetector.cli.server:cli"
+duectl-server-daemon = "duetector.cli.server_daemon:cli"
 
 [[project.authors]]
 name = "hitsz-ids"
