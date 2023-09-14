@@ -7,7 +7,7 @@ from duetector.analyzer.models import AnalyzerBrief, Tracking
 
 
 class AvaliableAnalyzers(BaseModel):
-    analyzers: list[str]
+    analyzers: List[str]
 
 
 class QueryBody(BaseModel):
