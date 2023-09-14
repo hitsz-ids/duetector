@@ -71,3 +71,6 @@ table_prefix = "duetector_tracking"
 
 [db_analyzer.db.engine]
 url = "sqlite:///:memory:"
+
+[server]
+token = ""

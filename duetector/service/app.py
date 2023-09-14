@@ -1,6 +1,6 @@
-from typing import Optional
-
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import APIKeyQuery
+from starlette.status import HTTP_403_FORBIDDEN
 
 from duetector.__init__ import __version__
 from duetector.service.config import Config, get_server_config
@@ -10,10 +10,10 @@ from duetector.service.query.routes import r as qr
 
 async def verify_token(
     server_config: Config = Depends(get_server_config),
-    token: Optional[str] = Query(default=""),
+    token: str = Depends(APIKeyQuery(name="token", auto_error=False)),
 ):
     if server_config.token and token != server_config.token:
-        raise HTTPException(403, "Invalid token")
+        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Not authenticated")
 
 
 app = FastAPI(
@@ -24,3 +24,8 @@ app = FastAPI(
 )
 app.include_router(qr)
 app.include_router(cr)
+
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
