@@ -12,9 +12,11 @@ class DBAnalyzer(Analyzer):
     """
     A analyzer using database.
 
-    As a top model, it will init a ``SessionManager`` and pass it to submodels.
+    We design this analyzer to be a top module, so it can be used as a standalone tools.
 
-    Config scope is ``db_analyzer``.
+    In this analyzer, we use ``SessionManager`` to manage database session.
+
+    Config scope is ``db_analyzer``. ``db_analyzer.db`` is the scope for ``SessionManager``.
 
     Example:
 

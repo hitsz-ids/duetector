@@ -20,8 +20,10 @@ Alternatively, you can run `duetector` in a kata container, this gives you more 
 docker run -it --rm \
 --privileged \
 -p 8888:8888 \
+-p 8120:8120 \
 -v /lib/modules:/lib/modules \
 -e DUETECTOR_DAEMON_WORKDIR=/duetector-kata \
+-e DUETECTOR_SERVER_DAEMON_WORKDIR=/duetector-kata \
 -v $(pwd)/duetector-kata:/duetector-kata \
 -v /sys/kernel/debug:/sys/kernel/debug \
 dataucon/duetector
@@ -34,6 +36,7 @@ Note:
 - You can use `--entrypoint bash` to enter the container and run `duetector` manually.
   - In kata container, you need to mount debugfs manually: `mount -t debugfs debugfs /sys/kernel/debug`
 - `/lib/modules` contains kernel modules, more details can be found in [run-with-docker](../../how-to/run-with-docker.md).
+- `8888` is the port of JupyterLab, `8120` is the port of duetector server. Access `http://localhost:8888` in your browser to use JupyterLab, and access `http://localhost:8120/docs` to see the API docs of duetector server.
 
 ## Use JupyterLab to write some code
 

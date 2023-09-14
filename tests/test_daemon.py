@@ -4,10 +4,10 @@ from duetector.tools.daemon import Daemon
 
 
 @pytest.fixture
-def daemon():
+def daemon(tmpdir):
     yield Daemon(
         cmd=["sleep", "100"],
-        workdir="/tmp/duetector",
+        workdir=tmpdir,
         env_dict={"DUETECTOR_LOG_LEVEL": "DEBUG"},
     )
 

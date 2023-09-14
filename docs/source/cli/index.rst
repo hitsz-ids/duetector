@@ -1,9 +1,14 @@
 duetector.cli
 =========================================
 
-``duectl``: CLI for Start Monitor, generate config.
+``duectl``: CLI for start monitor, generate config.
 
-``duectl-daemon``: Allow to run as daemon, and run as a service.
+``duectl-daemon``: Allow to run monitors and server as daemon.
+
+
+``duectl-server``: CLI for start duetector server.
+
+``duectl-server-daemon``: Allow to run server as daemon.
 
 
 .. toctree::
@@ -12,3 +17,5 @@ duetector.cli
 
    duectl <main>
    duectl-daemon <daemon>
+   duectl-server <server>
+   duectl-server-daemon <server-daemon>

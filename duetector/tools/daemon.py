@@ -41,6 +41,7 @@ class Daemon:
     def __init__(
         self,
         workdir: Union[str, Path],
+        application: str = "daemon",
         cmd: Optional[List[str]] = None,
         env_dict: Optional[Dict[str, str]] = None,
         rotate_log: bool = True,
@@ -48,6 +49,8 @@ class Daemon:
         self.cmd: List[str] = cmd or []
         self.workdir: Path = Path(workdir).expanduser().resolve()
         self.workdir.mkdir(parents=True, exist_ok=True)
+
+        self.application: str = application
 
         self.env_dict: Dict[str, str] = os.environ.copy()
         if env_dict:
@@ -60,14 +63,14 @@ class Daemon:
         """
         Path to pid file.
         """
-        return self.workdir / "pid"
+        return self.workdir / f"{self.application}.pid"
 
     @property
     def log_file(self):
         """
         Path to log file.
         """
-        return self.workdir / "log"
+        return self.workdir / f"{self.application}.log"
 
     @property
     def pid(self):
@@ -85,7 +88,7 @@ class Daemon:
         Rotate log file.
         """
         now = datetime.now()
-        new_log_file = self.log_file.with_suffix(f".{now:%Y%m%d%H%M%S}")
+        new_log_file = self.log_file.with_name(f"{self.application}-{now:%Y%m%d-%H%M%S}.log")
         logger.info(f"Rotate log file to {new_log_file}")
         self.log_file.rename(new_log_file)
 
@@ -97,7 +100,7 @@ class Daemon:
             raise RuntimeError("cmd is empty, nothing to start")
 
         if self.pid:
-            logger.warning("Daemon is already running, try stop first.")
+            logger.error("Daemon is already running, try stop first.")
             return
 
         if self.rotate_log and self.log_file.exists():
