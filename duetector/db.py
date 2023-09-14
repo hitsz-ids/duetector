@@ -210,6 +210,8 @@ class SessionManager(Configuable):
         Returns:
             type: a sqlalchemy model for tracking
         """
+        if tracer in self._tracking_models:
+            return self._tracking_models[tracer]
 
         with self.mutex:
             if tracer in self._tracking_models:
