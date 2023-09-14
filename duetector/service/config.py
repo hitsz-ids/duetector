@@ -1,12 +1,14 @@
 import os
 from typing import Any, Dict
 
+from fastapi import Depends
+
 try:
     from functools import cache
 except ImportError:
     from functools import lru_cache as cache
 
-from duetector.config import ConfigLoader
+from duetector.config import Config, ConfigLoader, Configuable
 
 CONFIG_PATH_ENV = "DUETECTOR_SERVER_CONFIG_PATH"
 
@@ -24,3 +26,14 @@ def get_config() -> Dict[str, Any]:
         load_env=False,
         dump_when_load=False,
     ).load_config()
+
+
+class ServerConfig(Configuable):
+    config_scope = "server"
+    default_config = {"token": ""}
+
+
+def get_server_config(
+    config: Dict[str, Any] = Depends(get_config),
+) -> Config:
+    return ServerConfig(config).config

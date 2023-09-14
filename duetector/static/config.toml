@@ -104,3 +104,6 @@ table_prefix = "duetector_tracking"
 
 [db_analyzer.db.engine]
 url = "sqlite:///duetector-dbcollector.sqlite3"
+
+[server]
+token = ""

@@ -9,6 +9,7 @@ from duetector.config import ConfigLoader
 from duetector.log import logger
 from duetector.managers import CollectorManager, FilterManager, TracerManager
 from duetector.monitors import BccMonitor, ShMonitor
+from duetector.service.config import ServerConfig
 
 
 def _recursive_load(config_scope: str, config_dict: dict, default_config: dict):
@@ -62,6 +63,8 @@ class ConfigGenerator:
     All analyzers to inspect.
     """
 
+    others = [ServerConfig]
+
     def __init__(
         self,
         load: bool = True,
@@ -87,6 +90,9 @@ class ConfigGenerator:
 
         for a in self.analyzer:
             _recursive_load(a.config_scope, self.dynamic_config, a.default_config)
+
+        for o in self.others:
+            _recursive_load(o.config_scope, self.dynamic_config, o.default_config)
         # This will generate default config file if not exists
         if load:
             self.loaded_config = ConfigLoader(path, load_env, dump_when_load=False).load_config()

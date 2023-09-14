@@ -9,4 +9,4 @@ r = APIRouter(
 
 @r.get("/")
 async def root(config: dict = Depends(get_config)):
-    return config
+    pass
