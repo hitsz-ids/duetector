@@ -4,6 +4,7 @@ from duetector.service.config import get_config
 
 r = APIRouter(
     prefix="/control",
+    tags=["control"],
 )
 
 

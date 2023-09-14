@@ -82,6 +82,7 @@ class Analyzer(Configuable):
         end_datetime: Optional[datetime] = None,
         with_details: bool = True,
         distinct: bool = False,
+        inspect_type: bool = False,
     ) -> AnalyzerBrief:
         """
         Get a brief of this analyzer.
@@ -97,6 +98,7 @@ class Analyzer(Configuable):
             end_datetime (Optional[datetime], optional): End time. Defaults to None.
             with_details (bool, optional): With details. Defaults to True.
             distinct (bool, optional): Distinct. Defaults to False.
+            inspect_type (bool, optional): Weather fileds's value is type or type name. Defaults to False, type name.
 
         Returns:
             AnalyzerBrief: A brief of this analyzer.

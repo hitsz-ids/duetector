@@ -68,7 +68,7 @@ class Brief(pydantic.BaseModel):
     fields: Dict[str, Any] = {}
 
     def __repr__(self):
-        fields_repr = ", ".join([f"{k}: {v.__name__}" for k, v in self.fields.items()])
+        fields_repr = ", ".join([f"{k}: {v}" for k, v in self.fields.items()])
 
         s = f"""
 {self.tracer}@{self.collector_id} with {self.count} records
@@ -97,10 +97,12 @@ class AnalyzerBrief(pydantic.BaseModel):
     Set of collector ids
     """
 
-    briefs: List[Brief]
+    briefs: Dict[str, Brief]
 
     def __repr__(self):
-        briefs_repr = "\n".join([f"\n----------------{b}----------------" for b in self.briefs])
+        briefs_repr = "\n".join(
+            [f"\n----------------{b}----------------" for b in self.briefs.values()]
+        )
         s = f"""
 Available tracers: {self.tracers}
 Available collector ids: {self.collector_ids}

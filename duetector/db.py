@@ -61,10 +61,10 @@ class TrackingInterface:
         raise NotImplementedError
 
     @classmethod
-    def inspect_fields(cls) -> Dict[str, Any]:
-        """
-        Inspect fields of this model.
-        """
+    def inspect_fields(
+        cls,
+        value_as_type: bool = False,
+    ) -> Dict[str, Any]:
         raise NotImplementedError
 
 
@@ -248,9 +248,14 @@ class SessionManager(Configuable):
                     )
 
                 @classmethod
-                def inspect_fields(cls) -> Dict[str, Any]:
+                def inspect_fields(
+                    cls,
+                    value_as_type: bool = False,
+                ) -> Dict[str, Any]:
                     return {
-                        c.name: c.type.python_type for c in cls.__table__.columns if c.name != "id"
+                        c.name: c.type.python_type if value_as_type else c.type.python_type.__name__
+                        for c in cls.__table__.columns
+                        if c.name != "id"
                     }
 
             try:

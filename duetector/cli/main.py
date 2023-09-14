@@ -170,7 +170,7 @@ def start(
         if brief:
             try:
                 logger.info("Generating brief...")
-                logger.info(str(DBAnalyzer(c).brief()))
+                logger.info(str(DBAnalyzer(c).brief(inspect_type=False)))
             except Exception as e:
                 logger.error("Exception when generating brief")
                 logger.exception(e)

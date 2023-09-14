@@ -28,4 +28,7 @@ app.include_router(cr)
 
 @app.get("/")
 async def root():
+    """
+    Just a simple health check, returns a message.
+    """
     return {"message": "Hello World"}

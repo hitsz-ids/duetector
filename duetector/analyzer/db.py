@@ -174,6 +174,7 @@ class DBAnalyzer(Analyzer):
         start_datetime: Optional[datetime] = None,
         end_datetime: Optional[datetime] = None,
         inspect: bool = True,
+        inspect_type: bool = False,
         distinct: bool = False,
     ) -> Brief:
         """
@@ -191,7 +192,11 @@ class DBAnalyzer(Analyzer):
         m = self.sm.get_tracking_model(tracer, collector_id)
 
         if not inspect:
-            return Brief(tracer=tracer, collector_id=collector_id, fields=m.inspect_fields())
+            return Brief(
+                tracer=tracer,
+                collector_id=collector_id,
+                fields=m.inspect_fields(value_as_type=inspect_type),
+            )
         columns = m.inspect_fields().keys()
         statm = select(*[getattr(m, k) for k in columns])
         if distinct:
@@ -218,7 +223,7 @@ class DBAnalyzer(Analyzer):
                 start=start_tracking.dt,
                 end=end_tracking.dt,
                 count=session.execute(count_statm).scalar(),
-                fields=m.inspect_fields(),
+                fields=m.inspect_fields(value_as_type=inspect_type),
             )
 
     def _convert_row_to_tracking(self, columns: List[str], row: Any, tracer: str) -> Tracking:
@@ -246,6 +251,7 @@ class DBAnalyzer(Analyzer):
         end_datetime: Optional[datetime] = None,
         with_details: bool = True,
         distinct: bool = False,
+        inspect_type: bool = False,
     ) -> AnalyzerBrief:
         """
         Get a brief of this analyzer.
@@ -271,9 +277,14 @@ class DBAnalyzer(Analyzer):
         if collector_ids:
             tables = [t for t in tables if self.sm.table_name_to_collector_id(t) in collector_ids]
 
-        briefs = [
+        briefs: List[Brief] = [
             self._table_brief(
-                t, start_datetime, end_datetime, inspect=with_details, distinct=distinct
+                t,
+                start_datetime,
+                end_datetime,
+                inspect=with_details,
+                distinct=distinct,
+                inspect_type=inspect_type,
             )
             for t in tables
         ]
@@ -281,5 +292,5 @@ class DBAnalyzer(Analyzer):
         return AnalyzerBrief(
             tracers=set([brief.tracer for brief in briefs]),
             collector_ids=set([brief.collector_id for brief in briefs]),
-            briefs=briefs,
+            briefs={f"{brief.tracer}@{brief.collector_id}": brief for brief in briefs},
         )
