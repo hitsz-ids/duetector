@@ -6,6 +6,7 @@ from sqlalchemy import func, select
 from duetector.analyzer.base import Analyzer
 from duetector.analyzer.models import AnalyzerBrief, Brief, Tracking
 from duetector.db import SessionManager
+from duetector.log import logger
 
 
 class DBAnalyzer(Analyzer):
@@ -140,6 +141,7 @@ class DBAnalyzer(Analyzer):
             if order_by_desc:
                 statm = statm.order_by(*[getattr(m, k).desc() for k in order_by_desc])
 
+            logger.debug(f"Querying {tracer}@{collector_id} with statm: {statm}")
             with self.sm.begin() as session:
                 r.extend(
                     [
@@ -192,6 +194,7 @@ class DBAnalyzer(Analyzer):
         m = self.sm.get_tracking_model(tracer, collector_id)
 
         if not inspect:
+            logger.debug(f"Briefing {tracer}@{collector_id} without inspect")
             return Brief(
                 tracer=tracer,
                 collector_id=collector_id,
@@ -209,6 +212,7 @@ class DBAnalyzer(Analyzer):
         start_statm = statm.order_by(m.dt.asc())
         end_statm = statm.order_by(m.dt.desc())
         count_statm = select(func.count()).select_from(statm.subquery())
+        logger.debug(f"Briefing {tracer}@{collector_id} with statm: {start_statm}")
         with self.sm.begin() as session:
             start_tracking = self._convert_row_to_tracking(
                 columns, session.execute(start_statm).first(), tracer
@@ -271,6 +275,7 @@ class DBAnalyzer(Analyzer):
         Returns:
             AnalyzerBrief: A brief of this analyzer.
         """
+
         tables = self.sm.inspect_all_tables()
         if tracers:
             tables = [t for t in tables if self.sm.table_name_to_tracer(t) in tracers]

@@ -28,7 +28,7 @@ async def root(
 @r.post("/{analyzer_name}", response_model=QueryResult)
 async def query(
     analyzer_name: str,
-    query_param: QueryBody = Body(),
+    query_param: QueryBody = Body(default=QueryBody()),
     controller: AnalyzerController = Depends(get_controller(AnalyzerController)),
 ):
     """

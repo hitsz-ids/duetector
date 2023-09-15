@@ -22,3 +22,7 @@ def client():
 def test_root(client: TestClient):
     response = client.get("/", params={"token": "test_token"})
     assert response.status_code == 200
+
+
+if __name__ == "__main__":
+    pytest.main(["-vv", "-s", __file__])
