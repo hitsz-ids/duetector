@@ -6,6 +6,7 @@ from sqlalchemy import func, select
 from duetector.analyzer.base import Analyzer
 from duetector.analyzer.models import AnalyzerBrief, Brief, Tracking
 from duetector.db import SessionManager
+from duetector.log import logger
 
 
 class DBAnalyzer(Analyzer):
@@ -140,6 +141,7 @@ class DBAnalyzer(Analyzer):
             if order_by_desc:
                 statm = statm.order_by(*[getattr(m, k).desc() for k in order_by_desc])
 
+            logger.debug(f"Querying {tracer}@{collector_id} with statm: {statm}")
             with self.sm.begin() as session:
                 r.extend(
                     [
@@ -174,6 +176,7 @@ class DBAnalyzer(Analyzer):
         start_datetime: Optional[datetime] = None,
         end_datetime: Optional[datetime] = None,
         inspect: bool = True,
+        inspect_type: bool = False,
         distinct: bool = False,
     ) -> Brief:
         """
@@ -191,7 +194,12 @@ class DBAnalyzer(Analyzer):
         m = self.sm.get_tracking_model(tracer, collector_id)
 
         if not inspect:
-            return Brief(tracer=tracer, collector_id=collector_id, fields=m.inspect_fields())
+            logger.debug(f"Briefing {tracer}@{collector_id} without inspect")
+            return Brief(
+                tracer=tracer,
+                collector_id=collector_id,
+                fields=m.inspect_fields(value_as_type=inspect_type),
+            )
         columns = m.inspect_fields().keys()
         statm = select(*[getattr(m, k) for k in columns])
         if distinct:
@@ -204,6 +212,7 @@ class DBAnalyzer(Analyzer):
         start_statm = statm.order_by(m.dt.asc())
         end_statm = statm.order_by(m.dt.desc())
         count_statm = select(func.count()).select_from(statm.subquery())
+        logger.debug(f"Briefing {tracer}@{collector_id} with statm: {start_statm}")
         with self.sm.begin() as session:
             start_tracking = self._convert_row_to_tracking(
                 columns, session.execute(start_statm).first(), tracer
@@ -218,7 +227,7 @@ class DBAnalyzer(Analyzer):
                 start=start_tracking.dt,
                 end=end_tracking.dt,
                 count=session.execute(count_statm).scalar(),
-                fields=m.inspect_fields(),
+                fields=m.inspect_fields(value_as_type=inspect_type),
             )
 
     def _convert_row_to_tracking(self, columns: List[str], row: Any, tracer: str) -> Tracking:
@@ -246,6 +255,7 @@ class DBAnalyzer(Analyzer):
         end_datetime: Optional[datetime] = None,
         with_details: bool = True,
         distinct: bool = False,
+        inspect_type: bool = False,
     ) -> AnalyzerBrief:
         """
         Get a brief of this analyzer.
@@ -265,15 +275,21 @@ class DBAnalyzer(Analyzer):
         Returns:
             AnalyzerBrief: A brief of this analyzer.
         """
+
         tables = self.sm.inspect_all_tables()
         if tracers:
             tables = [t for t in tables if self.sm.table_name_to_tracer(t) in tracers]
         if collector_ids:
             tables = [t for t in tables if self.sm.table_name_to_collector_id(t) in collector_ids]
 
-        briefs = [
+        briefs: List[Brief] = [
             self._table_brief(
-                t, start_datetime, end_datetime, inspect=with_details, distinct=distinct
+                t,
+                start_datetime,
+                end_datetime,
+                inspect=with_details,
+                distinct=distinct,
+                inspect_type=inspect_type,
             )
             for t in tables
         ]
@@ -281,5 +297,5 @@ class DBAnalyzer(Analyzer):
         return AnalyzerBrief(
             tracers=set([brief.tracer for brief in briefs]),
             collector_ids=set([brief.collector_id for brief in briefs]),
-            briefs=briefs,
+            briefs={f"{brief.tracer}@{brief.collector_id}": brief for brief in briefs},
         )

@@ -101,8 +101,12 @@ def test_brief(db_analyzer: DBAnalyzer, a_tracking, collector_id):
 
     assert not db_analyzer.brief(tracers=["not-exist"]).tracers
     assert not db_analyzer.brief(collector_ids=["not-exist"]).collector_ids
-    assert not db_analyzer.brief(start_datetime=now + timedelta(days=1)).briefs[0].count
-    assert not db_analyzer.brief(end_datetime=now - timedelta(days=1)).briefs[0].count
+    assert not list(db_analyzer.brief(start_datetime=now + timedelta(days=1)).briefs.values())[
+        0
+    ].count
+    assert not list(db_analyzer.brief(end_datetime=now - timedelta(days=1)).briefs.values())[
+        0
+    ].count
 
 
 if __name__ == "__main__":
