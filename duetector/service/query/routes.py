@@ -1,4 +1,7 @@
+from asyncio import sleep
+
 from fastapi import APIRouter, Body, Depends
+from fastapi.concurrency import run_in_threadpool
 
 from duetector.service.base import get_controller
 from duetector.service.query.controller import AnalyzerController
@@ -35,7 +38,7 @@ async def query(
     Query data from analyzer
     """
     analyzer = controller.get_analyzer(analyzer_name)
-    trackings = analyzer.query(**query_param.model_dump())
+    trackings = await run_in_threadpool(analyzer.query, **query_param.model_dump())
 
     return QueryResult(
         trackings=trackings,
@@ -50,8 +53,8 @@ async def query_brief(
 ):
     # type is not serializable, so we need to get analyzer without inspect type
     analyzer = controller.get_analyzer(analyzer_name)
-
+    brief = await run_in_threadpool(analyzer.brief, inspect_type=False)
     return BriefResult(
-        brief=analyzer.brief(inspect_type=False),
+        brief=brief,
         analyzer_name=analyzer_name,
     )
