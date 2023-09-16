@@ -4,7 +4,9 @@ from typing import Any, Callable, Dict, NamedTuple, Optional, Type
 import pytest
 
 from duetector.collectors.models import Tracking
-from duetector.managers import CollectorManager, FilterManager, TracerManager
+from duetector.managers.collector import CollectorManager
+from duetector.managers.filter import FilterManager
+from duetector.managers.tracer import TracerManager
 from duetector.monitors.bcc_monitor import BccMonitor, Monitor
 from duetector.tracers.base import BccTracer, Tracer
 from duetector.utils import get_boot_time_duration_ns

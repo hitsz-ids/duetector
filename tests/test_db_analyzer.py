@@ -5,6 +5,7 @@ import pytest
 from duetector.analyzer.db import DBAnalyzer
 from duetector.analyzer.models import Tracking as AT
 from duetector.collectors.models import Tracking as CT
+from duetector.managers.analyzer import AnalyzerManager
 
 now = datetime.now()
 
@@ -42,8 +43,13 @@ def a_tracking():
 
 
 @pytest.fixture
-def db_analyzer(full_config, c_tracking, collector_id):
-    db_analyzer = DBAnalyzer(full_config)
+def config(full_config):
+    yield AnalyzerManager(full_config).config._config_dict
+
+
+@pytest.fixture
+def db_analyzer(config, c_tracking, collector_id):
+    db_analyzer = DBAnalyzer(config)
     sessionmanager = db_analyzer.sm
 
     m = sessionmanager.get_tracking_model(c_tracking.tracer, collector_id)

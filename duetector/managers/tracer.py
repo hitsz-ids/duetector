@@ -6,7 +6,7 @@ import pluggy
 import duetector.tracers.register
 from duetector.extension.tracer import project_name
 from duetector.log import logger
-from duetector.managers import Manager
+from duetector.managers.base import Manager
 from duetector.tracers.base import Tracer
 
 PROJECT_NAME = project_name  #: Default project name for pluggy

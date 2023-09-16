@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 from duetector.analyzer.base import Analyzer
-from duetector.analyzer.db import DBAnalyzer
+from duetector.managers.analyzer import AnalyzerManager
 from duetector.service.base import Controller
 from duetector.service.exceptions import NotFoundError
 
@@ -11,11 +11,10 @@ class AnalyzerController(Controller):
         super().__init__(config, *args, **kwargs)
 
         # TODO: Make this configurable, may intro a manager for analyzer
-        self._avaliable_analyzers = [DBAnalyzer]
+        self._avaliable_analyzers = AnalyzerManager(config).init()
 
         self._analyzers: Dict[str, Analyzer] = {
-            analyzer.config_scope: self._init_analyzer(analyzer)
-            for analyzer in self._avaliable_analyzers
+            analyzer.config_scope: analyzer for analyzer in self._avaliable_analyzers
         }
 
     def _init_analyzer(self, analyzer: type):

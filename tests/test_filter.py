@@ -4,7 +4,7 @@ import pytest
 
 from duetector.config import ConfigLoader
 from duetector.filters.pattern import PatternFilter
-from duetector.managers import FilterManager
+from duetector.managers.filter import FilterManager
 
 data_t = namedtuple(
     "Tracking", ["pid", "uid", "gid", "comm", "fname", "timestamp", "custom", "gcustom"]

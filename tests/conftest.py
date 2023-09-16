@@ -23,4 +23,4 @@ def full_config_file(tmpdir):
 
 @pytest.fixture
 def full_config(full_config_file):
-    yield ConfigLoader(full_config_file).load_config()
+    yield ConfigLoader(full_config_file, load_env=False, dump_when_load=False).load_config()

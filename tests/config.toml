@@ -98,10 +98,17 @@ max_workers = 10
 [monitor.sh.poller]
 interval_ms = 500
 
-[db_analyzer.db]
+[analyzer]
+disabled = false
+include_extension = true
+
+[analyzer.dbanalyzer]
+disabled = false
+
+[analyzer.dbanalyzer.db]
 table_prefix = "duetector_tracking"
 
-[db_analyzer.db.engine]
+[analyzer.dbanalyzer.db.engine]
 url = "sqlite:///:memory:"
 
 [server]
