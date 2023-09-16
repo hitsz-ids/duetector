@@ -19,6 +19,7 @@ dependencies = [
     # Following are for web server
     "fastapi",
     "uvicorn[standard]",
+    "anyio"
 ]
 dynamic = ["version"]
 classifiers = [
