@@ -1,0 +1,17 @@
+# Build with hatch, you can use any build tool you like.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "duetector-emptyanalyzer"
+
+dependencies = ["duetector"]
+dynamic = ["version"]
+
+# This is the entry point for the AnalyzerManager to find the Analyzer.
+[project.entry-points."duetector.analyzer"]
+emptyanalyzer= "duetector_emptyanalyzer.empty"
+
+[tool.hatch.version]
+path = "duetector_emptyanalyzer/__init__.py"

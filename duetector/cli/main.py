@@ -10,6 +10,7 @@ import click
 from duetector.analyzer.db import DBAnalyzer
 from duetector.config import CONFIG_PATH, ConfigLoader
 from duetector.log import logger
+from duetector.managers.analyzer import AnalyzerManager
 from duetector.monitors import BccMonitor, ShMonitor
 from duetector.monitors.base import Monitor
 from duetector.tools.config_generator import ConfigGenerator
@@ -170,7 +171,9 @@ def start(
         if brief:
             try:
                 logger.info("Generating brief...")
-                logger.info(str(DBAnalyzer(c).brief(inspect_type=False)))
+                analyzers = AnalyzerManager(c).init()
+                for a in analyzers:
+                    logger.info(str(a.brief(inspect_type=False)))
             except Exception as e:
                 logger.error("Exception when generating brief")
                 logger.exception(e)

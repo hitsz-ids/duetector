@@ -6,6 +6,7 @@ from sqlalchemy import func, select
 from duetector.analyzer.base import Analyzer
 from duetector.analyzer.models import AnalyzerBrief, Brief, Tracking
 from duetector.db import SessionManager
+from duetector.extension.analyzer import hookimpl
 from duetector.log import logger
 
 
@@ -66,11 +67,6 @@ class DBAnalyzer(Analyzer):
     }
     """
     Default config for ``DBAnalyzer``.
-    """
-
-    config_scope = "db_analyzer"
-    """
-    Config scope for this analyzer.
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
@@ -299,3 +295,8 @@ class DBAnalyzer(Analyzer):
             collector_ids=set([brief.collector_id for brief in briefs]),
             briefs={f"{brief.tracer}@{brief.collector_id}": brief for brief in briefs},
         )
+
+
+@hookimpl
+def init_analyzer(config):
+    return DBAnalyzer(config)

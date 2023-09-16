@@ -8,6 +8,7 @@ from duetector.analyzer.db import DBAnalyzer
 from duetector.config import ConfigLoader
 from duetector.log import logger
 from duetector.managers import CollectorManager, FilterManager, TracerManager
+from duetector.managers.analyzer import AnalyzerManager
 from duetector.monitors import BccMonitor, ShMonitor
 from duetector.service.config import ServerConfig
 
@@ -48,7 +49,7 @@ class ConfigGenerator:
 
 """
 
-    managers = [FilterManager, TracerManager, CollectorManager]
+    managers = [FilterManager, TracerManager, CollectorManager, AnalyzerManager]
     """
     All managers to inspect.
     """
@@ -56,11 +57,6 @@ class ConfigGenerator:
     monitors = [BccMonitor, ShMonitor]
     """
     All monitors to inspect.
-    """
-
-    analyzer = [DBAnalyzer]
-    """
-    All analyzers to inspect.
     """
 
     others = [ServerConfig]
@@ -87,9 +83,6 @@ class ConfigGenerator:
 
         for m in self.monitors:
             _recursive_load(m.config_scope, self.dynamic_config, m.default_config)
-
-        for a in self.analyzer:
-            _recursive_load(a.config_scope, self.dynamic_config, a.default_config)
 
         for o in self.others:
             _recursive_load(o.config_scope, self.dynamic_config, o.default_config)

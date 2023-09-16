@@ -1,38 +1,12 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from duetector.analyzer.base import Analyzer
 from duetector.analyzer.models import AnalyzerBrief, Tracking
-from duetector.config import Configuable
+from duetector.extension.analyzer import hookimpl
 
 
-class Analyzer(Configuable):
-    """
-    A base class for all analyzers.
-    """
-
-    default_config = {
-        "disabled": False,
-    }
-    """
-    Default config for ``Analyzer``.
-    """
-
-    @property
-    def disabled(self) -> bool:
-        """
-        Weather this analyzer is disabled.
-        """
-        return self.config.disabled
-
-    @property
-    def config_scope(self):
-        """
-        Config scope for this analyzer.
-
-        Subclasses cloud override this.
-        """
-        return self.__class__.__name__.lower()
-
+class EmptyAnalyzer(Analyzer):
     def get_all_tracers(self) -> List[str]:
         """
         Get all tracers from storage.
@@ -40,7 +14,7 @@ class Analyzer(Configuable):
         Returns:
             List[str]: List of tracer's name.
         """
-        raise NotImplementedError
+        return []
 
     def get_all_collector_ids(self) -> List[str]:
         """
@@ -49,7 +23,7 @@ class Analyzer(Configuable):
         Returns:
             List[str]: List of collector id.
         """
-        raise NotImplementedError
+        return []
 
     def query(
         self,
@@ -83,7 +57,7 @@ class Analyzer(Configuable):
         Returns:
             List[duetector.analyzer.models.Tracking]: List of tracking records.
         """
-        raise NotImplementedError
+        return []
 
     def brief(
         self,
@@ -114,8 +88,13 @@ class Analyzer(Configuable):
         Returns:
             AnalyzerBrief: A brief of this analyzer.
         """
-        raise NotImplementedError
+        return AnalyzerBrief(tracers=set(), collector_ids=set(), briefs={})
 
     def analyze(self):
         # TODO: Not design yet.
         pass
+
+
+@hookimpl
+def init_analyzer(config):
+    return EmptyAnalyzer(config)

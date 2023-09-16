@@ -20,3 +20,4 @@ Avaliable Manager
    Collector Manager <collector>
    Filter Manager <filter>
    Tracer Manager <tracer>
+   Analyzer Manager <analyzer>

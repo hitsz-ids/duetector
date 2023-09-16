@@ -1,38 +1,13 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+In this example, we will write a empty Analyzer. The Analyzer returns nothing and does nothing.
 
-from duetector.analyzer.models import AnalyzerBrief, Tracking
-from duetector.config import Configuable
+Full example and more details can be found in [duetector_emptyanalyzer](./duetector_emptyanalyzer/)
 
+## 1 Write a Analyzer
 
-class Analyzer(Configuable):
-    """
-    A base class for all analyzers.
-    """
+Here we write the echo Analyzer and set it to not `disabled` by defaylt.
 
-    default_config = {
-        "disabled": False,
-    }
-    """
-    Default config for ``Analyzer``.
-    """
-
-    @property
-    def disabled(self) -> bool:
-        """
-        Weather this analyzer is disabled.
-        """
-        return self.config.disabled
-
-    @property
-    def config_scope(self):
-        """
-        Config scope for this analyzer.
-
-        Subclasses cloud override this.
-        """
-        return self.__class__.__name__.lower()
-
+```python
+class EmptyAnalyzer(Analyzer):
     def get_all_tracers(self) -> List[str]:
         """
         Get all tracers from storage.
@@ -40,7 +15,7 @@ class Analyzer(Configuable):
         Returns:
             List[str]: List of tracer's name.
         """
-        raise NotImplementedError
+        return []
 
     def get_all_collector_ids(self) -> List[str]:
         """
@@ -49,7 +24,7 @@ class Analyzer(Configuable):
         Returns:
             List[str]: List of collector id.
         """
-        raise NotImplementedError
+        return []
 
     def query(
         self,
@@ -83,7 +58,7 @@ class Analyzer(Configuable):
         Returns:
             List[duetector.analyzer.models.Tracking]: List of tracking records.
         """
-        raise NotImplementedError
+        return []
 
     def brief(
         self,
@@ -114,8 +89,68 @@ class Analyzer(Configuable):
         Returns:
             AnalyzerBrief: A brief of this analyzer.
         """
-        raise NotImplementedError
+        return AnalyzerBrief(tracers=set(), collector_ids=set(), briefs={})
 
     def analyze(self):
         # TODO: Not design yet.
         pass
+
+
+```
+
+## 2 Register the Analyzer
+
+```python
+from duetector.extension.analyzer import hookimpl
+
+@hookimpl
+def init_analyzer(config):
+    return EmptyAnalyzer(config)
+
+```
+
+## 3 Turning the Analyzer into a package
+
+Here we use `pyproject.toml` as the configuration file.
+
+```toml
+# Build with hatch, you can use any build tool you like.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "duetector-emptyanalyzer"
+
+dependencies = ["duetector"]
+dynamic = ["version"]
+
+# This is the entry point for the AnalyzerManager to find the Analyzer.
+[project.entry-points."duetector.analyzer"]
+emptyanalyzer= "duetector_emptyanalyzer.empty"
+
+[tool.hatch.version]
+path = "duetector_emptyanalyzer/__init__.py"
+
+```
+
+## 4 Verification
+
+Simply run the following code to verify the Analyzer is registered.
+
+```python
+from duetector.manager import AnalyzerManager
+from duetector_emptyanalyzer.empty import EmptyAnalyzer
+
+
+assert EmptyAnalyzer in (type(a) for a in AnalyzerManager().init())
+```
+
+## 5 Configuration
+
+In `config.toml` you can set the Analyzer to be disabled.
+
+```toml
+[analyzer.EmptyAnalyzer]
+disabled = true
+```
