@@ -1,5 +1,10 @@
 from typing import Any, Dict, Optional
 
+try:
+    from functools import cache
+except ImportError:
+    from functools import lru_cache as cache
+
 from fastapi import Depends
 
 from duetector.config import Configuable
@@ -15,6 +20,7 @@ class Controller(Configuable):
         super().__init__(config, *args, **kwargs)
 
 
+@cache
 def get_controller(controller_type: type):
     def _(config: dict = Depends(get_config)) -> Controller:
         return controller_type(config)
