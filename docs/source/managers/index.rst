@@ -4,7 +4,7 @@ Managers
 Managers provides a way to get instances of both built-in implementations and extensions.
 
 
-.. autoclass:: duetector.managers.Manager
+.. autoclass:: duetector.managers.base.Manager
    :members:
    :undoc-members:
    :inherited-members:

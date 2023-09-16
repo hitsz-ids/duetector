@@ -6,7 +6,7 @@ CollectorManager
 .. autofunction:: duetector.managers.collector.init_collector
 
 
-.. autoclass:: duetector.managers.CollectorManager
+.. autoclass:: duetector.managers.collector.CollectorManager
    :members:
    :undoc-members:
    :inherited-members:

@@ -6,7 +6,7 @@ AnalyzerManager
 .. autofunction:: duetector.managers.analyzer.init_analyzer
 
 
-.. autoclass:: duetector.managers.AnalyzerManager
+.. autoclass:: duetector.managers.analyzer.AnalyzerManager
    :members:
    :undoc-members:
    :inherited-members:

@@ -4,7 +4,7 @@ import pytest
 
 from duetector.collectors.db import DBCollector
 from duetector.collectors.models import Tracking
-from duetector.managers import CollectorManager
+from duetector.managers.collector import CollectorManager
 from duetector.utils import get_boot_time_duration_ns
 
 timestamp = 13205215231927

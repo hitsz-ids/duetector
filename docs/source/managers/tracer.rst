@@ -6,7 +6,7 @@ TracerManager
 .. autofunction:: duetector.managers.tracer.init_tracer
 
 
-.. autoclass:: duetector.managers.TracerManager
+.. autoclass:: duetector.managers.tracer.TracerManager
    :members:
    :undoc-members:
    :inherited-members:

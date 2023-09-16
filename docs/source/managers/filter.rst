@@ -6,7 +6,7 @@ FilterManager
 .. autofunction:: duetector.managers.filter.init_filter
 
 
-.. autoclass:: duetector.managers.FilterManager
+.. autoclass:: duetector.managers.filter.FilterManager
    :members:
    :undoc-members:
    :inherited-members:

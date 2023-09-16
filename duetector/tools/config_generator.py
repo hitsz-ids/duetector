@@ -7,8 +7,10 @@ import tomli_w
 from duetector.analyzer.db import DBAnalyzer
 from duetector.config import ConfigLoader
 from duetector.log import logger
-from duetector.managers import CollectorManager, FilterManager, TracerManager
 from duetector.managers.analyzer import AnalyzerManager
+from duetector.managers.collector import CollectorManager
+from duetector.managers.filter import FilterManager
+from duetector.managers.tracer import TracerManager
 from duetector.monitors import BccMonitor, ShMonitor
 from duetector.service.config import ServerConfig
 
