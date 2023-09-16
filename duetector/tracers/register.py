@@ -1,4 +1,5 @@
 # Expose for plugin system
-from . import clone, openat2, tcpconnect, uname
+from .bcc import clone, openat2, tcpconnect
+from .sh import uname
 
 registers = [openat2, uname, tcpconnect, clone]

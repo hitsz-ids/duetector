@@ -1,7 +1,7 @@
 CloneTracer
 ==================================
 
-.. autoclass:: duetector.tracers.clone.CloneTracer
+.. autoclass:: duetector.tracers.bcc.clone.CloneTracer
    :members:
    :undoc-members:
    :private-members:

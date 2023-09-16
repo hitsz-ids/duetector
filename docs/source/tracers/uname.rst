@@ -1,7 +1,7 @@
 UnameTracer
 ==================================
 
-.. autoclass:: duetector.tracers.uname.UnameTracer
+.. autoclass:: duetector.tracers.sh.uname.UnameTracer
    :members:
    :undoc-members:
    :private-members:

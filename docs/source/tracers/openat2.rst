@@ -1,7 +1,7 @@
 OpenTracer
 ==================================
 
-.. autoclass:: duetector.tracers.openat2.OpenTracer
+.. autoclass:: duetector.tracers.bcc.openat2.OpenTracer
    :members:
    :undoc-members:
    :private-members:
