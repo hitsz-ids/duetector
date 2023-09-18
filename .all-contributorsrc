@@ -1,8 +1,22 @@
 {
-    "projectName": "duetector",
-    "projectOwner": "hitsz-ids",
-    "files": [
-        "README.md",
-        "README_zh.md"
-    ]
+  "projectName": "duetector",
+  "projectOwner": "hitsz-ids",
+  "files": [
+    "README.md",
+    "README_zh.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "wunder957",
+      "name": "wunder957",
+      "avatar_url": "https://avatars.githubusercontent.com/u/141890183?v=4",
+      "profile": "https://github.com/wunder957",
+      "contributions": [
+        "code"
+      ]
+    }
+  ]
 }
