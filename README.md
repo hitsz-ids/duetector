@@ -8,6 +8,7 @@
 <a href="https://github.com/hitsz-ids/duetector/releases/"><img alt="Pre Releases" src="https://img.shields.io/github/v/release/hitsz-ids/duetector?include_prereleases&label=pre-release&logo=github"></a>
 <a href="https://github.com/hitsz-ids/duetector"><img alt="Last Commit" src="https://img.shields.io/github/last-commit/hitsz-ids/duetector"></a>
 <a href="https://github.com/hitsz-ids/duetector"><img alt="Python version" src="https://img.shields.io/pypi/pyversions/duetector"></a>
+<a href="https://github.com/hitsz-ids/duetector/contributors"><img alt="contributors" src="https://img.shields.io/github/all-contributors/hitsz-ids/duetector?color=ee8449&style=flat-square"></a>
 </p>
 
 <p align="center">
@@ -208,6 +209,17 @@ See [docs of duetector](https://duetector.readthedocs.io/)
 ## Maintainers
 
 This project is initiated by **Institute of Data Security, Harbin Institute of Technology (Shen Zhen)**, if you are interested in this project and [DataUCON](https://dataucon.idslab.io/) project and willing to work together to improve it, welcome to join our open source community.
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## How to contribute
 
