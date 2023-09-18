@@ -1,8 +1,22 @@
 {
-    "projectName": "duetector",
-    "projectOwner": "hitsz-ids",
-    "files": [
-        "README.md",
-        "README_zh.md"
-    ]
+  "projectName": "duetector",
+  "projectOwner": "hitsz-ids",
+  "files": [
+    "README.md",
+    "README_zh.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "WYXsb",
+      "name": "MayDown",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62527555?v=4",
+      "profile": "https://github.com/WYXsb",
+      "contributions": [
+        "code"
+      ]
+    }
+  ]
 }
