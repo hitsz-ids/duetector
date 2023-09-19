@@ -6,7 +6,8 @@
 
 - Tracking ML jobs in kata containers. [tracking-mljob-in-kata-containers](./tracking-mljob-in-kata-containers/README.md)
 
-
 # Configurations Reference
 
-TODO: Wait for readthedocs
+Docs available at: https://readthedocs.org/projects/duetector/
+
+All configurable class inherit from [`Configurable` class](https://duetector.readthedocs.io/en/latest/config.html#duetector.config.Configuable).

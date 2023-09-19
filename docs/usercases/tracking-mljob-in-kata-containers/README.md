@@ -22,6 +22,7 @@ mkdir ./duetector-kata
 sudo nerdctl run \
 -it --rm \
 -p 8888:8888 \
+-p 8120:8120 \
 -e DUETECTOR_DAEMON_WORKDIR=/duetector-kata \
 -v $(pwd)/duetector-kata:/duetector-kata \
 --runtime=io.containerd.kata.v2 \

@@ -37,24 +37,33 @@ In the [ABAUC control model](https://github.com/hitsz-ids/dataucon), duetector c
 
 ## Feature
 
-- [X] Plug-in system
-  - [X] Customized tracer support
-  - [X] Support for custom filters
-  - [X] Custom collector support
-  - [X] [Custom Plugin Examples](./examples/)
-- [ ] Configuration Management
+- Plug-in system support, see [examples](./examples/) for more details
+  - [X] Custom `Tracer` and `TracerManager`
+  - [X] Custom `Filters` and `FilterManager`
+  - [X] Custom `Collector` and `CollectorManager`
+  - [X] Custom `Analyzer` and `AnalyzerManager`
+- Configuration Management
   - [X] Configuration using a single configuration file
   - [X] Generate Plugin Configuration
   - [ ] Support for dynamically loading configurations
-- [ ] eBPF-based data usage probes
-  - [X] File Open Operation
-  - [ ] ......
-- [ ] Shell command probes
-  - [X] Kernel Information Probe
-  - [ ] ......
-- [X] Data collector with SQL database support
-- [X] CLI Tools
-- [ ] PIP Service
+- `Tracer` Support
+  - [X] eBPF-based tracer
+  - [X] Shell command tracer
+  - [ ] Subprocess tracer
+- `Filter` Support
+  - [X] Pattern matching, based on regular expressions
+- `Collector` and `Analyzer` Support
+  - [X] SQL database
+  - [ ] Opentelemetry
+- Analyzer Support
+  - [X] SQL database support
+  - [ ] Opentelemetry support
+- User Interface
+  - [X] CLI Tools
+  - [X] PIP Service
+  - [ ] Control Panel
+- Enhancements
+  - [ ] Runc containers identification
 
 The eBPF program requires kernel support, see [Kernel Support](./docs/kernel_config.md)
 
@@ -158,7 +167,7 @@ Commands:
 
 ### Analyzing with analyzer
 
-We provide an [Analyzer](https://duetector.readthedocs.io/en/latest/analyzer/index.html) that can query the data in storage, here we provide a [user case](./docs/usercases/simplest-open-count/README.md)
+We provide an [Analyzer](https://duetector.readthedocs.io/en/latest/analyzer/index.html) that can query the data in storage, try it in [user case](./docs/usercases/simplest-open-count/README.md)
 
 ### Using duetector server
 
@@ -231,12 +240,10 @@ This project is initiated by **Institute of Data Security, Harbin Institute of T
 
 ## How to contribute
 
-You are very welcome to join! [Raise an Issue](https://github.com/hitsz-ids/duetector/issues/new) or submit a Pull Request.
+Starting with the [good first issue](https://github.com/hitsz-ids/duetector/issues/70) and reading our [contributing guidelines](./CONTRIBUTING.md).
 
-Please refer to the [Developer Documentation](./CONTRIBUTING.md).
-
-Learn about the design ideas and architecture of this project here: [DESIGN DOCUMENTS](./docs/design/README.md).
+Learn about the designing and architecture of this project here: [docs/design](./docs/design/README.md).
 
 ## License
 
-This project uses Apache-2.0 license, please refer to [LICENSE](https://github.com/hitsz-ids/duetector/blob/main/LICENSE).
+This project uses Apache-2.0 license, please refer to [LICENSE](./LICENSE).

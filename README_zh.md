@@ -41,24 +41,28 @@ duetector🔍是一个基于可扩展的的数据使用探测器，它可以在L
 
 ## 主要特性
 
-- [X] 插件化系统
-  - [X] 支持自定义tracer
-  - [X] 支持自定义filter
-  - [X] 支持自定义collector
-  - [X] [自定义插件示例](./examples/)
-- [ ] 配置管理
+- 插件化系统，在[例子](./examples/)获取更多细节
+  - [X] 支持自定义`Tracer`和`TracerManager`
+  - [X] 支持自定义`Filters`和`FilterManager`
+  - [X] 支持自定义`Collector`和`CollectorManager`
+  - [X] 支持自定义`Analyzer`和`AnalyzerManager`
+- 配置管理
   - [X] 使用单一配置文件配置
   - [X] 支持生成插件配置
   - [ ] 支持动态加载配置
-- [ ] 基于eBPF的数据使用探测器
-  - [X] 文件打开操作
-  - [ ] ……
-- [ ] 基于Shell命令的探测器
-  - [X] 内核信息探测
-  - [ ] ……
-- [X] 支持SQL数据库的数据收集器
-- [X] CLI工具
-- [ ] PIP服务
+- `Tracer`支持
+  - [X] 基于eBPF的tracer
+  - [X] 基于shell命令的tracer
+  - [ ] 基于子进程的tracer
+- `Filter`支持
+  - [X] 支持正则的模式匹配
+- `Collector`和`Analyzer`支持
+  - [X] SQL数据库
+  - [ ] Opentelemetry
+- 用户接口
+  - [X] 命令行工具
+  - [X] PIP服务
+  - [ ] 控制平面
 
 eBPF程序需要内核支持，详见[内核支持](./docs/kernel_config.md)
 
@@ -235,19 +239,10 @@ Commands:
 
 ## 如何贡献
 
-非常欢迎您的加入！[我们欢迎任何类型的Issue](https://github.com/hitsz-ids/duetector/issues/new)，同时也期待您的PR
+从[good first issue](https://github.com/hitsz-ids/duetector/issues/70)了解如何开始，并阅读我们的[贡献指南](./CONTRIBUTING.md)。
 
-我们提供了以下资料让您更快了解项目
-
-- 开发环境配置和其他注意事项请参考：[开发者文档](./CONTRIBUTING.md)
-- 在这里了解本项目的设计思路和架构：[设计文档](./docs/design/README.md)
-
-# 如何开发插件
-
-目前，tracer、filter、collector都支持自定义插件开发，以Python包作为单个插件或多个插件，可以查看[自定义插件示例](./examples/)了解开发步骤
-
-TODO: 提供一个插件的cookiecutter模板
+在这里了解本项目的设计思路和架构：[设计文档](./docs/design/README.md)
 
 ## 许可证
 
-本项目使用 Apache-2.0 license，有关协议请参考[LICENSE](https://github.com/hitsz-ids/duetector/blob/main/LICENSE)。
+本项目使用 Apache-2.0 license，有关协议请参考[LICENSE](./LICENSE)。

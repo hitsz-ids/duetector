@@ -70,6 +70,7 @@ Linux 856b63ebabcc 6.1.38 #2 SMP Fri Aug 11 16:20:36 CST 2023 x86_64 Linux
 sudo nerdctl run \
 -it \
 -p 8888:8888 \
+-p 8120:8120 \
 --runtime=io.containerd.kata.v2 \
 --cap-add=sys_admin \
 --entrypoint bash \
