@@ -172,8 +172,9 @@ class ConfigLoader:
 
 class Configuable:
     """
-    A base class for all configuable classes
+    A base class for all configuable classes.
 
+    It's recommended to use CLI to generate config file as ``config_scope`` may be masked ``manager``.
 
     Attributes:
         default_config (Dict[str, Any]): default config for this class

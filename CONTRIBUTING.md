@@ -55,7 +55,7 @@ pip install -e .[docs]
 Build docs
 
 ```bash
-make clean && make html
+make html
 ```
 
 Use [start-docs-host.sh](dev-tools/start-docs-host.sh) to deploy a local http server to view the docs
@@ -65,7 +65,6 @@ cd ./dev-tools && ./start-docs-host.sh
 ```
 
 Access `http://localhost:8080` for docs.
-
 
 ## Contributing a new tracer/filter/collector/analyzer
 

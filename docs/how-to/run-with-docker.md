@@ -1,6 +1,5 @@
 # Run with docker
 
-
 > Get the image from [dockerhub](https://hub.docker.com/r/dataucon/duetector/).
 
 BCC relies on kernel headers, either by turning on the kernel compilation parameter `CONFIG_IKHEADERS=m` or by installing the `kernel-development-package` provided by the distribution.
@@ -14,6 +13,7 @@ There are two options:
 ```Bash
 docker run -it --rm --privileged \
 -p 8888:8888 \
+-p 8120:8120 \
 --entrypoint bash \
 -v /sys/kernel/kheaders.tar.xz:/sys/kernel/kheaders.tar.xz \
 -v /sys/kernel/debug:/sys/kernel/debug \
@@ -31,6 +31,7 @@ Then mount `/lib/modules` into the container:
 ```Bash
 docker run -it --rm --privileged \
 -p 8888:8888 \
+-p 8120:8120 \
 --entrypoint bash \
 -v /lib/modules:/lib/modules \
 -v /sys/kernel/debug:/sys/kernel/debug \
@@ -42,6 +43,7 @@ dataucon/duetector
 ```Bash
 docker run -it --rm --privileged \
 -p 8888:8888 \
+-p 8120:8120 \
 --entrypoint bash \
 -v /lib/modules:/lib/modules \
 -v /usr/src:/usr/src \
