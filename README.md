@@ -30,9 +30,10 @@ In the [ABAUC control model](https://github.com/hitsz-ids/dataucon), duetector c
 - [Features](#Features)
 - [Installation](#Installation)
 - [Quick Start](#quick-start)
-- [API](#API)
+- [API](#API-documentation)
 - [Maintainers](#Maintainers)
-- [contribute](#contribute)
+- [Contributors](#Contributors)
+- [How to contribute](#How-to-contribute)
 - [License](#License)
 
 ## Feature
