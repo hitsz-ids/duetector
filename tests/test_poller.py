@@ -25,7 +25,8 @@ def test_poller(poller: Poller, capsys):
     poller.shutdown()
     poller.wait()
     captured = capsys.readouterr()
-    assert captured.out == "hello\nhello\n"
+    # One for the first time, one for 1.5 * interval_ms, one for last time
+    assert captured.out == "hello\nhello\nhello\n"
 
 
 if __name__ == "__main__":

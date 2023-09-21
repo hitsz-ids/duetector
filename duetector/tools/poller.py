@@ -56,6 +56,8 @@ class Poller(Configuable):
             while not self.shutdown_event.is_set():
                 func(*args, **kwargs)
                 self.shutdown_event.wait(timeout=self.interval_ms / 1000)
+            # call func one last time before exit
+            func(*args, **kwargs)
 
         self._thread = threading.Thread(target=_poll)
         self.shutdown_event.clear()
