@@ -25,6 +25,8 @@ duetector🔍 is an extensible data usage control detector that provides support
 
 In the [ABAUC control model](https://github.com/hitsz-ids/dataucon), duetector can be used as a PIP (Policy Information Point) to obtain data usage behavior, so as to provide information about data usage behavior for PDP (Policy Decision Point). Provide information on data usage behavior to PDP (Policy Decision Point).
 
+Try simple user case: [Simplest Open Count](./docs/usercases/simplest-open-count/README.md)
+
 ## Table of Contents
 
 - [Features](#Features)
@@ -94,7 +96,7 @@ For more details on running with docker images see [here](./docs/how-to/run-with
 
 ## Quick start
 
-> More documentation and examples can be found [here](. /docs/).
+> More documentation and examples can be found [here](./docs/).
 
 ### Start detector
 
@@ -136,7 +138,6 @@ Options:
                                 config.a, default: True
   ...
 ```
-
 
 When using a plugin, the default configuration file will not contain the plugin's configuration, use the dynamically-generated configuration directive to generate a configuration file with the plugin's configuration, this directive also supports merging existing configuration files and environment variables.
 
@@ -223,8 +224,11 @@ This project is initiated by **Institute of Data Security, Harbin Institute of T
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+
 <!-- prettier-ignore-start -->
+
 <!-- markdownlint-disable -->
+
 <table>
   <tbody>
     <tr>
@@ -235,6 +239,7 @@ This project is initiated by **Institute of Data Security, Harbin Institute of T
 </table>
 
 <!-- markdownlint-restore -->
+
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
