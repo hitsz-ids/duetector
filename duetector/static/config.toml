@@ -100,6 +100,7 @@ max_workers = 10
 
 [monitor.bcc.poller]
 interval_ms = 500
+call_when_shutdown = true
 
 [monitor.sh]
 disabled = false
@@ -111,6 +112,7 @@ max_workers = 10
 
 [monitor.sh.poller]
 interval_ms = 500
+call_when_shutdown = true
 
 [server]
 token = ""

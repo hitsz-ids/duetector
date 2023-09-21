@@ -20,6 +20,7 @@ class Poller(Configuable):
 
     default_config = {
         "interval_ms": 500,
+        "call_when_shutdown": True,
     }
     """
     Default config for this poller.
@@ -42,6 +43,13 @@ class Poller(Configuable):
         """
         return self.config.interval_ms
 
+    @property
+    def call_when_shutdown(self):
+        """
+        Whether to call ``func`` when shutdown
+        """
+        return self.config.call_when_shutdown
+
     def start(self, func, *args, **kwargs):
         """
         Start a poller thread, until ``shutdown`` is called.
@@ -56,6 +64,9 @@ class Poller(Configuable):
             while not self.shutdown_event.is_set():
                 func(*args, **kwargs)
                 self.shutdown_event.wait(timeout=self.interval_ms / 1000)
+            # call func one last time before exit
+            if self.call_when_shutdown:
+                func(*args, **kwargs)
 
         self._thread = threading.Thread(target=_poll)
         self.shutdown_event.clear()
