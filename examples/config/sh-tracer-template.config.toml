@@ -1,0 +1,9 @@
+# For more details of tracer template and tracer manager
+# See: https://duetector.readthedocs.io/en/latest/managers/tracer.html
+
+[tracer.template]
+disabled = false
+
+[tracer.template.sh]
+# Add a pstracer to run the command "ps -aux"
+pstracer = { "comm" = ["ps", "-aux"], config = { "enable_cache" = false } }

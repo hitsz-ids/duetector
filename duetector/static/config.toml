@@ -34,6 +34,11 @@ exclude_gid = [
 disabled = false
 include_extension = true
 
+[tracer.template]
+disabled = false
+
+[tracer.template.sh]
+
 [tracer.clonetracer]
 disabled = false
 attach_event = "__x64_sys_clone"

@@ -7,7 +7,6 @@ from typing import List
 
 import click
 
-from duetector.analyzer.db import DBAnalyzer
 from duetector.config import CONFIG_PATH, ConfigLoader
 from duetector.log import logger
 from duetector.managers.analyzer import AnalyzerManager

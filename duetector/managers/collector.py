@@ -41,10 +41,11 @@ class CollectorManager(Manager):
 
         self.pm = pluggy.PluginManager(PROJECT_NAME)
         self.pm.add_hookspecs(sys.modules[__name__])
-        self.pm.load_setuptools_entrypoints(PROJECT_NAME)
+        if self.include_extension:
+            self.pm.load_setuptools_entrypoints(PROJECT_NAME)
         self.register(duetector.collectors.register)
 
-    def init(self, ignore_disabled=True) -> List[Collector]:
+    def init(self, ignore_disabled=True, *args, **kwargs) -> List[Collector]:
         """
         Initialize all collectors from config.
 

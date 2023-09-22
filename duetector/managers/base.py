@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import pluggy
 
@@ -64,3 +64,9 @@ class Manager(Configuable):
         If current manager is disabled.
         """
         return self.config.disabled
+
+    def init(self, *args, **kwargs) -> List[Any]:
+        """
+        Initialize manager.
+        """
+        raise NotImplementedError

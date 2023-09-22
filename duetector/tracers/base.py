@@ -240,7 +240,7 @@ class ShellTracer(Tracer):
     """
     shell command
     """
-    data_t = namedtuple("ShellOutput", ["output"])
+    data_t = namedtuple("ShellOutput", ["output", "dt"])
     """
     data type for this tracer
     """

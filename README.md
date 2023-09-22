@@ -40,7 +40,7 @@ Try simple user case: [Simplest Open Count](./docs/usercases/simplest-open-count
 
 ## Feature
 
-- Plug-in system support, see [examples](./examples/) for more details
+- Plug-in system support, see [examples](./examples/README.md) for more details
   - [X] Custom `Tracer` and `TracerManager`
   - [X] Custom `Filters` and `FilterManager`
   - [X] Custom `Collector` and `CollectorManager`
