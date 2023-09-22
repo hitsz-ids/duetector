@@ -76,7 +76,7 @@ class ConfigGenerator:
         for manager in self.managers:
             m = manager(include_extension=include_extension)
             _recursive_load(m.config_scope, self.dynamic_config, m.default_config)
-            for c in m.init(ignore_disabled=False):
+            for c in m.init(ignore_disabled=False, include_template=False):
                 _recursive_load(
                     c.config_scope,
                     self.dynamic_config[m.config_scope],

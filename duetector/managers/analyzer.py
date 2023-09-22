@@ -39,10 +39,11 @@ class AnalyzerManager(Manager):
 
         self.pm = pluggy.PluginManager(PROJECT_NAME)
         self.pm.add_hookspecs(sys.modules[__name__])
-        self.pm.load_setuptools_entrypoints(PROJECT_NAME)
+        if self.include_extension:
+            self.pm.load_setuptools_entrypoints(PROJECT_NAME)
         self.register(duetector.analyzer.register)
 
-    def init(self, analyzer_type=Analyzer, ignore_disabled=True) -> List[Analyzer]:
+    def init(self, analyzer_type=Analyzer, ignore_disabled=True, *args, **kwargs) -> List[Analyzer]:
         """
         Initialize all analyzers from config.
 

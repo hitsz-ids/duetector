@@ -11,3 +11,10 @@ TracerManager
    :undoc-members:
    :inherited-members:
    :show-inheritance:
+
+
+.. autoclass:: duetector.managers.tracer.TracerTemplate
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:
