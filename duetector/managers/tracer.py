@@ -35,8 +35,9 @@ class TracerTemplate(Configuable):
 
     .. code-block:: toml
 
-    [tracer.template.sh]
-    pstracer = { "comm" = ["ps", "-aux"], config = { "enable_cache" = false } }
+        [tracer.template.sh]
+        pstracer = { "comm" = ["ps", "-aux"], config = { "enable_cache" = false } }
+
     """
 
     _avaliable_tracer_type = {
