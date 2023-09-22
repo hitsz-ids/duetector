@@ -306,3 +306,30 @@ class ShellTracer(Tracer):
         Set callback function to host.
         """
         host.set_callback(self, callback)
+
+
+class SubprocessTracer(Tracer):
+    default_config = {
+        **Tracer.default_config,
+    }
+    """
+    Default config for this tracer.
+    """
+
+    executable_: List[str]
+    """
+    shell command
+    """
+
+    sudo: bool = False
+    """
+    If use sudo to run this command
+    """
+
+    preserve_env: bool = False
+    """
+    If preserve env for this command
+    """
+
+    def __init__(self, config: Optional[Union[Config, Dict[str, Any]]] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
