@@ -1,4 +1,5 @@
 import subprocess
+from datetime import datetime
 from typing import Any, Callable, Dict, List, NamedTuple, Optional
 
 from duetector.collectors.base import Collector
@@ -50,7 +51,7 @@ class ShTracerHost:
                 tracer.set_cache(output)
 
             callback = self.callbacks[tracer]
-            callback(tracer.data_t(output=output))
+            callback(tracer.data_t(output=output, dt=datetime.now()))
 
         return _
 

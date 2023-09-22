@@ -79,6 +79,7 @@ class Tracking(pydantic.BaseModel):
             # Is instance of tracer
             tracer_name = getattr(tracer, "name", tracer.__class__.__name__)
 
+        tracer_name = tracer_name.lower()
         args = {
             "tracer": tracer_name,
             "extended": {},
