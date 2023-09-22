@@ -57,10 +57,10 @@ Try simple user case: [Simplest Open Count](./docs/usercases/simplest-open-count
   - [X] Pattern matching, based on regular expressions
 - `Collector` and `Analyzer` Support
   - [X] SQL database
-  - [ ] Opentelemetry
+  - [ ] OpenTelemetry
 - Analyzer Support
-  - [X] SQL database support
-  - [ ] Opentelemetry support
+  - [X] SQL database
+  - [ ] OpenTelemetry
 - User Interface
   - [X] CLI Tools
   - [X] PIP Service
