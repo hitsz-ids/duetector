@@ -39,6 +39,8 @@ disabled = false
 
 [tracer.template.sh]
 
+[tracer.template.sp]
+
 [tracer.clonetracer]
 disabled = false
 attach_event = "__x64_sys_clone"
@@ -95,27 +97,17 @@ table_prefix = "duetector_tracking"
 [analyzer.dbanalyzer.db.engine]
 url = "sqlite:///duetector-dbcollector.sqlite3"
 
-[monitor.bcc]
-disabled = false
-auto_init = true
-continue_on_exception = true
-
-[monitor.bcc.backend_args]
-max_workers = 10
-
-[monitor.bcc.poller]
-interval_ms = 500
-call_when_shutdown = true
-
-[monitor.sh]
+[monitor]
 disabled = false
 auto_init = true
 timeout = 5
+kill_timeout = 5
+bufsize = 32768
 
-[monitor.sh.backend_args]
+[monitor.backend_args]
 max_workers = 10
 
-[monitor.sh.poller]
+[monitor.poller]
 interval_ms = 500
 call_when_shutdown = true
 

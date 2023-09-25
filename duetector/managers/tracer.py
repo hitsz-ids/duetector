@@ -8,7 +8,7 @@ from duetector.config import Config, Configuable
 from duetector.extension.tracer import project_name
 from duetector.log import logger
 from duetector.managers.base import Manager
-from duetector.tracers.base import ShellTracer, Tracer
+from duetector.tracers.base import ShellTracer, SubprocessTracer, Tracer
 
 PROJECT_NAME = project_name  #: Default project name for pluggy
 hookspec = pluggy.HookspecMarker(PROJECT_NAME)
@@ -38,10 +38,18 @@ class TracerTemplate(Configuable):
         [tracer.template.sh]
         pstracer = { "comm" = ["ps", "-aux"], config = { "enable_cache" = false } }
 
+        [tracer.template.sp]
+        randomtracer = { "comm" = ["cat", "/dev/random"], config = { "enable_cache" = false } }
+
+    TODO:
+
+    Example of ``tracer.template.sp`` is not working yet. Replace it with some CO-RE example
+
     """
 
     _avaliable_tracer_type = {
         "sh": ShellTracer,
+        "sp": SubprocessTracer,
     }
     """
     Available tracer type.

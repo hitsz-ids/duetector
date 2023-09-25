@@ -6,6 +6,7 @@ import json
 import signal
 import threading
 import time
+from sys import stderr
 
 
 class Tracer:
@@ -34,7 +35,7 @@ class Tracer:
         print(json.dumps(msg))
         self.thread.start()
 
-    def stop(self, *args, **kwargs):
+    def stop(self):
         self.event.set()
         self.thread.join()
         self.thread = None
@@ -50,9 +51,24 @@ class Tracer:
 def main():
     t = Tracer()
     t.start()
-    signal.signal(signal.SIGINT, t.stop)
-    signal.signal(signal.SIGTERM, t.stop)
-    signal.pause()
+
+    def _stop(*args, **kwargs):
+        t.stop()
+        exit(0)
+
+    signal.signal(signal.SIGINT, _stop)
+    signal.signal(signal.SIGTERM, _stop)
+    while True:
+        line = input()
+        try:
+            msg = json.loads(line)
+        except json.JSONDecodeError as e:
+            msg = {
+                "version": "v0",
+                "event": "error",
+                "payload": {"error": str(e)},
+            }
+        stderr.write(json.dumps(msg))
 
 
 if __name__ == "__main__":

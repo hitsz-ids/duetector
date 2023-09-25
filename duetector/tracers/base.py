@@ -1,6 +1,6 @@
 from collections import namedtuple
 from threading import Lock
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import IO, Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from duetector.config import Config, Configuable
 from duetector.exceptions import TracerError, TreacerDisabledError
@@ -266,10 +266,6 @@ class ShellTracer(Tracer):
 
         return self.config.enable_cache
 
-    @property
-    def disabled(self):
-        return self.config.disabled
-
     def set_cache(self, cache):
         """
         Set cache for this tracer.
@@ -316,14 +312,9 @@ class SubprocessTracer(Tracer):
     Default config for this tracer.
     """
 
-    executable_: List[str]
+    comm: List[str]
     """
     shell command
-    """
-
-    sudo: bool = False
-    """
-    If use sudo to run this command
     """
 
     preserve_env: bool = False
@@ -333,3 +324,45 @@ class SubprocessTracer(Tracer):
 
     def __init__(self, config: Optional[Union[Config, Dict[str, Any]]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
+
+    def attach(self, host):
+        """
+        Attach to host.
+        """
+        host.attach(self)
+
+    def detach(self, host):
+        """
+        Detach from host.
+        """
+        host.detach(self)
+
+    def get_poller(self, host) -> Callable:
+        """
+        Get poller function from host.
+        """
+        return host.get_poller(self)
+
+    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+        """
+        Set callback function to host.
+        """
+        host.set_callback(self, callback)
+
+    def notify_poll(self, io: IO):
+        """
+        Notify: poller is polling.
+        """
+        raise NotImplementedError("notify_poll not implemented")
+
+    def notify_stop(self):
+        """
+        Notify: subprocess need to stop.
+        """
+        raise NotImplementedError("notify_stop not implemented")
+
+    def deserialize(self, data):
+        """
+        Deserialize data to ``data_t``.
+        """
+        raise NotImplementedError("deserialize not implemented")
