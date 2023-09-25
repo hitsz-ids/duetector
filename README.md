@@ -9,6 +9,7 @@
 <a href="https://github.com/hitsz-ids/duetector"><img alt="Last Commit" src="https://img.shields.io/github/last-commit/hitsz-ids/duetector"></a>
 <a href="https://github.com/hitsz-ids/duetector"><img alt="Python version" src="https://img.shields.io/pypi/pyversions/duetector"></a>
 <a href="https://github.com/hitsz-ids/duetector/contributors"><img alt="contributors" src="https://img.shields.io/github/all-contributors/hitsz-ids/duetector?color=ee8449&style=flat-square"></a>
+<a href="https://join.slack.com/t/hitsz-ids/shared_invite/zt-2395mt6x2-dwf0j_423QkAgGvlNA5E1g"><img alt="slack" src="https://img.shields.io/badge/slack-join%20chat-ff69b4.svg?style=flat-square"></a>
 </p>
 
 <p align="center">
@@ -25,7 +26,9 @@ duetector🔍 is an extensible data usage control detector that provides support
 
 In the [ABAUC control model](https://github.com/hitsz-ids/dataucon), duetector can be used as a PIP (Policy Information Point) to obtain data usage behavior, so as to provide information about data usage behavior for PDP (Policy Decision Point). Provide information on data usage behavior to PDP (Policy Decision Point).
 
-Try simple user case: [Simplest Open Count](./docs/usercases/simplest-open-count/README.md)
+Try simple user case: [Simplest Open Count](./docs/usercases/simplest-open-count/README.md).
+
+Join our [slack channel](https://join.slack.com/t/hitsz-ids/shared_invite/zt-2395mt6x2-dwf0j_423QkAgGvlNA5E1g).
 
 ## Table of Contents
 
