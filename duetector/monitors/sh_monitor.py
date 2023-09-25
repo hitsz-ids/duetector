@@ -2,6 +2,11 @@ import subprocess
 from datetime import datetime
 from typing import Any, Callable, Dict, List, NamedTuple, Optional
 
+try:
+    from functools import cache
+except ImportError:
+    from functools import lru_cache as cache
+
 from duetector.collectors.base import Collector
 from duetector.log import logger
 from duetector.managers.collector import CollectorManager
@@ -27,10 +32,11 @@ class ShTracerHost:
     def attach(self, tracer):
         self.tracers[tracer] = tracer.comm
 
-    def delete(self, tracer):
+    def detach(self, tracer):
         if tracer in self.tracers:
             self.tracers.pop(tracer)
 
+    @cache
     def get_poller(self, tracer) -> Callable[[None], None]:
         """
         Provide a callback function for ``Poller``.
