@@ -1,6 +1,6 @@
 from collections import namedtuple
 from threading import Lock
-from typing import IO, Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from duetector.config import Config, Configuable
 from duetector.exceptions import TracerError, TreacerDisabledError
@@ -348,21 +348,3 @@ class SubprocessTracer(Tracer):
         Set callback function to host.
         """
         host.set_callback(self, callback)
-
-    def notify_poll(self, io: IO):
-        """
-        Notify: poller is polling.
-        """
-        raise NotImplementedError("notify_poll not implemented")
-
-    def notify_stop(self):
-        """
-        Notify: subprocess need to stop.
-        """
-        raise NotImplementedError("notify_stop not implemented")
-
-    def deserialize(self, data):
-        """
-        Deserialize data to ``data_t``.
-        """
-        raise NotImplementedError("deserialize not implemented")

@@ -97,17 +97,42 @@ table_prefix = "duetector_tracking"
 [analyzer.dbanalyzer.db.engine]
 url = "sqlite:///duetector-dbcollector.sqlite3"
 
-[monitor]
+[monitor.bcc]
+disabled = false
+auto_init = true
+continue_on_exception = true
+
+[monitor.bcc.backend_args]
+max_workers = 10
+
+[monitor.bcc.poller]
+interval_ms = 500
+call_when_shutdown = true
+
+[monitor.sh]
+disabled = false
+auto_init = true
+timeout = 5
+
+[monitor.sh.backend_args]
+max_workers = 10
+
+[monitor.sh.poller]
+interval_ms = 500
+call_when_shutdown = true
+
+[monitor.subprocess]
 disabled = false
 auto_init = true
 timeout = 5
 kill_timeout = 5
 bufsize = 32768
+restart_times = 0
 
-[monitor.backend_args]
+[monitor.subprocess.backend_args]
 max_workers = 10
 
-[monitor.poller]
+[monitor.subprocess.poller]
 interval_ms = 500
 call_when_shutdown = true
 

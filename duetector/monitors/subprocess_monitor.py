@@ -1,6 +1,9 @@
 import subprocess
-from io import DEFAULT_BUFFER_SIZE, StringIO
-from typing import Any, Callable, Dict, List, NamedTuple, Optional
+import threading
+from collections import Counter
+from io import DEFAULT_BUFFER_SIZE
+from select import select
+from typing import IO, Any, Callable, Dict, List, NamedTuple, Optional
 
 import psutil
 
@@ -10,11 +13,24 @@ from duetector.managers.collector import CollectorManager
 from duetector.managers.filter import FilterManager
 from duetector.managers.tracer import TracerManager
 from duetector.monitors.base import Monitor
+from duetector.proto.subprocess import (
+    EventMessage,
+    InitMessage,
+    StopMessage,
+    dispatch_message,
+)
 from duetector.tracers.base import SubprocessTracer
 
 
 class SubprocessHost:
-    def __init__(self, timeout, backend, bufsize=DEFAULT_BUFFER_SIZE * 4, kill_timeout=5) -> None:
+    def __init__(
+        self,
+        timeout,
+        backend,
+        bufsize=DEFAULT_BUFFER_SIZE * 4,
+        kill_timeout=5,
+        restart_times=0,
+    ) -> None:
         self.tracers: Dict[SubprocessTracer, subprocess.Popen] = {}
         self.callbacks: Dict[SubprocessTracer, Callable[[NamedTuple], None]] = {}
         self.timeout = timeout
@@ -22,7 +38,25 @@ class SubprocessHost:
         self.bufsize = bufsize
         self.kill_timeout = kill_timeout
 
+        self.restart_times = restart_times
+        self.restart_counter: Counter = Counter()
+        self.shutdown_event = threading.Event()
+        self.shutdown_event.clear()
+
+    def notify_init(self, tracer: SubprocessTracer):
+        self.tracers[tracer].stdin.write(InitMessage.from_host(self, tracer).model_dump_json())
+        self._poll(tracer, self.tracers[tracer].stdout.readline())
+
+    def notify_stop(self, tracer: SubprocessTracer):
+        self.tracers[tracer].stdin.write(StopMessage.from_host(self).model_dump_json())
+
+    def notify_poll(self, tracer: SubprocessTracer):
+        self.tracers[tracer].stdin.write(EventMessage.from_host(self).model_dump_json())
+
     def attach(self, tracer: SubprocessTracer):
+        if self.shutdown_event.is_set():
+            raise RuntimeError("Host already shutdown")
+
         p = subprocess.Popen(
             tracer.comm,
             stdin=subprocess.PIPE,
@@ -32,13 +66,21 @@ class SubprocessHost:
             bufsize=self.bufsize,
         )
         self.tracers[tracer] = p
+        self.notify_init(tracer)
 
-    def detach(self, tracer):
+    def detach(self, tracer: SubprocessTracer):
         if tracer in self.tracers:
-            p = self.tracers.pop(tracer)
+            p = self.tracers.get(tracer)
             try:
-                # TODO: Write stop message for notify subprocess to stop
-                # tracer.notify_stop(p.stdin)
+                p = psutil.Process(p.pid)
+            except psutil.NoSuchProcess:
+                # Already stopped
+                self.poll(tracer)
+                self.tracers.pop(tracer)
+                return
+
+            try:
+                self.notify_stop(tracer)
                 p.terminate()
                 logger.info("Wating for subprocess to stop")
                 p.wait(self.kill_timeout)
@@ -46,22 +88,60 @@ class SubprocessHost:
                 logger.warning("Timeout for terminate subprocess, kill it.")
                 p.kill()
             self.poll(tracer)
+            self.tracers.pop(tracer)
 
     def shutdown(self):
-        for tracer in self.tracers:
+        self.shutdown_event.set()
+        for tracer in list(self.tracers):
             self.detach(tracer)
 
-    def poll(self, tracer):
+    def is_alive(self, tracer: SubprocessTracer):
+        p = self.tracers[tracer]
+        try:
+            psutil_p = psutil.Process(p.pid)
+        except psutil.NoSuchProcess:
+            return False
+        return psutil_p.is_running()
+
+    def poll(self, tracer: SubprocessTracer):
         """
         Poll a tracer.
         """
         p = self.tracers[tracer]
-        # TODO: Write poll message for keepalive
-        tracer.notify_poll(p.stdin)
-        outputs = p.stdout.readlines()
-        callback = self.callbacks[tracer]
-        for output in outputs:
-            callback(tracer.deserialize(output))
+        if not self.is_alive(tracer):
+            if self.restart_times == 0:
+                return
+            if (
+                self.restart_counter[tracer] >= self.restart_times
+                and not self.shutdown_event.is_set()
+            ):
+                logger.warning(
+                    f"Tracer {tracer.__class__.__name__} restart times exceed limit, stop it."
+                )
+                self.detach(tracer)
+                return
+            logger.warning(f"Tracer {tracer.__class__.__name__} stopped, restart it.")
+            self.restart_counter[tracer] += 1
+            self.attach(tracer)
+            p = self.tracers[tracer]
+            # Poll next time
+
+        else:
+            self.notify_poll(tracer)
+            # FIXME: This stuck everything as no EOF
+            outputs = p.stdout.readlines()
+            for output in outputs:
+                self._poll(tracer, output)
+
+    def _poll(self, tracer: SubprocessTracer, output):
+        msg = dispatch_message(output)
+        if isinstance(msg, EventMessage):
+            callback = self.callbacks[tracer]
+            callback(msg.serialize_namedtuple())
+        if isinstance(msg, StopMessage):
+            self.detach(tracer)
+        if isinstance(msg, InitMessage):
+            logger.info(f"Tracer {tracer.__class__.__name__} initialized")
 
     def poll_all(self):
         """
@@ -77,12 +157,15 @@ class SubprocessHost:
 
 
 class SubprocessMonitor(Monitor):
+    config_scope = "monitor.subprocess"
+
     default_config = {
         **Monitor.default_config,
         "auto_init": True,
         "timeout": 5,
         "kill_timeout": 5,
         "bufsize": DEFAULT_BUFFER_SIZE * 4,
+        "restart_times": 0,
     }
 
     @property
@@ -128,7 +211,7 @@ class SubprocessMonitor(Monitor):
 
         self.host = SubprocessHost(
             timeout=self.timeout,
-            backend=self.backend,
+            backend=self._backend,
             bufsize=self.bufsize,
             kill_timeout=self.kill_timeout,
         )
@@ -156,3 +239,9 @@ class SubprocessMonitor(Monitor):
     def shutdown(self):
         self.host.shutdown()
         super().shutdown()
+
+    def poll_all(self):
+        return self.host.poll_all()
+
+    def poll(self, tracer: SubprocessTracer):  # type: ignore
+        return self.host.poll(tracer)

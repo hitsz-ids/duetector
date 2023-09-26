@@ -65,7 +65,7 @@ Furthermore, `SubprocessMonitor` also support non-BPF program, as long as it can
 {
     "proto": "duetector", // or opentelemetry if type is event
     "type": "" // init, event, stop, stopped
-    "version": "0.1", // protocol version
+    "version": "0.1.0", // protocol version
     "payload":{}
 }
 ```
@@ -74,32 +74,32 @@ Furthermore, `SubprocessMonitor` also support non-BPF program, as long as it can
 
 ##### From host(reqeust)
 
-type: init
+type: `init`
 
 payload:
-- poll_time: unit: seconds
-- kill_timeout: unit, seconds
-- config: object, config of tracer
+- `poll_time`: unit: seconds
+- `kill_timeout`: unit, seconds
+- `config`: object, config of tracer
 
 ##### From subprocess(response)
 
-type: init
+type: `init`
 
 payload:
-- name: string, name of tracer
-- version: string, version of tracer
+- `name`: string, name of tracer
+- `version`: string, version of tracer
 
 #### 3.1.3 Event Message
 
 ##### From host
 
-type: event
+type: `event`
 
 payload:
 
 ##### From subprocess
 
-type: event
+type: `event`
 
 payload: object of tracking data or OpenTelemetry OTLP things
 
@@ -107,13 +107,13 @@ payload: object of tracking data or OpenTelemetry OTLP things
 
 ##### From host
 
-type: stop
+type: `stop`
 
 payload:
 
 ##### From subprocess
 
-type: stopped
+type: `stopped`
 
 payload:
 
