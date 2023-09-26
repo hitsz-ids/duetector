@@ -6,9 +6,12 @@ ARG DUETECTOR_VERSION
 
 RUN apt-get update && apt-get install -y tini \
     && rm -rf /var/lib/apt/lists/*
-RUN pip install jupyterlab
+#removed jupyterlab dependency
+
 
 RUN pip install duetector==${DUETECTOR_VERSION} --no-cache-dir
+
+
 
 
 # Add application user
@@ -22,5 +25,7 @@ RUN addgroup --system --gid ${APPLICATION_GID} application && \
 COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
 
-CMD [ "/sbin/tini", "--" ]
-ENTRYPOINT [ "/start.sh" ]
+ENTRYPOINT [ "/sbin" ]
+CMD ["application"]
+# CMD [ "/sbin/tini", "--" ]
+# ENTRYPOINT [ "/start.sh" ]
