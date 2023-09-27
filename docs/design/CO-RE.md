@@ -125,11 +125,11 @@ After we intro OpenTelemetry in [#25](https://github.com/hitsz-ids/duetector/iss
 
 ### 4.1 Architecture
 
-![SubprocessMonitorArch](./src/spm-arch.png)
+![SubprocessMonitorArch](./image/spm-arch.png)
 
 ### 4.2 State Transfer & Failure Handling
 
-![SubrpocessMonitorFailureHandling](./src/spm-state-flow.png)
+![SubrpocessMonitorFailureHandling](./image/spm-state-flow.png)
 
 - When a `SubprocessTracer` `attatch` to the `SubprocessHost`, host will `Popen` a subprocess and send `init` message to subprocess.
 - After the subprocess is started, subprocess will send a `init` message to host.
