@@ -124,8 +124,9 @@ call_when_shutdown = true
 [monitor.subprocess]
 disabled = false
 auto_init = true
-timeout = 5
+timeout = 0.01
 kill_timeout = 5
+pool_size = 1024
 bufsize = 32768
 restart_times = 0
 

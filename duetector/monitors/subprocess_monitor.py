@@ -179,7 +179,6 @@ class SubprocessHost:
         """
         Poll all tracers.
         """
-        logger.debug("Polling all tracers")
         return self.backend.map(self.poll, self.tracers)
 
     def set_callback(self, tracer, callback):
