@@ -17,6 +17,7 @@ from duetector.proto.subprocess import (
     EventMessage,
     InitMessage,
     StopMessage,
+    StoppedMessage,
     dispatch_message,
 )
 from duetector.tracers.base import SubprocessTracer
@@ -27,6 +28,7 @@ class SubprocessHost:
         self,
         timeout,
         backend,
+        poll_szie=1024,
         bufsize=DEFAULT_BUFFER_SIZE * 4,
         kill_timeout=5,
         restart_times=0,
@@ -36,6 +38,7 @@ class SubprocessHost:
         self.timeout = timeout
         self.backend = backend
         self.bufsize = bufsize
+        self.poll_szie = poll_szie
         self.kill_timeout = kill_timeout
 
         self.restart_times = restart_times
@@ -44,14 +47,27 @@ class SubprocessHost:
         self.shutdown_event.clear()
 
     def notify_init(self, tracer: SubprocessTracer):
-        self.tracers[tracer].stdin.write(InitMessage.from_host(self, tracer).model_dump_json())
+        logger.debug(f"Notify init for tracer {tracer.__class__.__name__}")
+        self._writeline(
+            InitMessage.from_host(self, tracer).model_dump_json(),
+            self.tracers[tracer].stdin,
+        )
+
         self._poll(tracer, self.tracers[tracer].stdout.readline())
 
     def notify_stop(self, tracer: SubprocessTracer):
-        self.tracers[tracer].stdin.write(StopMessage.from_host(self).model_dump_json())
+        logger.debug(f"Notify stop for tracer {tracer.__class__.__name__}")
+        self._writeline(StopMessage.from_host(self).model_dump_json(), self.tracers[tracer].stdin)
 
     def notify_poll(self, tracer: SubprocessTracer):
-        self.tracers[tracer].stdin.write(EventMessage.from_host(self).model_dump_json())
+        logger.debug(f"Notify poll for tracer {tracer.__class__.__name__}")
+        self._writeline(EventMessage.from_host(self).model_dump_json(), self.tracers[tracer].stdin)
+
+    def _writeline(self, json_str: str, io: IO):
+        if not json_str.endswith("\n"):
+            json_str += "\n"
+        io.write(json_str)
+        io.flush()
 
     def attach(self, tracer: SubprocessTracer):
         if self.shutdown_event.is_set():
@@ -75,12 +91,14 @@ class SubprocessHost:
                 p = psutil.Process(p.pid)
             except psutil.NoSuchProcess:
                 # Already stopped
+                logger.warning("Detaching a stopped tracer")
                 self.poll(tracer)
                 self.tracers.pop(tracer)
                 return
 
             try:
                 self.notify_stop(tracer)
+                logger.info(f"Detaching {tracer}")
                 p.terminate()
                 logger.info("Wating for subprocess to stop")
                 p.wait(self.kill_timeout)
@@ -89,8 +107,11 @@ class SubprocessHost:
                 p.kill()
             self.poll(tracer)
             self.tracers.pop(tracer)
+        else:
+            logger.warning("Tracer not attached, ignore")
 
     def shutdown(self):
+        logger.info("Shutting down host")
         self.shutdown_event.set()
         for tracer in list(self.tracers):
             self.detach(tracer)
@@ -127,18 +148,29 @@ class SubprocessHost:
             # Poll next time
 
         else:
+            logger.debug(f"Polling tracer {tracer.__class__.__name__}")
             self.notify_poll(tracer)
-            # FIXME: This stuck everything as no EOF
-            outputs = p.stdout.readlines()
-            for output in outputs:
+            ready = select([p.stdout.fileno()], [], [], self.timeout)[0]
+            poll_count = 0
+            while ready and poll_count < self.poll_szie and not self.shutdown_event.is_set():
+                poll_count += 1
+                output = p.stdout.readline()
+                if not output:
+                    break
                 self._poll(tracer, output)
+                ready = select([p.stdout.fileno()], [], [], self.timeout)[0]
+            logger.debug(f"Total poll count: {poll_count}")
 
     def _poll(self, tracer: SubprocessTracer, output):
+        if not output:
+            # Empty output
+            return
         msg = dispatch_message(output)
+        if not msg:
+            return
         if isinstance(msg, EventMessage):
-            callback = self.callbacks[tracer]
-            callback(msg.serialize_namedtuple())
-        if isinstance(msg, StopMessage):
+            self.callbacks[tracer](msg.serialize_namedtuple())
+        if isinstance(msg, StoppedMessage):
             self.detach(tracer)
         if isinstance(msg, InitMessage):
             logger.info(f"Tracer {tracer.__class__.__name__} initialized")
@@ -147,7 +179,8 @@ class SubprocessHost:
         """
         Poll all tracers.
         """
-        return [self.backend.submit(self.poll, tracer) for tracer in self.tracers]
+        logger.debug("Polling all tracers")
+        return self.backend.map(self.poll, self.tracers)
 
     def set_callback(self, tracer, callback):
         """
@@ -162,8 +195,9 @@ class SubprocessMonitor(Monitor):
     default_config = {
         **Monitor.default_config,
         "auto_init": True,
-        "timeout": 5,
+        "timeout": 0.01,
         "kill_timeout": 5,
+        "pool_size": 1024,
         "bufsize": DEFAULT_BUFFER_SIZE * 4,
         "restart_times": 0,
     }
@@ -178,9 +212,9 @@ class SubprocessMonitor(Monitor):
     @property
     def timeout(self):
         """
-        Timeout for shell command.
+        Timeout for poll.
         """
-        return int(self.config.timeout)
+        return float(self.config.timeout)
 
     @property
     def kill_timeout(self):
@@ -195,6 +229,13 @@ class SubprocessMonitor(Monitor):
         Buffer size for subprocess.
         """
         return int(self.config.bufsize)
+
+    @property
+    def poll_szie(self):
+        """
+        Poll size for subprocess.
+        """
+        return float(self.config.pool_size)
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config=config, *args, **kwargs)
@@ -213,6 +254,7 @@ class SubprocessMonitor(Monitor):
             timeout=self.timeout,
             backend=self._backend,
             bufsize=self.bufsize,
+            poll_szie=self.poll_szie,
             kill_timeout=self.kill_timeout,
         )
         if self.auto_init:

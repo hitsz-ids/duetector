@@ -6,6 +6,8 @@ from typing import Any, Dict
 
 from pydantic import BaseModel
 
+from duetector.log import logger
+
 VERSION = "0.1.0"
 
 
@@ -29,12 +31,16 @@ class Message(BaseModel):
 
 def dispatch_message(data):
     if isinstance(data, str):
-        data = json.loads(data)
+        try:
+            data = json.loads(data)
+        except json.JSONDecodeError:
+            logger.warning(f"Invalid json: {data}")
+            return None
 
     if data["type"] == "init":
         return InitMessage.from_subprocess(data)
     elif data["type"] == "event":
-        return EventMessage.from_subprocess(data)
+        return EventMessage.from_subprocess(data.get("payload", {}))
     elif data["type"] == "stopped":
         return StoppedMessage.from_subprocess(data)
     else:

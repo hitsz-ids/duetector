@@ -71,7 +71,8 @@ class ShTracerHost:
         """
         Poll all tracers.
         """
-        return [self.backend.submit(self.poll, tracer) for tracer in self.tracers]
+        logger.debug("Polling all tracers")
+        return self.backend.map(self.poll, self.tracers)
 
     def set_callback(self, tracer, callback):
         """

@@ -4,7 +4,8 @@ import json
 import os
 import signal
 import threading
-from sys import stderr
+from sys import stderr, stdout
+from typing import IO
 
 from duetector.proto.subprocess import (
     EventMessage,
@@ -14,6 +15,13 @@ from duetector.proto.subprocess import (
 )
 
 
+def _writeline(msg, io: IO = stdout):
+    if not msg.endswith("\n"):
+        msg += "\n"
+    io.write(msg)
+    io.flush()
+
+
 class Tracer:
     def __init__(self, init_config) -> None:
         self.name = "dummy"
@@ -21,6 +29,7 @@ class Tracer:
         self.event = threading.Event()
         self.thread = None
         self.init_config = init_config
+        self.timewait = 1
 
     def _target(self):
         msg = EventMessage.from_subprocess(
@@ -30,14 +39,14 @@ class Tracer:
             }
         )
         while not self.event.is_set():
-            print(msg.model_dump_json())
-            self.event.wait(1)
+            _writeline(msg.model_dump_json())
+            self.event.wait(self.timewait)
 
     def start(self):
         if self.thread and self.thread.is_alive():
             raise RuntimeError("Treacer already running")
         msg = InitMessage.from_subprocess({"name": self.name, "version": self.version})
-        print(msg.model_dump_json())
+        _writeline(msg.model_dump_json())
         self.event.clear()
         self.thread = threading.Thread(target=self._target)
         self.thread.start()
@@ -74,7 +83,7 @@ def main():
 
     def _stop(*args, **kwargs):
         t.stop()
-        print(StoppedMessage().model_dump_json())
+        _writeline(StoppedMessage().model_dump_json())
         exit(0)
 
     signal.signal(signal.SIGINT, _stop)
@@ -92,5 +101,4 @@ def main():
 
 
 if __name__ == "__main__":
-    print(InitMessage().model_dump_json())
     main()
