@@ -266,10 +266,6 @@ class ShellTracer(Tracer):
 
         return self.config.enable_cache
 
-    @property
-    def disabled(self):
-        return self.config.disabled
-
     def set_cache(self, cache):
         """
         Set cache for this tracer.
@@ -282,6 +278,52 @@ class ShellTracer(Tracer):
         Get cache for this tracer.
         """
         return self._cache
+
+    def attach(self, host):
+        """
+        Attach to host.
+        """
+        host.attach(self)
+
+    def detach(self, host):
+        """
+        Detach from host.
+        """
+        host.detach(self)
+
+    def get_poller(self, host) -> Callable:
+        """
+        Get poller function from host.
+        """
+        return host.get_poller(self)
+
+    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+        """
+        Set callback function to host.
+        """
+        host.set_callback(self, callback)
+
+
+class SubprocessTracer(Tracer):
+    default_config = {
+        **Tracer.default_config,
+    }
+    """
+    Default config for this tracer.
+    """
+
+    comm: List[str]
+    """
+    shell command
+    """
+
+    preserve_env: bool = False
+    """
+    If preserve env for this command
+    """
+
+    def __init__(self, config: Optional[Union[Config, Dict[str, Any]]] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
 
     def attach(self, host):
         """

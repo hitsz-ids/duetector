@@ -4,14 +4,13 @@ from typing import Dict
 
 import tomli_w
 
-from duetector.analyzer.db import DBAnalyzer
 from duetector.config import ConfigLoader
 from duetector.log import logger
 from duetector.managers.analyzer import AnalyzerManager
 from duetector.managers.collector import CollectorManager
 from duetector.managers.filter import FilterManager
 from duetector.managers.tracer import TracerManager
-from duetector.monitors import BccMonitor, ShMonitor
+from duetector.monitors import BccMonitor, ShMonitor, SubprocessMonitor
 from duetector.service.config import ServerConfig
 
 
@@ -56,7 +55,7 @@ class ConfigGenerator:
     All managers to inspect.
     """
 
-    monitors = [BccMonitor, ShMonitor]
+    monitors = [BccMonitor, ShMonitor, SubprocessMonitor]
     """
     All monitors to inspect.
     """

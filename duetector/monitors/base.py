@@ -81,7 +81,7 @@ class Monitor(Configuable):
         """
         Poll all tracers. Depends on ``self.poll``.
         """
-        return [self._backend.submit(self.poll, tracer) for tracer in self.tracers]
+        return self._backend.map(self.poll, self.tracers)
 
     def poll(self, tracer: Tracer):
         """

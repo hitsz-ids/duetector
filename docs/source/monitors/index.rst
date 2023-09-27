@@ -22,3 +22,4 @@ Avaliable Monitor
 
    Bcc Monitor <bcc>
    Shell Monitor <sh>
+   Subprocess Monitor <subprocess>

@@ -39,6 +39,8 @@ disabled = false
 
 [tracer.template.sh]
 
+[tracer.template.sp]
+
 [tracer.clonetracer]
 disabled = false
 attach_event = "__x64_sys_clone"
@@ -116,6 +118,22 @@ timeout = 5
 max_workers = 10
 
 [monitor.sh.poller]
+interval_ms = 500
+call_when_shutdown = true
+
+[monitor.subprocess]
+disabled = false
+auto_init = true
+timeout = 0.01
+kill_timeout = 5
+pool_size = 1024
+bufsize = 32768
+restart_times = 0
+
+[monitor.subprocess.backend_args]
+max_workers = 10
+
+[monitor.subprocess.poller]
 interval_ms = 500
 call_when_shutdown = true
 

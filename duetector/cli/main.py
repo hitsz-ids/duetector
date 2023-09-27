@@ -10,7 +10,7 @@ import click
 from duetector.config import CONFIG_PATH, ConfigLoader
 from duetector.log import logger
 from duetector.managers.analyzer import AnalyzerManager
-from duetector.monitors import BccMonitor, ShMonitor
+from duetector.monitors import BccMonitor, ShMonitor, SubprocessMonitor
 from duetector.monitors.base import Monitor
 from duetector.tools.config_generator import ConfigGenerator
 
@@ -128,6 +128,11 @@ def generate_config(path):
     help=f"Set false or False to disable shell monitor, default: ``True``.",
 )
 @click.option(
+    "--enable_sp_monitor",
+    default=True,
+    help=f"Set false or False to disable subprocess monitor, default: ``True``.",
+)
+@click.option(
     "--brief",
     default=True,
     help=f"Print brief when exit, default: ``True``.",
@@ -139,6 +144,7 @@ def start(
     config_dump_dir,
     enable_bcc_monitor,
     enable_sh_monitor,
+    enable_sp_monitor,
     brief,
 ):
     """
@@ -158,6 +164,8 @@ def start(
         monitors.append(BccMonitor(c))
     if enable_sh_monitor:
         monitors.append(ShMonitor(c))
+    if enable_sp_monitor:
+        monitors.append(SubprocessMonitor(c))
 
     for m in monitors:
         m.start_polling()
