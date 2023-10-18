@@ -102,8 +102,10 @@ class OTelInitiator:
         self._initialized = True
 
     def shutdown(self):
-        self.provider.shutdown()
-        self.provider = None
+        if self.provider:
+            self.provider.shutdown()
+            self._initialized = False
+            self.provider = None
 
 
 class OTelCollector(Collector):
