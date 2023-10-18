@@ -55,21 +55,18 @@ Join our [slack channel](https://join.slack.com/t/hitsz-ids/shared_invite/zt-239
 - `Tracer` Support
   - [X] eBPF-based tracer
   - [X] Shell command tracer
-  - [ ] Subprocess tracer
+  - [X] Subprocess tracer
 - `Filter` Support
   - [X] Pattern matching, based on regular expressions
-- `Collector` and `Analyzer` Support
-  - [X] SQL database
-  - [ ] OpenTelemetry
-- Analyzer Support
-  - [X] SQL database
-  - [ ] OpenTelemetry
+- Data Collection and Analysis
+  - [X] `Analyzer` Support SQL database
+  - [X] `Collector` Support SQL database and *OpenTelemetry(Experimental)*
 - User Interface
   - [X] CLI Tools
   - [X] PIP Service
   - [ ] Control Panel
 - Enhancements
-  - [ ] Runc containers identification
+  - [ ] `RunC` containers identification
 
 The eBPF program requires kernel support, see [Kernel Support](./docs/kernel_config.md)
 

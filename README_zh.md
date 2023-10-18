@@ -59,16 +59,18 @@ duetector🔍是一个基于可扩展的的数据使用探测器，它可以在L
 - `Tracer`支持
   - [X] 基于eBPF的tracer
   - [X] 基于shell命令的tracer
-  - [ ] 基于子进程的tracer
+  - [X] 基于子进程的tracer
 - `Filter`支持
   - [X] 支持正则的模式匹配
-- `Collector`和`Analyzer`支持
-  - [X] SQL数据库
-  - [ ] Opentelemetry
+- 遥测数据传输与分析
+  - [X] `Analyzer`支持SQL数据库
+  - [X] `Collector`支持SQL数据库和*Opentelemetry（实验性）*
 - 用户接口
   - [X] 命令行工具
   - [X] PIP服务
   - [ ] 控制平面
+- 增强功能
+  - [ ] `RunC`容器云原生支持
 
 eBPF程序需要内核支持，详见[内核支持](./docs/kernel_config.md)
 

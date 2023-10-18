@@ -25,6 +25,37 @@ from duetector.extension.collector import hookimpl
 
 
 class OTelInitiator:
+    """
+    Host the OpenTelemetry SDK and initialize the provider and exporter.
+
+    Avaliable exporters:
+        - ``console``
+        - ``otlp-grpc``
+        - ``otlp-http``
+        - ``jaeger-thrift``
+        - ``jaeger-grpc``
+        - ``zipkin-http``
+        - ``zipkin-json``
+        - ``prometheus``
+
+    Example:
+
+    .. code-block:: python
+
+            otel = OTelInitiator()
+            trace = otel.initialize(
+                service_name="duetector",
+                exporter="console",
+            )
+
+            from opentelemetry import trace
+            tracer = trace.get_tracer(__name__)
+            with tracer.start_as_current_span("test") as span:
+                span.set_attribute("test", "test")
+
+            otel.shutdown()
+    """
+
     exporter_cls = {
         "console": ConsoleSpanExporter,
         "otlp-grpc": GRPCOTLPSpanExporter,
@@ -76,16 +107,28 @@ class OTelInitiator:
 
 
 class OTelCollector(Collector):
+    """
+    A collector using OpenTelemetry SDK.
+
+    Config:
+        - ``exporter``: One of ``console``, ``otlp-grpc``, ``otlp-http``, ``jaeger-thrift``, ``jaeger-grpc``, ``zipkin-http``, ``zipkin-json``, see :class:`OTelInitiator` for more details
+        - ``exporter_kwargs``: A dict of kwargs for exporter
+
+    Note:
+        Since v1.35, the Jaeger supports OTLP natively. Please use the OTLP exporter instead. Support for this exporter will end July 2023.
+
+    """
+
     default_config = {
         **Collector.default_config,
         "disabled": True,
-        "mode": "console",
+        "exporter": "console",
         "exporter_kwargs": {},
     }
 
     @property
-    def mode(self) -> str:
-        return self.config.mode
+    def exporter(self) -> str:
+        return self.config.exporter
 
     @property
     def endpoint(self) -> Optional[str]:
@@ -100,7 +143,7 @@ class OTelCollector(Collector):
         self.otel = OTelInitiator()
         self.otel.initialize(
             service_name="duetector",
-            exporter=self.mode,
+            exporter=self.exporter,
             exporter_kwargs=self.exporter_kwargs,
         )
 

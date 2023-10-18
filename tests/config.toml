@@ -58,7 +58,7 @@ include_extension = true
 [collector.otelcollector]
 disabled = false
 statis_id = ""
-mode = "console"
+exporter = "console"
 
 [collector.otelcollector.backend_args]
 max_workers = 10
