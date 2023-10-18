@@ -63,6 +63,16 @@ poll_timeout = 10
 disabled = false
 include_extension = true
 
+[collector.otelcollector]
+disabled = true
+statis_id = ""
+exporter = "console"
+
+[collector.otelcollector.backend_args]
+max_workers = 10
+
+[collector.otelcollector.exporter_kwargs]
+
 [collector.dbcollector]
 disabled = false
 statis_id = ""

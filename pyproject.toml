@@ -16,10 +16,19 @@ dependencies = [
     "SQLAlchemy>=2",
     "click",
     "psutil",
-    # Following are for web server
+    # OTel
+    "opentelemetry-sdk",
+    "opentelemetry-api",
+    "opentelemetry-semantic-conventions",
+    "opentelemetry-exporter-otlp-proto-grpc",
+    "opentelemetry-exporter-otlp-proto-http",
+    "opentelemetry-exporter-jaeger",
+    "opentelemetry-exporter-zipkin-proto-http",
+    "opentelemetry-exporter-zipkin-json",
+    # Web server
     "fastapi",
     "uvicorn[standard]",
-    "anyio"
+    "anyio",
 ]
 dynamic = ["version"]
 classifiers = [

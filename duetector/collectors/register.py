@@ -1,4 +1,4 @@
 # Expose for plugin system
-from . import base, db
+from . import base, db, otel
 
-registers = [base, db]
+registers = [base, db, otel]
