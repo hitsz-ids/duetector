@@ -102,7 +102,7 @@ class OTelInitiator:
         self._initialized = True
 
     def shutdown(self):
-        if self.provider:
+        if self._initialized and self.provider:
             self.provider.shutdown()
             self._initialized = False
             self.provider = None
