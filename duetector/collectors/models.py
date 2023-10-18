@@ -102,6 +102,16 @@ class Tracking(pydantic.BaseModel):
 
         return Tracking(**args)
 
+    def set_span(self, span):
+        for k in self.model_fields:
+            if k in ("tracer", "extended"):
+                continue
+            v = getattr(self, k)
+            if v is not None:
+                span.set_attribute(k, v)
+        for k, v in self.extended.items():
+            span.set_attribute(k, v)
+
 
 if __name__ == "__main__":
     Tracking(tracer="test", dt=datetime.now())

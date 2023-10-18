@@ -25,6 +25,7 @@ Avaliable Collector
    :maxdepth: 2
 
    DB Collectors <db>
+   OTel Collector <otel>
 
 
 Data Models

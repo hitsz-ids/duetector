@@ -25,7 +25,6 @@ dependencies = [
     "opentelemetry-exporter-jaeger",
     "opentelemetry-exporter-zipkin-proto-http",
     "opentelemetry-exporter-zipkin-json",
-    "opentelemetry-exporter-prometheus",
     # Web server
     "fastapi",
     "uvicorn[standard]",
