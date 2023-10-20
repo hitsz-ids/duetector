@@ -1,5 +1,5 @@
 # 基于机器学习的mnist实验的文件数据流使用监控实验报告
-  
+
 ## 机器学习的基于mnist数据集的torch实验分析，在实验过程中使用数据、产生中间结果、生成和保存最终模型三个工程中对数据的工作流
 
 下面根据实验代码，按照对mnist数据下载、处理，神经网络的定义、训练、保存、加载并验证的流程对数据流进行分析。
@@ -25,7 +25,7 @@
 
 这段代码使用了PyTorch中的torchvision.datasets.MNIST类来加载MNIST手写数字数据集对数据进行的处理：
 1. `root='./data/'`: 指定了数据集保存或提取的位置，这里设置为'./data/'，表示数据集将保存在当前文件夹中。
-2. 用train=？参数将数据分为mnist的训练集和测试集。 
+2. 用train=？参数将数据分为mnist的训练集和测试集。
 3. `transform=torchvision.transforms.ToTensor()`: 将图像数据转换为Tensor格式。`ToTensor()`是一个变换函数，它将PIL.Image格式或NumPy数组格式的图像转换为Tensor格式。
 4. `download=DOWNLOAD_MNIST`: 判断是否需要下载数据集。
 
@@ -54,7 +54,7 @@ test_y = test_data.test_labels[:2000]
    - `dataset=train_data`：指定了数据集，即之前加载的训练数据集`train_data`。
    - `batch_size=BATCH_SIZE`：指定了每个批次的样本数量。
    - `shuffle=True`：对数据进行打乱以增加随机性。
-2. `test_x = torch.unsqueeze(test_data.train_data, dim=1).type(torch.FloatTensor)[:2000] / 255`： 
+2. `test_x = torch.unsqueeze(test_data.train_data, dim=1).type(torch.FloatTensor)[:2000] / 255`：
    - `torch.unsqueeze(test_data.train_data, dim=1)`: 使用`torch.unsqueeze()`函数将原本的测试数据的维度从(2000, 28, 28)扩展为(2000, 1, 28, 28)。这个操作在维度1上增加了一个维度，用于表示通道数。
    - `.type(torch.FloatTensor)`: 将数据类型转换为`torch.FloatTensor`，即浮点型。
    - `[:2000]`: 截取前2000个样本。
@@ -267,4 +267,3 @@ def read_sn3_pascalvincent_tensor(path: str, strict: bool = True) -> torch.Tenso
 ## 梳理并画出实验中Trace points 和 Kprobes 、Kretprobes串连起来的流程图
 
 ![流程图](Src/Imgs/ProcessionandHooks.png)
-

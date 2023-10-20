@@ -1,13 +1,14 @@
 # 训练+测试
 
 
+import os
+
+import cv2
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.utils.data as Data
 import torchvision
-import matplotlib.pyplot as plt
-import os
-import cv2
 
 torch.manual_seed(1)  # 使用随机化种子使神经网络的初始化每次都相同
 
@@ -19,24 +20,18 @@ DOWNLOAD_MNIST = True  # 表示还没有下载数据集，如果数据集下载�
 
 # 下载mnist手写数据集
 train_data = torchvision.datasets.MNIST(
-    root='./data/',  # 保存或提取的位置  会放在当前文件夹中
+    root="./data/",  # 保存或提取的位置  会放在当前文件夹中
     train=True,  # true说明是用于训练的数据，false说明是用于测试的数据
     transform=torchvision.transforms.ToTensor(),  # 转换PIL.Image or numpy.ndarray
-
     download=DOWNLOAD_MNIST,  # 已经下载了就不需要下载了
 )
 
-test_data = torchvision.datasets.MNIST(
-    root='./data/',
-    train=False  # 表明是测试集
-)
+test_data = torchvision.datasets.MNIST(root="./data/", train=False)  # 表明是测试集
 
 # 批训练 50个samples， 1  channel，28x28 (50,1,28,28)
 # Torch中的DataLoader是用来包装数据的工具，它能帮我们有效迭代数据，这样就可以进行批训练
 train_loader = Data.DataLoader(
-    dataset=train_data,
-    batch_size=BATCH_SIZE,
-    shuffle=True  # 是否打乱数据，一般都打乱
+    dataset=train_data, batch_size=BATCH_SIZE, shuffle=True  # 是否打乱数据，一般都打乱
 )
 
 # 进行测试
@@ -52,6 +47,7 @@ test_y = test_data.test_labels[:2000]
 # CNN流程：卷积(Conv2d)-> 激励函数(ReLU)->池化(MaxPooling)->
 #        卷积(Conv2d)-> 激励函数(ReLU)->池化(MaxPooling)->
 #        展平多维的卷积成的特征图->接入全连接层(Linear)->输出
+
 
 class CNN(nn.Module):  # 我们建立的CNN继承nn.Module这个模块
     def __init__(self):
@@ -76,11 +72,7 @@ class CNN(nn.Module):  # 我们建立的CNN继承nn.Module这个模块
         self.conv2 = nn.Sequential(
             # 输入图像大小(16,14,14)
             nn.Conv2d(  # 也可以直接简化写成nn.Conv2d(16,32,5,1,2)
-                in_channels=16,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                padding=2
+                in_channels=16, out_channels=32, kernel_size=5, stride=1, padding=2
             ),
             # 输出图像大小 (32,14,14)
             nn.ReLU(),
@@ -130,13 +122,13 @@ loss_func = nn.CrossEntropyLoss()  # 目标标签是one-hotted
 # torch.save(cnn.state_dict(), 'cnn2.pkl')#保存模型
 
 # 加载模型，调用时需将前面训练及保存模型的代码注释掉，否则会再训练一遍
-cnn.load_state_dict(torch.load('cnn2.pkl'))
+cnn.load_state_dict(torch.load("cnn2.pkl"))
 cnn.eval()
 # print 10 predictions from test data
 inputs = test_x[:32]  # 测试32个数据
 test_output = cnn(inputs)
 pred_y = torch.max(test_output, 1)[1].data.numpy()
-print(pred_y, 'prediction number')  # 打印识别后的数字
+print(pred_y, "prediction number")  # 打印识别后的数字
 # print(test_y[:10].numpy(), 'real number')
 
 img = torchvision.utils.make_grid(inputs)
@@ -146,5 +138,5 @@ img = img.numpy().transpose(1, 2, 0)
 # std = [0.5, 0.5, 0.5]
 # mean = [0.5, 0.5, 0.5]
 # img = img * std + mean
-cv2.imshow('win', img)  # opencv显示需要识别的数据图片
+cv2.imshow("win", img)  # opencv显示需要识别的数据图片
 key_pressed = cv2.waitKey(0)

@@ -21,12 +21,12 @@
 >     root='./data/',  # 保存或提取的位置  会放在当前文件夹中
 >     train=True,  # true说明是用于训练的数据，false说明是用于测试的数据
 >     transform=torchvision.transforms.ToTensor(),  # 转换PIL.Image or numpy.ndarray
-> 
+>
 >     download=DOWNLOAD_MNIST,  # 已经下载了就不需要下载了
 > )
 > ```
 >
-> ``` 
+> ```
 > 11257 stat("./data/MNIST/processed", 0x7ffc239123c0) = -1 ENOENT (No such file or directory)
 > 11257 stat("./data/MNIST/raw/train-images-idx3-ubyte", {st_mode=S_IFREG|0664, st_size=47040016, ...}) = 0
 > 11257 stat("./data/MNIST/raw/train-labels-idx1-ubyte", {st_mode=S_IFREG|0664, st_size=60008, ...}) = 0
@@ -262,7 +262,7 @@
 >
 >
 >
->``` 
+>```
 >11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
 >11257 getsockname(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
 >11257 getpeername(5, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
@@ -318,7 +318,7 @@
 >for step, (b_x, b_y) in enumerate(train_loader):
 >```
 >
-> 
+>
 >
 >```
 >11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
@@ -351,7 +351,7 @@
 > output = cnn(b_x)
 > ```
 >
->  
+>
 >
 > ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
@@ -505,7 +505,7 @@
 > 11257 futex(0x5580907ffdb4, FUTEX_WAKE_PRIVATE, 2147483647) = 0
 > ```
 >
-> 
+>
 
 
 
@@ -517,9 +517,9 @@
 > loss = loss_func(output, b_y)
 > ```
 >
->  
 >
-> ``` 
+>
+> ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
 > 11257 getsockname(4, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
 > 11257 getpeername(4, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
@@ -536,9 +536,9 @@
 > optimizer.zero_grad()
 > ```
 >
->  
 >
-> ``` 
+>
+> ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
 > 11257 getsockname(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
 > 11257 getpeername(5, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
@@ -555,7 +555,7 @@
 > loss.backward()
 > ```
 >
->  
+>
 >
 > ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP <unfinished ...>
@@ -683,9 +683,9 @@
 > optimizer.step()
 > ```
 >
->  
 >
-> ``` 
+>
+> ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
 > 11257 getsockname(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
 > 11257 getpeername(5, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
@@ -711,9 +711,9 @@
 > torch.save(cnn.state_dict(), 'cnn2.pkl')
 > ```
 >
->  
 >
-> ``` 
+>
+> ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
 > 11257 getsockname(4, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
 > 11257 getpeername(4, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
@@ -732,7 +732,7 @@
 #### 16. python函数结束后的部分
 
 > ```
-> 
+>
 > 11293 futex(0x5580904cd034, FUTEX_WAIT_PRIVATE, 328, NULL <unfinished ...>
 > 11257 <... write resumed>)              = 767
 > 11257 close(4)                          = 0
@@ -789,4 +789,4 @@
 > 11257 +++ exited with 0 +++
 > ```
 >
-> 
+>
