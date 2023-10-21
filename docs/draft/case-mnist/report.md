@@ -191,7 +191,7 @@ key_pressed = cv2.waitKey(0)
 
 ## 梳理并输出数据流程图
 
-![数据流分析](./Src/Imgs/DataStream.png)
+![数据流分析](./imgs/DataStream.png)
 
 ## 实验过程中可能涉及的系统调用和网络调用，eBPF的hook点分析
 
@@ -203,7 +203,7 @@ sudo cat /sys/kernel/debug/tracing/available_events |grep ‘系统调用名称�
 
 对实验过程的strace部分例子分析：
 
-![部分产生的系统调用](./Src/Imgs/Analysis.png)
+![部分产生的系统调用](./imgs/Analysis.png)
 
 这一系列系统调研对应于实验中下载minist训练集的代码
 
@@ -259,11 +259,11 @@ def read_sn3_pascalvincent_tensor(path: str, strict: bool = True) -> torch.Tenso
 ```
 
 利用sudo cat /sys/kernel/debug/tracing/available_events |grep ‘系统调用名称命令可以打印系统调用对应的trace_point作为ebpf的hook点。
-![command0](Src/Imgs/command0.png)
-![command1](Src/Imgs/command1.png)
-![command2](Src/Imgs/command2.png)
+![command0](imgs/command0.png)
+![command1](imgs/command1.png)
+![command2](imgs/command2.png)
 更多系统调用分析和对应源码的分析，以及相应的bpf的hook点略，可参见下图。
 
 ## 梳理并画出实验中Trace points 和 Kprobes 、Kretprobes串连起来的流程图
 
-![流程图](Src/Imgs/ProcessionandHooks.png)
+![流程图](imgs/ProcessionandHooks.png)
