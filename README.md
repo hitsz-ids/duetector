@@ -234,6 +234,7 @@ This project is initiated by **Institute of Data Security, Harbin Institute of T
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tsdsnk"><img src="https://avatars.githubusercontent.com/u/93241244?v=4?s=100" width="100px;" alt="tsdsnk"/><br /><sub><b>tsdsnk</b></sub></a><br /><a href="#doc-tsdsnk" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/zhemulin"><img src="https://avatars.githubusercontent.com/u/89471919?v=4?s=100" width="100px;" alt="zhemulin"/><br /><sub><b>zhemulin</b></sub></a><br /><a href="#doc-zhemulin" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/aklly"><img src="https://avatars.githubusercontent.com/u/87172923?v=4?s=100" width="100px;" alt="Mortal"/><br /><sub><b>Mortal</b></sub></a><br /><a href="#doc-aklly" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mingzhedream"><img src="https://avatars.githubusercontent.com/u/58738872?v=4?s=100" width="100px;" alt="mingzhedream"/><br /><sub><b>mingzhedream</b></sub></a><br /><a href="#doc-mingzhedream" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
