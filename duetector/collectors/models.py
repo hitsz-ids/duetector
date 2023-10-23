@@ -66,6 +66,16 @@ class Tracking(pydantic.BaseModel):
             data = get_boot_time_duration_ns(data)
         return field, data
 
+    @classmethod
+    def serialize_field(cls, field, data):
+        """
+        Serialize filed to one of ['bool', 'str', 'bytes', 'int', 'float'] or a sequence of those types
+        """
+        if field == "dt":
+            field = "timestamp"
+            data = datetime.timestamp(data)
+        return field, data
+
     @staticmethod
     def from_namedtuple(tracer, data: NamedTuple) -> Tracking:  # type: ignore
         """
@@ -108,9 +118,14 @@ class Tracking(pydantic.BaseModel):
                 continue
             v = getattr(self, k)
             if v is not None:
+                k, v = self.serialize_field(k, v)
                 span.set_attribute(k, v)
         for k, v in self.extended.items():
             span.set_attribute(k, v)
+
+    @property
+    def span_name(self):
+        return self.tracer
 
 
 if __name__ == "__main__":
