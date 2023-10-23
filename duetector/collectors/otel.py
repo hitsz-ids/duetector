@@ -140,18 +140,22 @@ class OTelCollector(Collector):
     def exporter_kwargs(self) -> Dict[str, Any]:
         return self.config.exporter_kwargs
 
+    @property
+    def service_name(self) -> str:
+        return f"duetector-{self.id}"
+
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         self.otel = OTelInitiator()
         self.otel.initialize(
-            service_name="duetector",
+            service_name=self.service_name,
             exporter=self.exporter,
-            exporter_kwargs=self.exporter_kwargs,
+            exporter_kwargs=self.exporter_kwargs._config_dict,
         )
 
     def _emit(self, t: Tracking):
         tracer = trace.get_tracer(self.id)
-        with tracer.start_as_current_span(t.tracer) as span:
+        with tracer.start_as_current_span(t.span_name) as span:
             t.set_span(span)
 
     def summary(self) -> Dict:

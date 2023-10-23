@@ -132,7 +132,10 @@ class BccTracer(Tracer):
         for k in self.data_t._fields:  # type: ignore
             v = getattr(data, k)
             if isinstance(v, bytes):
-                v = v.decode("utf-8")
+                try:
+                    v = v.decode("utf-8")
+                except UnicodeDecodeError:
+                    pass
 
             args[k] = v
 
