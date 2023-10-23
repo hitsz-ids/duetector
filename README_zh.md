@@ -1,3 +1,7 @@
+<p align="center">
+<a href="https://github.com/hitsz-ids/dataucon"><img alt="DataUCon" src="https://raw.githubusercontent.com/hitsz-ids/dataucon/main/img/white-icon-simple.png"></a>
+</p>
+
 <h2 align="center">duetector🔍: 支持eBPF的可扩展数据使用探测器</h2>
 <p align="center">
 <a href="https://github.com/hitsz-ids/duetector/actions"><img alt="Actions Status" src="https://github.com/hitsz-ids/duetector/actions/workflows/python-package.yml/badge.svg"></a>
