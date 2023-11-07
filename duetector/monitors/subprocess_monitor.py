@@ -130,6 +130,7 @@ class SubprocessHost:
         """
         p = self.tracers[tracer]
         if not self.is_alive(tracer):
+            # Restart tracer
             if self.restart_times == 0:
                 return
             if (

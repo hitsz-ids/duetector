@@ -10,6 +10,8 @@ class OpenTracer(BccTracer):
     A tracer for openat2 syscall.
     """
 
+    name = "do_sys_openat2"
+
     default_config = {
         **BccTracer.default_config,
         "attach_event": "do_sys_openat2",

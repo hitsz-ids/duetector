@@ -19,6 +19,11 @@ class Tracer(Configuable):
     Default scope for config is ``Tracer.__class__.__name__``.
     """
 
+    name: Optional[str]
+    """
+    Name for this tracer. Will be used for collecting data.
+    """
+
     data_t: NamedTuple
     """
     Data type for this tracer.
@@ -239,11 +244,11 @@ class ShellTracer(Tracer):
                         Cache means the same output will not be converted and emited again.
     """
 
-    comm = List[str]
+    comm: List[str]
     """
     shell command
     """
-    data_t = namedtuple("ShellOutput", ["output", "dt"])
+    data_t: namedtuple("ShellOutput", ["output", "dt"])
     """
     data type for this tracer
     """

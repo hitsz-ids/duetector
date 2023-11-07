@@ -10,6 +10,8 @@ class CloneTracer(BccTracer):
     A tracer for clone syscall.
     """
 
+    name = "__x64_sys_clone"
+
     default_config = {
         **BccTracer.default_config,
         "attach_event": "__x64_sys_clone",

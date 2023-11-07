@@ -154,7 +154,7 @@ class OTelCollector(Collector):
         )
 
     def _emit(self, t: Tracking):
-        tracer = trace.get_tracer(self.id)
+        tracer = trace.get_tracer(t.tracer_name)
         with tracer.start_as_current_span(t.span_name) as span:
             t.set_span(span)
 

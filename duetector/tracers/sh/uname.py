@@ -7,6 +7,8 @@ class UnameTracer(ShellTracer):
     A tracer for uname command.
     """
 
+    name = "uname"
+
     comm = ["uname", "-a"]
 
 

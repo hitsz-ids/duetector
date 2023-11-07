@@ -11,6 +11,8 @@ class TcpconnectTracer(BccTracer):
     A tracer for tcpconnect syscall
     """
 
+    name = "tcp_v4_connect"
+
     default_config = {
         **BccTracer.default_config,
         "poll_timeout": 10,

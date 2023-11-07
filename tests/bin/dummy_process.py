@@ -34,8 +34,9 @@ class Tracer:
     def _target(self):
         msg = EventMessage.from_subprocess(
             {
+                "tracer_name": self.name,
                 "pid": os.getpid(),
-                "extra": "noting",
+                "extra": "nothing",
             }
         )
         while not self.event.is_set():
