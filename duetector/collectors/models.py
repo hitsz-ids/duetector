@@ -114,7 +114,7 @@ class Tracking(pydantic.BaseModel):
 
         return Tracking(**args)
 
-    def set_span(self, span):
+    def set_span(self, collector, span):
         for k in self.model_fields:
             if k in ("tracer", "extended"):
                 continue
@@ -124,16 +124,10 @@ class Tracking(pydantic.BaseModel):
                 span.set_attribute(k, v)
         for k, v in self.extended.items():
             span.set_attribute(k, v)
+        span.set_attribute("collector_id", collector.id)
 
-    @property
-    def tracer_name(self):
-        if not self.pid:
-            return f"{self.tracer}:-1"
-        return f"{self.tracer}:{self.pid}"
-
-    @property
-    def span_name(self):
-        return self.tracer
+    def span_name(self, collector):
+        return f"{self.tracer}@{collector.id}"
 
 
 if __name__ == "__main__":
