@@ -4,7 +4,7 @@
 
 `duetector` support integration with OpenTelemetry. Through [otel collector](../../duetector/collectors/otel.py), we can export traces to any backend supported by OpenTelemetry.
 
-## Deploy a bancend
+## Deploy a backend
 
 **If you already have a backend and familiar with OpenTelemetry, you can skip this section.**
 
