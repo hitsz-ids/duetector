@@ -10,6 +10,8 @@ class CloneTracer(BccTracer):
     A tracer for clone syscall.
     """
 
+    name = "__x64_sys_clone"
+
     default_config = {
         **BccTracer.default_config,
         "attach_event": "__x64_sys_clone",
@@ -21,13 +23,13 @@ class CloneTracer(BccTracer):
     def attatch_args(self):
         return {"fn_name": "do_trace", "event": self.config.attach_event}
 
-    poll_fn = "perf_buffer_poll"
+    poll_fn = "ring_buffer_poll"
 
     @property
     def poll_args(self):
         return {"timeout": int(self.config.poll_timeout)}
 
-    data_t = namedtuple("CloneTracking", ["pid", "timestamp", "comm"])
+    data_t = namedtuple("CloneTracking", ["pid", "uid", "gid", "timestamp", "comm"])
     prog = """
     #include <linux/sched.h>
 
@@ -39,7 +41,7 @@ class CloneTracer(BccTracer):
         u64 timestamp;
         char comm[TASK_COMM_LEN];
     };
-    BPF_PERF_OUTPUT(events);
+    BPF_RINGBUF_OUTPUT(buffer, 1 << 4);
 
     int do_trace(struct pt_regs *ctx) {
         struct data_t data = {};
@@ -50,7 +52,7 @@ class CloneTracer(BccTracer):
         data.timestamp = bpf_ktime_get_ns();
         bpf_get_current_comm(&data.comm, sizeof(data.comm));
 
-        events.perf_submit(ctx, &data, sizeof(data));
+        buffer.ringbuf_output(&data, sizeof(data), 0);
 
         return 0;
     }
@@ -58,10 +60,10 @@ class CloneTracer(BccTracer):
 
     def set_callback(self, host, callback: Callable[[NamedTuple], None]):
         def _(ctx, data, size):
-            event = host["events"].event(data)
+            event = host["buffer"].event(data)
             return callback(self._convert_data(event))  # type: ignore
 
-        host["events"].open_perf_buffer(_)
+        host["buffer"].open_ring_buffer(_)
 
 
 @hookimpl
@@ -81,10 +83,11 @@ if __name__ == "__main__":
     def print_callback(data: NamedTuple):
         global start
         if start == 0:
-            print(f"[{data.comm} ({data.pid})] 0 ")
+            print(f"[{data.comm} ({data.pid})  {data.gid} {data.uid}] 0 ")
+            start = data.timestamp
+
         else:
             print(f"[{data.comm} ({data.pid}) {data.gid} {data.uid}]  {(data.timestamp-start)/1000000000}")  # type: ignore
-        start = data.timestamp
 
     tracer.set_callback(b, print_callback)
     poller = tracer.get_poller(b)

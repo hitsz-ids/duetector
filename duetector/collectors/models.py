@@ -81,13 +81,15 @@ class Tracking(pydantic.BaseModel):
         """
         Create a Tracking instance from tracer's data
         """
-        if isinstance(tracer, type):
-            tracer_name = getattr(tracer, "__name__")
-        elif isinstance(tracer, str):
-            tracer_name = tracer
-        else:
-            # Is instance of tracer
-            tracer_name = getattr(tracer, "name", tracer.__class__.__name__)
+        tracer_name = getattr(data, "tracer_name", None)
+        if not tracer_name:
+            if isinstance(tracer, type):
+                tracer_name = getattr(tracer, "__name__")
+            elif isinstance(tracer, str):
+                tracer_name = tracer
+            else:
+                # Is instance of tracer
+                tracer_name = getattr(tracer, "name", tracer.__class__.__name__)
 
         tracer_name = tracer_name.lower()
         args = {
@@ -112,7 +114,7 @@ class Tracking(pydantic.BaseModel):
 
         return Tracking(**args)
 
-    def set_span(self, span):
+    def set_span(self, collector, span):
         for k in self.model_fields:
             if k in ("tracer", "extended"):
                 continue
@@ -122,10 +124,10 @@ class Tracking(pydantic.BaseModel):
                 span.set_attribute(k, v)
         for k, v in self.extended.items():
             span.set_attribute(k, v)
+        span.set_attribute("collector_id", collector.id)
 
-    @property
-    def span_name(self):
-        return self.tracer
+    def span_name(self, collector):
+        return f"{self.tracer}@{collector.id}"
 
 
 if __name__ == "__main__":
