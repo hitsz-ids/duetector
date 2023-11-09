@@ -25,6 +25,9 @@ dependencies = [
     "opentelemetry-exporter-jaeger",
     "opentelemetry-exporter-zipkin-proto-http",
     "opentelemetry-exporter-zipkin-json",
+    # Proto for jaeger and ozther backend
+    'grpcio',
+    'protobuf',
     # Web server
     "fastapi",
     "uvicorn[standard]",
