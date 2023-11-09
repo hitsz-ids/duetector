@@ -5,6 +5,7 @@ from typing import Any, Dict, NamedTuple, Optional
 
 import pydantic
 
+from duetector.log import logger
 from duetector.utils import get_boot_time_duration_ns
 
 
@@ -111,8 +112,11 @@ class Tracking(pydantic.BaseModel):
             except Exception:
                 # Process may already exit
                 pass
-
-        return Tracking(**args)
+        try:
+            return Tracking(**args)
+        except ValueError as e:
+            logger.error("Failed to create Tracking instance: %s", e)
+            logger.exception(e)
 
     def set_span(self, collector, span):
         for k in self.model_fields:
