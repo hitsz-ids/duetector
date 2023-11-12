@@ -13,17 +13,8 @@ from google.protobuf.internal import enum_type_wrapper
 _sym_db = _symbol_database.Default()
 
 
-from opentelemetry.exporter.jaeger.proto.grpc.gen.gogoproto import (
-    gogo_pb2 as gogoproto_dot_gogo__pb2,
-)
-from opentelemetry.exporter.jaeger.proto.grpc.gen.google.api import (
-    annotations_pb2 as google_dot_api_dot_annotations__pb2,
-)
-
-# from .gogoproto import gogo_pb2 as gogoproto_dot_gogo__pb2
-
-
-# from .google.api import annotations_pb2 as google_dot_api_dot_annotations__pb2
+from gogoproto import gogo_pb2 as gogoproto_dot_gogo__pb2
+from google.api import annotations_pb2 as google_dot_api_dot_annotations__pb2
 
 DESCRIPTOR = _descriptor.FileDescriptor(
     name="sampling.proto",
