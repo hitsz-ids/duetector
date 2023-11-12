@@ -98,6 +98,9 @@ max_workers = 10
 disabled = false
 include_extension = true
 
+[analyzer.jaegeranalyzer]
+disabled = true
+
 [analyzer.dbanalyzer]
 disabled = false
 
