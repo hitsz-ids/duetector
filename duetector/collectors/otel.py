@@ -22,9 +22,10 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExport
 from duetector.collectors.base import Collector
 from duetector.collectors.models import Tracking
 from duetector.extension.collector import hookimpl
+from duetector.utils import Singleton
 
 
-class OTelInitiator:
+class OTelInitiator(metaclass=Singleton):
     """
     Host the OpenTelemetry SDK and initialize the provider and exporter.
 
