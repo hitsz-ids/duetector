@@ -28,8 +28,8 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     -
-      name: Build and push release
-      id: docker_build_release
+      name: Build image
+      id: docker_build_test
       uses: docker/build-push-action@v4
       with:
         context: .
@@ -38,4 +38,4 @@ jobs:
         platforms: linux/amd64,linux/arm64/v8
         file: ./docker/Dockerfile
         push: false
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/duetector:latest
+        tags: build
