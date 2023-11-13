@@ -1,21 +1,20 @@
-name: Build latest images automatically
+name: Release docker image
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch: {}
+  release:
+    types: [published]
+
+permissions:
+  contents: write
 
 jobs:
   deploy:
-    strategy:
-        fail-fast: true
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
-
-    # Build docker images
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v2
@@ -29,8 +28,8 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     -
-      name: Build and push release
-      id: docker_build_release
+      name: Build and push image
+      id: docker_build
       uses: docker/build-push-action@v4
       with:
         context: .
@@ -39,4 +38,4 @@ jobs:
         platforms: linux/amd64,linux/arm64/v8
         file: ./docker/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/duetector:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/duetector:${{ github.ref_name }}

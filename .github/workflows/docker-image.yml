@@ -1,14 +1,13 @@
-name: Build images manually
+name: Testing docker image build
 
 on:
-    workflow_dispatch: {}
+  pull_request:
+    branches: [ "master", "main" ]
 
 jobs:
   deploy:
     strategy:
-        fail-fast: false
-        matrix:
-          duetector-version: ["0.0.1", "0.0.2"]
+        fail-fast: true
 
     runs-on: ubuntu-latest
 
@@ -29,15 +28,14 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     -
-      name: Build and push image
-      id: docker_build
+      name: Build and push release
+      id: docker_build_release
       uses: docker/build-push-action@v4
       with:
         context: .
         build-args: |
           BCC_VERSION=v0.28.0
-          DUETECTOR_VERSION=${{ matrix.duetector-version }}
         platforms: linux/amd64,linux/arm64/v8
         file: ./docker/Dockerfile
-        push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/duetector:${{  matrix.duetector-version }}
+        push: false
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/duetector:latest
