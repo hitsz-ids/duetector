@@ -1,9 +1,8 @@
-name: Build latest images automatically
+name: Testing docker image build
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    branches: [ "master", "main" ]
 
 jobs:
   deploy:
@@ -29,8 +28,8 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     -
-      name: Build and push
-      id: docker_build_latest
+      name: Build image
+      id: docker_build_test
       uses: docker/build-push-action@v4
       with:
         context: .
@@ -38,5 +37,5 @@ jobs:
           BCC_VERSION=v0.28.0
         platforms: linux/amd64,linux/arm64/v8
         file: ./docker/Dockerfile
-        push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/duetector:latest
+        push: false
+        tags: build
