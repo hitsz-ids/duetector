@@ -12,7 +12,7 @@ from duetector.collectors.otel import OTelCollector
 def get_port():
     # Get an unoccupied port
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(("localhost", 0))
+        s.bind(("127.0.0.1", 0))
         return s.getsockname()[1]
 
 
@@ -73,7 +73,7 @@ def jaeger_container(docker_client: docker.DockerClient, service_id, data_t):
         while True:
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    s.connect(("localhost", ui_port))
+                    s.connect(("127.0.0.1", ui_port))
                     break
             except:
                 time.sleep(0.1)
@@ -85,7 +85,7 @@ def jaeger_container(docker_client: docker.DockerClient, service_id, data_t):
                 "statis_id": service_id,
                 "exporter": "otlp-grpc",
                 "exporter_kwargs": {
-                    "endpoint": f"localhost:{otel_grpc_port}",
+                    "endpoint": f"127.0.0.1:{otel_grpc_port}",
                     "insecure": True,
                 },
             }
