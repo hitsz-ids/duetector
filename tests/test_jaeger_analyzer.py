@@ -2,6 +2,7 @@ import socket
 import time
 from collections import namedtuple
 
+import httpx
 import pytest
 
 import docker
@@ -72,8 +73,8 @@ def jaeger_container(docker_client: docker.DockerClient, service_id, data_t):
         # Waiting for the container to start by query ui_port
         while True:
             try:
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    s.connect(("127.0.0.1", ui_port))
+                response = httpx.get(f"http://127.0.0.1:{ui_port}")
+                if response.status_code == 200:
                     break
             except:
                 time.sleep(0.1)
