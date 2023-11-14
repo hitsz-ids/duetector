@@ -122,6 +122,9 @@ class OTelCollector(Collector):
 
     """
 
+    service_prefix = "duetector"
+    service_sep = "-"
+
     default_config = {
         **Collector.default_config,
         "disabled": True,
@@ -143,7 +146,7 @@ class OTelCollector(Collector):
 
     @property
     def service_name(self) -> str:
-        return f"duetector-{self.id}"
+        return self.service_sep.join([f"{self.service_prefix}", f"{self.id}"])
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)

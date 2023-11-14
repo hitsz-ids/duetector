@@ -100,6 +100,8 @@ include_extension = true
 
 [analyzer.jaegeranalyzer]
 disabled = true
+host = "localhost"
+port = 16685
 
 [analyzer.dbanalyzer]
 disabled = false
