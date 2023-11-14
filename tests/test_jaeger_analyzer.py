@@ -104,7 +104,7 @@ def jaeger_analyzer(jaeger_container):
     config = {
         "jaegeranalyzer": {
             "disabled": False,
-            "host": "localhost",
+            "host": "127.0.0.1",
             "port": jaeger_container,
         }
     }
