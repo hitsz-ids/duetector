@@ -73,6 +73,10 @@ max_workers = 10
 
 [collector.otelcollector.exporter_kwargs]
 
+[collector.otelcollector.grpc_exporter_kwargs]
+secure = false
+creds_file_path = ""
+
 [collector.dbcollector]
 disabled = false
 statis_id = ""
@@ -100,6 +104,8 @@ include_extension = true
 
 [analyzer.jaegeranalyzer]
 disabled = true
+secure = false
+creds_file_path = ""
 host = "localhost"
 port = 16685
 

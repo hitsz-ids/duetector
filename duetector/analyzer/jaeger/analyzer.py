@@ -5,6 +5,8 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 import grpc
 
+from duetector.utils import get_grpc_cred_from_path
+
 try:
     from functools import cache
 except ImportError:
@@ -35,7 +37,8 @@ class JaegerAnalyzer(Analyzer):
     default_config = {
         "disabled": True,
         # TODO: Support secure channel
-        # "secure_channel": False,
+        "secure": False,
+        "creds_file_path": "",
         "host": "localhost",
         "port": 16685,
     }
@@ -56,8 +59,13 @@ class JaegerAnalyzer(Analyzer):
                 print(response)
 
         """
-        target_func = grpc.aio.insecure_channel
-        kwargs = {"target": f"{self.config.host}:{self.config.port}"}
+        kwargs = {}
+        if self.config.secure:
+            target_func = grpc.aio.secure_channel
+            kwargs["credentials"] = get_grpc_cred_from_path(self.config.creds_file_path)
+        else:
+            target_func = grpc.aio.insecure_channel
+        kwargs["target"] = f"{self.config.host}:{self.config.port}"
 
         return functools.partial(target_func, **kwargs)
 

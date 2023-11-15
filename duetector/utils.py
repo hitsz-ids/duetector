@@ -1,10 +1,16 @@
 import threading
 from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Optional, Union
 
 try:
     from functools import cache
 except ImportError:
     from functools import lru_cache as cache
+
+import grpc
+
+from duetector.log import logger
 
 
 class Singleton(type):
@@ -41,6 +47,20 @@ def get_boot_time() -> datetime:
 def get_boot_time_duration_ns(ns) -> datetime:
     ns = int(ns)
     return get_boot_time() + timedelta(microseconds=ns / 1000)
+
+
+def get_grpc_cred_from_path(path: Optional[Union[str, Path]]) -> grpc.ChannelCredentials:
+    if not path:
+        logger.info("No creds file provided, using system certs.")
+        return grpc.ssl_channel_credentials()
+
+    if isinstance(path, str):
+        path = Path(path)
+    if not path.exists():
+        logger.warning(f"Could not find creds file: {path}, using system certs.")
+        return grpc.ssl_channel_credentials()
+    with path.open("rb") as f:
+        return grpc.ssl_channel_credentials(f.read())
 
 
 if __name__ == "__main__":

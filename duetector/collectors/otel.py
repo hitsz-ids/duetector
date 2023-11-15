@@ -22,7 +22,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExport
 from duetector.collectors.base import Collector
 from duetector.collectors.models import Tracking
 from duetector.extension.collector import hookimpl
-from duetector.utils import Singleton
+from duetector.utils import Singleton, get_grpc_cred_from_path
 
 
 class OTelInitiator(metaclass=Singleton):
@@ -130,6 +130,10 @@ class OTelCollector(Collector):
         "disabled": True,
         "exporter": "console",
         "exporter_kwargs": {},
+        "grpc_exporter_kwargs": {
+            "secure": False,
+            "creds_file_path": "",
+        },
     }
 
     @property
@@ -142,19 +146,36 @@ class OTelCollector(Collector):
 
     @property
     def exporter_kwargs(self) -> Dict[str, Any]:
-        return self.config.exporter_kwargs
+        return self.config.exporter_kwargs._config_dict
 
     @property
     def service_name(self) -> str:
         return self.service_sep.join([f"{self.service_prefix}", f"{self.id}"])
 
+    @property
+    def grpc_exporter_kwargs(self) -> Dict[str, Any]:
+        kwargs = self.config.grpc_exporter_kwargs._config_dict
+        wrapped_kwargs = {}
+        if kwargs.get("secure"):
+            creds = get_grpc_cred_from_path(kwargs.get("creds_file_path"))
+            wrapped_kwargs = {
+                "insecure": False,
+                "credentials": creds,
+            }
+
+        return wrapped_kwargs
+
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
+
+        if "grpc" in self.exporter:
+            self.exporter_kwargs.update(self.grpc_exporter_kwargs)
+
         self.otel = OTelInitiator()
         self.otel.initialize(
             service_name=self.service_name,
             exporter=self.exporter,
-            exporter_kwargs=self.exporter_kwargs._config_dict,
+            exporter_kwargs=self.exporter_kwargs,
         )
 
     def _emit(self, t: Tracking):
