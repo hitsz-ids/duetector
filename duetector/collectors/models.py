@@ -130,9 +130,6 @@ class Tracking(pydantic.BaseModel):
             span.set_attribute(k, v)
         span.set_attribute("collector_id", collector.id)
 
-    def span_name(self, collector):
-        return f"{self.tracer}@{collector.id}"
-
 
 if __name__ == "__main__":
     Tracking(tracer="test", dt=datetime.now())

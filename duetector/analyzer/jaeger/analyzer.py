@@ -16,27 +16,47 @@ from duetector.analyzer.base import Analyzer
 from duetector.analyzer.jaeger.proto.query_pb2 import *
 from duetector.analyzer.jaeger.proto.query_pb2_grpc import *
 from duetector.analyzer.models import AnalyzerBrief, Tracking
-from duetector.collectors.otel import OTelCollector
+from duetector.collectors.otel import OTelInspector
 from duetector.extension.analyzer import hookimpl
 
 ChannelInitializer = Callable[[], grpc.aio.Channel]
 
 
-class JaegerConnector:
+class JaegerConnector(OTelInspector):
     def __init__(self, channel_initializer: ChannelInitializer):
         self.channel_initializer: ChannelInitializer = channel_initializer
 
-    def inspect_all_service(self):
-        pass
+    def inspect_all_collector_ids(self) -> List[str]:
+        with self.channel_initializer() as channel:
+            stub = QueryServiceStub(channel)
+            response = stub.GetServices(GetServicesRequest())
+            return [
+                self.get_identifier(service)
+                for service in response.services
+                if self.get_identifier(service)
+            ]
 
-    def inspect_all_operation(self):
-        pass
+    def get_operation(self, service: str, span_kind: Optional[str] = None) -> List[str]:
+        with self.channel_initializer() as channel:
+            stub = QueryServiceStub(channel)
+            response = stub.GetOperations(
+                GetOperationsRequest(service=service, span_kind=span_kind)
+            )
+            return [operation.name for operation in response.operations]
+
+    def inspect_all_tracers(self) -> List[str]:
+        return [
+            self.get_tracer_name(operation)
+            for operation in self.get_operation(
+                service for service in self.inspect_all_collector_ids()
+            )
+            if self.get_tracer_name(operation)
+        ]
 
 
 class JaegerAnalyzer(Analyzer):
     default_config = {
         "disabled": True,
-        # TODO: Support secure channel
         "secure": False,
         "root_certificates_path": "",
         "private_key_path": "",
@@ -44,15 +64,13 @@ class JaegerAnalyzer(Analyzer):
         "host": "localhost",
         "port": 16685,
     }
-    service_prefix = OTelCollector.service_prefix
-    service_sep = OTelCollector.service_sep
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
     @property
     @cache
-    def channel(self) -> ChannelInitializer:
+    def channel_initializer(self) -> ChannelInitializer:
         """
         Example:
             async with self.channel as channel:
@@ -78,7 +96,7 @@ class JaegerAnalyzer(Analyzer):
     @property
     @cache
     def connector(self):
-        return JaegerConnector(self.channel)
+        return JaegerConnector(self.channel_initializer)
 
     def get_all_tracers(self) -> List[str]:
         """
@@ -88,7 +106,7 @@ class JaegerAnalyzer(Analyzer):
             List[str]: List of tracer's name.
         """
 
-        raise NotImplementedError
+        return self.connector.inspect_all_tracers()
 
     def get_all_collector_ids(self) -> List[str]:
         """
@@ -97,7 +115,7 @@ class JaegerAnalyzer(Analyzer):
         Returns:
             List[str]: List of collector id.
         """
-        raise NotImplementedError
+        return self.connector.inspect_all_collector_ids()
 
     def query(
         self,

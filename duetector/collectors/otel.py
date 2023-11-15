@@ -25,6 +25,30 @@ from duetector.extension.collector import hookimpl
 from duetector.utils import Singleton, get_grpc_cred_from_path
 
 
+class OTelInspector:
+    service_prefix = "duetector"
+    service_sep = "-"
+
+    @classmethod
+    def generate_service_name(cls, identifier: str) -> str:
+        return cls.service_sep.join([f"{cls.service_prefix}", f"{identifier}"])
+
+    @classmethod
+    def get_identifier(cls, service_name: str) -> Optional[str]:
+        if not service_name.startswith(cls.service_prefix):
+            return None
+
+        return service_name.replace(cls.service_prefix + cls.service_sep, "")
+
+    @classmethod
+    def generate_span_name(cls, t: Tracking) -> str:
+        return t.tracer
+
+    @classmethod
+    def get_tracer_name(cls, span_name: str) -> str:
+        return span_name
+
+
 class OTelInitiator(metaclass=Singleton):
     """
     Host the OpenTelemetry SDK and initialize the provider and exporter.
@@ -109,7 +133,7 @@ class OTelInitiator(metaclass=Singleton):
             self.provider = None
 
 
-class OTelCollector(Collector):
+class OTelCollector(Collector, OTelInspector):
     """
     A collector using OpenTelemetry SDK.
 
@@ -152,7 +176,7 @@ class OTelCollector(Collector):
 
     @property
     def service_name(self) -> str:
-        return self.service_sep.join([f"{self.service_prefix}", f"{self.id}"])
+        return self.generate_service_name(self.id)
 
     @property
     def grpc_exporter_kwargs(self) -> Dict[str, Any]:
@@ -186,7 +210,7 @@ class OTelCollector(Collector):
 
     def _emit(self, t: Tracking):
         tracer = trace.get_tracer(self.id)
-        with tracer.start_as_current_span(t.span_name(self)) as span:
+        with tracer.start_as_current_span(self.generate_span_name(t)) as span:
             t.set_span(self, span)
 
     def summary(self) -> Dict:

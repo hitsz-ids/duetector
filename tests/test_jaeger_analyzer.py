@@ -116,7 +116,7 @@ async def test_jaeger_analyzer(jaeger_analyzer: JaegerAnalyzer):
     from duetector.analyzer.jaeger.proto.query_pb2 import GetServicesRequest
     from duetector.analyzer.jaeger.proto.query_pb2_grpc import QueryServiceStub
 
-    async with jaeger_analyzer.channel() as channel:
+    async with jaeger_analyzer.channel_initializer() as channel:
         stub = QueryServiceStub(channel)
         response = await stub.GetServices(GetServicesRequest())
         print(response)
