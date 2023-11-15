@@ -38,7 +38,9 @@ class JaegerAnalyzer(Analyzer):
         "disabled": True,
         # TODO: Support secure channel
         "secure": False,
-        "creds_file_path": "",
+        "root_certificates_path": "",
+        "private_key_path": "",
+        "certificate_chain_path": "",
         "host": "localhost",
         "port": 16685,
     }
@@ -62,7 +64,11 @@ class JaegerAnalyzer(Analyzer):
         kwargs = {}
         if self.config.secure:
             target_func = grpc.aio.secure_channel
-            kwargs["credentials"] = get_grpc_cred_from_path(self.config.creds_file_path)
+            kwargs["credentials"] = get_grpc_cred_from_path(
+                root_certificates_path=self.config.root_certificates_path,
+                private_key_path=self.config.private_key_path,
+                certificate_chain_path=self.config.certificate_chain_path,
+            )
         else:
             target_func = grpc.aio.insecure_channel
         kwargs["target"] = f"{self.config.host}:{self.config.port}"

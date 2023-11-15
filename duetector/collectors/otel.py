@@ -132,7 +132,9 @@ class OTelCollector(Collector):
         "exporter_kwargs": {},
         "grpc_exporter_kwargs": {
             "secure": False,
-            "creds_file_path": "",
+            "root_certificates_path": "",
+            "private_key_path": "",
+            "certificate_chain_path": "",
         },
     }
 
@@ -157,7 +159,11 @@ class OTelCollector(Collector):
         kwargs = self.config.grpc_exporter_kwargs._config_dict
         wrapped_kwargs = {}
         if kwargs.get("secure"):
-            creds = get_grpc_cred_from_path(kwargs.get("creds_file_path"))
+            creds = get_grpc_cred_from_path(
+                root_certificates_path=kwargs.get("root_certificates_path"),
+                private_key_path=kwargs.get("private_key_path"),
+                certificate_chain_path=kwargs.get("certificate_chain_path"),
+            )
             wrapped_kwargs = {
                 "insecure": False,
                 "credentials": creds,

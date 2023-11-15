@@ -75,7 +75,9 @@ max_workers = 10
 
 [collector.otelcollector.grpc_exporter_kwargs]
 secure = false
-creds_file_path = ""
+root_certificates_path = ""
+private_key_path = ""
+certificate_chain_path = ""
 
 [collector.dbcollector]
 disabled = false
@@ -105,7 +107,9 @@ include_extension = true
 [analyzer.jaegeranalyzer]
 disabled = true
 secure = false
-creds_file_path = ""
+root_certificates_path = ""
+private_key_path = ""
+certificate_chain_path = ""
 host = "localhost"
 port = 16685
 

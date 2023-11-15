@@ -1,3 +1,4 @@
+import os
 import threading
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -49,18 +50,48 @@ def get_boot_time_duration_ns(ns) -> datetime:
     return get_boot_time() + timedelta(microseconds=ns / 1000)
 
 
-def get_grpc_cred_from_path(path: Optional[Union[str, Path]]) -> grpc.ChannelCredentials:
-    if not path:
-        logger.info("No creds file provided, using system certs.")
-        return grpc.ssl_channel_credentials()
+@cache
+def get_grpc_cred_from_path(
+    root_certificates_path: Optional[Union[str, Path]],
+    private_key_path: Optional[Union[str, Path]],
+    certificate_chain_path: Optional[Union[str, Path]],
+) -> grpc.ChannelCredentials:
+    def _read_content(path: Optional[Union[str, Path]]) -> Optional[bytes]:
+        if not path:
+            return None
+        if isinstance(path, str):
+            path = Path(path)
+        if not path.exists():
+            return None
+        with path.open("rb") as f:
+            return f.read()
 
-    if isinstance(path, str):
-        path = Path(path)
-    if not path.exists():
-        logger.warning(f"Could not find creds file: {path}, using system certs.")
-        return grpc.ssl_channel_credentials()
-    with path.open("rb") as f:
-        return grpc.ssl_channel_credentials(f.read())
+    root_certificates = _read_content(root_certificates_path)
+    if not root_certificates:
+        # Support GRPC_DEFAULT_SSL_ROOTS_FILE_PATH env
+        if "GRPC_DEFAULT_SSL_ROOTS_FILE_PATH" in os.environ:
+            logger.debug(
+                "Using GRPC_DEFAULT_SSL_ROOTS_FILE_PATH env for root_certificates: %s",
+                os.environ["GRPC_DEFAULT_SSL_ROOTS_FILE_PATH"],
+            )
+
+            root_certificates = _read_content(os.environ["GRPC_DEFAULT_SSL_ROOTS_FILE_PATH"])
+
+    private_key = _read_content(private_key_path)
+    certificate_chain = _read_content(certificate_chain_path)
+
+    logger.debug(
+        "root_certificates: %s, private_key: %s, certificate_chain: %s",
+        root_certificates,
+        private_key,
+        certificate_chain,
+    )
+
+    return grpc.ssl_channel_credentials(
+        root_certificates=root_certificates,
+        private_key=private_key,
+        certificate_chain=certificate_chain,
+    )
 
 
 if __name__ == "__main__":
