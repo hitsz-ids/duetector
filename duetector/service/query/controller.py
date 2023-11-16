@@ -4,6 +4,7 @@ from duetector.analyzer.base import Analyzer
 from duetector.managers.analyzer import AnalyzerManager
 from duetector.service.base import Controller
 from duetector.service.exceptions import NotFoundError
+from duetector.service.query.models import QueryBody
 
 
 class AnalyzerController(Controller):
@@ -49,3 +50,9 @@ class AnalyzerController(Controller):
         if not a:
             raise NotFoundError(analyzer_name)
         return a
+
+    def wrap_query_param(self, query_param: QueryBody) -> Dict[str, Any]:
+        model = query_param.model_dump()
+
+        model["collector_ids"] = [model.pop("collector_id")]
+        return model

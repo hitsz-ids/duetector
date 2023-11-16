@@ -11,8 +11,8 @@ class AvaliableAnalyzers(BaseModel):
 
 
 class QueryBody(BaseModel):
+    collector_id: str
     tracers: Optional[List[str]] = None
-    collector_ids: Optional[List[str]] = None
     start_datetime: Optional[datetime] = None
     end_datetime: Optional[datetime] = None
     start: int = 0
@@ -28,7 +28,7 @@ class QueryBody(BaseModel):
             "examples": [
                 {
                     "tracers": [],
-                    "collector_ids": [],
+                    "collector_id": "test-service",
                     "start_datetime": datetime.fromtimestamp(0),
                     "end_datetime": datetime.now(),
                     "start": 0,

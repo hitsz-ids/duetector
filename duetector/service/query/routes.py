@@ -29,14 +29,15 @@ async def root(
 @r.post("/{analyzer_name}", response_model=QueryResult)
 async def query(
     analyzer_name: str,
-    query_param: QueryBody = Body(default=QueryBody()),
+    query_param: QueryBody = Body(default=QueryBody(collector_id="unknown-collector-id")),
     controller: AnalyzerController = Depends(get_controller(AnalyzerController)),
 ):
     """
     Query data from analyzer
     """
     analyzer = controller.get_analyzer(analyzer_name)
-    trackings = await ensure_async(analyzer.query, **query_param.model_dump())
+    query_param = controller.wrap_query_param(query_param)
+    trackings = await ensure_async(analyzer.query, **query_param)
 
     return QueryResult(
         trackings=trackings,
