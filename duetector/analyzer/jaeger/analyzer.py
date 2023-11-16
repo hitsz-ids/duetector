@@ -4,6 +4,8 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Union
 
 import grpc
+from google.protobuf.duration_pb2 import Duration
+from google.protobuf.timestamp_pb2 import Timestamp
 
 from duetector.utils import get_grpc_cred_from_path
 
@@ -26,32 +28,71 @@ class JaegerConnector(OTelInspector):
     def __init__(self, channel_initializer: ChannelInitializer):
         self.channel_initializer: ChannelInitializer = channel_initializer
 
-    def inspect_all_collector_ids(self) -> List[str]:
-        with self.channel_initializer() as channel:
+    async def inspect_all_collector_ids(self) -> List[str]:
+        async with self.channel_initializer() as channel:
             stub = QueryServiceStub(channel)
-            response = stub.GetServices(GetServicesRequest())
+            response = await stub.GetServices(GetServicesRequest())
             return [
                 self.get_identifier(service)
                 for service in response.services
                 if self.get_identifier(service)
             ]
 
-    def get_operation(self, service: str, span_kind: Optional[str] = None) -> List[str]:
-        with self.channel_initializer() as channel:
+    async def get_operation(self, service: str, span_kind: Optional[str] = None) -> List[str]:
+        async with self.channel_initializer() as channel:
             stub = QueryServiceStub(channel)
-            response = stub.GetOperations(
+            response = await stub.GetOperations(
                 GetOperationsRequest(service=service, span_kind=span_kind)
             )
             return [operation.name for operation in response.operations]
 
-    def inspect_all_tracers(self) -> List[str]:
+    async def inspect_all_tracers(self) -> List[str]:
         return [
-            self.get_tracer_name(operation)
-            for operation in self.get_operation(
+            await self.get_tracer_name(operation)
+            for operation in await self.get_operation(
                 service for service in self.inspect_all_collector_ids()
             )
             if self.get_tracer_name(operation)
         ]
+
+    def _datetime_to_protobuf_timestamp(self, dt: datetime) -> Timestamp:
+        ts = Timestamp()
+        ts.FromDatetime(dt)
+        return ts
+
+    async def query_trace(
+        self,
+        collector_id,
+        tracer_name,
+        tags: Optional[Dict[str, Any]] = None,
+        start_time_min: Optional[datetime] = None,
+        start_time_max: Optional[datetime] = None,
+        duration_min: Optional[int] = None,
+        duration_max: Optional[int] = None,
+        search_depth: int = 0,
+    ) -> List[Tracking]:
+        service_name = self.generate_service_name(collector_id)
+        operation_name = self.generate_span_name(tracer_name)
+        if start_time_min:
+            start_time_min = self._datetime_to_protobuf_timestamp(start_time_min)
+        if start_time_max:
+            start_time_max = self._datetime_to_protobuf_timestamp(start_time_max)
+
+        request = FindTracesRequest(
+            query=TraceQueryParameters(
+                service_name=service_name,
+                operation_name=operation_name,
+                tags=tags,
+                start_time_min=start_time_min,
+                start_time_max=start_time_max,
+                duration_min=Duration(seconds=duration_min) if duration_min else None,
+                duration_max=Duration(seconds=duration_max) if duration_max else None,
+                search_depth=search_depth,
+            )
+        )
+
+        async with self.channel_initializer() as channel:
+            pass
 
 
 class JaegerAnalyzer(Analyzer):
@@ -117,14 +158,14 @@ class JaegerAnalyzer(Analyzer):
         """
         return self.connector.inspect_all_collector_ids()
 
-    def query(
+    async def query(
         self,
         tracers: Optional[List[str]] = None,
         collector_ids: Optional[List[str]] = None,
         start_datetime: Optional[datetime] = None,
         end_datetime: Optional[datetime] = None,
         start: int = 0,
-        limit: int = 0,
+        limit: int = 20,
         columns: Optional[List[str]] = None,
         where: Optional[Dict[str, Any]] = None,
         distinct: bool = False,
@@ -132,26 +173,37 @@ class JaegerAnalyzer(Analyzer):
         order_by_desc: Optional[List[str]] = None,
     ) -> List[Tracking]:
         """
-        Query all tracking records from database.
+        Query all tracking records from jaeger connector.
 
         Args:
             tracers (Optional[List[str]], optional): Tracer's name. Defaults to None, all tracers will be queried.
             collector_ids (Optional[List[str]], optional): Collector id. Defaults to None, all collector id will be queried.
             start_datetime (Optional[datetime], optional): Start time. Defaults to None.
             end_datetime (Optional[datetime], optional): End time. Defaults to None.
-            start (int, optional): Start index. Defaults to 0.
-            limit (int, optional): Limit of records. Defaults to 20. ``0`` means no limit.
-            columns (Optional[List[str]], optional): Columns to query. Defaults to None, all columns will be queried.
-            where (Optional[Dict[str, Any]], optional): Where clause. Defaults to None.
-            distinct (bool, optional): Distinct. Defaults to False.
-            order_by_asc (Optional[List[str]], optional): Order by asc. Defaults to None.
-            order_by_desc (Optional[List[str]], optional): Order by desc. Defaults to None.
+            start (int, optional): Not support.
+            limit (int, optional): Limit for each tracer of each collector id. Defaults to 20.
+            columns (Optional[List[str]], optional): Not support, all tags will be returned.
+            where (Optional[Dict[str, Any]], optional): Tags filter. Defaults to None.
+            distinct (bool, optional): Not support.
+            order_by_asc (Optional[List[str]], optional): Not support.
+            order_by_desc (Optional[List[str]], optional): Not support.
         Returns:
             List[duetector.analyzer.models.Tracking]: List of tracking records.
         """
-        raise NotImplementedError
+        return [
+            await self.connector.query_trace(
+                collector_id=collector_id,
+                tracer_name=tracer,
+                tags=where,
+                start_time_min=start_datetime,
+                start_time_max=end_datetime,
+                search_depth=limit,
+            )
+            for tracer in tracers
+            for collector_id in collector_ids
+        ]
 
-    def brief(
+    async def brief(
         self,
         tracers: Optional[List[str]] = None,
         collector_ids: Optional[List[str]] = None,
@@ -182,7 +234,7 @@ class JaegerAnalyzer(Analyzer):
         """
         raise NotImplementedError
 
-    def analyze(self):
+    async def analyze(self):
         # TODO: Not design yet.
         pass
 

@@ -66,53 +66,53 @@ def db_analyzer(config, c_tracking, collector_id):
     yield db_analyzer
 
 
-def test_query(db_analyzer: DBAnalyzer, a_tracking, collector_id):
-    assert a_tracking in db_analyzer.query()
-    assert a_tracking in db_analyzer.query(tracers=[a_tracking.tracer])
-    assert a_tracking in db_analyzer.query(collector_ids=[collector_id])
-    assert a_tracking in db_analyzer.query(
+async def test_query(db_analyzer: DBAnalyzer, a_tracking, collector_id):
+    assert a_tracking in await db_analyzer.query()
+    assert a_tracking in await db_analyzer.query(tracers=[a_tracking.tracer])
+    assert a_tracking in await db_analyzer.query(collector_ids=[collector_id])
+    assert a_tracking in await db_analyzer.query(
         tracers=[a_tracking.tracer], collector_ids=[collector_id]
     )
-    assert a_tracking in db_analyzer.query(start_datetime=now - timedelta(days=1))
-    assert a_tracking in db_analyzer.query(end_datetime=now + timedelta(days=1))
-    assert a_tracking in db_analyzer.query(order_by_asc=["pid"])
-    assert a_tracking in db_analyzer.query(order_by_desc=["pid"])
+    assert a_tracking in await db_analyzer.query(start_datetime=now - timedelta(days=1))
+    assert a_tracking in await db_analyzer.query(end_datetime=now + timedelta(days=1))
+    assert a_tracking in await db_analyzer.query(order_by_asc=["pid"])
+    assert a_tracking in await db_analyzer.query(order_by_desc=["pid"])
 
-    assert len(db_analyzer.query()) == 2
-    assert len(db_analyzer.query(distinct=True)) == 1
+    assert len(await db_analyzer.query()) == 2
+    assert len(await db_analyzer.query(distinct=True)) == 1
 
     assert AT(
         tracer=a_tracking.tracer,
         pid=a_tracking.pid,
         fname=a_tracking.fname,
-    ) in db_analyzer.query(columns=["pid", "fname"])
+    ) in await db_analyzer.query(columns=["pid", "fname"])
 
-    assert not db_analyzer.query(tracers=["not-exist"])
-    assert not db_analyzer.query(collector_ids=["not-exist"])
-    assert not db_analyzer.query(start_datetime=now + timedelta(days=1))
-    assert not db_analyzer.query(end_datetime=now - timedelta(days=1))
-    assert not db_analyzer.query(start=100)
-    assert not db_analyzer.query(where={"pid": 1})
+    assert not await db_analyzer.query(tracers=["not-exist"])
+    assert not await db_analyzer.query(collector_ids=["not-exist"])
+    assert not await db_analyzer.query(start_datetime=now + timedelta(days=1))
+    assert not await db_analyzer.query(end_datetime=now - timedelta(days=1))
+    assert not await db_analyzer.query(start=100)
+    assert not await db_analyzer.query(where={"pid": 1})
 
 
-def test_brief(db_analyzer: DBAnalyzer, a_tracking, collector_id):
-    assert db_analyzer.brief()
-    assert db_analyzer.brief(tracers=[a_tracking.tracer])
-    assert db_analyzer.brief(collector_ids=[collector_id])
-    assert db_analyzer.brief(tracers=[a_tracking.tracer], collector_ids=[collector_id])
-    assert db_analyzer.brief(start_datetime=now - timedelta(days=1))
-    assert db_analyzer.brief(end_datetime=now + timedelta(days=1))
-    assert db_analyzer.brief(with_details=False)
-    assert db_analyzer.brief(distinct=True)
+async def test_brief(db_analyzer: DBAnalyzer, a_tracking, collector_id):
+    assert await db_analyzer.brief()
+    assert await db_analyzer.brief(tracers=[a_tracking.tracer])
+    assert await db_analyzer.brief(collector_ids=[collector_id])
+    assert await db_analyzer.brief(tracers=[a_tracking.tracer], collector_ids=[collector_id])
+    assert await db_analyzer.brief(start_datetime=now - timedelta(days=1))
+    assert await db_analyzer.brief(end_datetime=now + timedelta(days=1))
+    assert await db_analyzer.brief(with_details=False)
+    assert await db_analyzer.brief(distinct=True)
 
-    assert not db_analyzer.brief(tracers=["not-exist"]).tracers
-    assert not db_analyzer.brief(collector_ids=["not-exist"]).collector_ids
-    assert not list(db_analyzer.brief(start_datetime=now + timedelta(days=1)).briefs.values())[
-        0
-    ].count
-    assert not list(db_analyzer.brief(end_datetime=now - timedelta(days=1)).briefs.values())[
-        0
-    ].count
+    assert not (await db_analyzer.brief(tracers=["not-exist"])).tracers
+    assert not (await db_analyzer.brief(collector_ids=["not-exist"])).collector_ids
+    assert not list(
+        (await db_analyzer.brief(start_datetime=now + timedelta(days=1))).briefs.values()
+    )[0].count
+    assert not list(
+        (await db_analyzer.brief(end_datetime=now - timedelta(days=1))).briefs.values()
+    )[0].count
 
 
 if __name__ == "__main__":
