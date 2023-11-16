@@ -16,8 +16,8 @@ from duetector.analyzer.base import Analyzer
 from duetector.analyzer.jaeger.proto.query_pb2 import *
 from duetector.analyzer.jaeger.proto.query_pb2_grpc import *
 from duetector.analyzer.models import AnalyzerBrief, Tracking
-from duetector.collectors.otel import OTelInspector
 from duetector.extension.analyzer import hookimpl
+from duetector.otel import OTelInspector
 
 ChannelInitializer = Callable[[], grpc.aio.Channel]
 
