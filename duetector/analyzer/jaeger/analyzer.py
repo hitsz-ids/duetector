@@ -7,6 +7,7 @@ import grpc
 from google.protobuf.duration_pb2 import Duration
 from google.protobuf.timestamp_pb2 import Timestamp
 
+from duetector.exceptions import AnalysQueryError
 from duetector.utils import get_grpc_cred_from_path
 
 try:
@@ -15,6 +16,7 @@ except ImportError:
     from functools import lru_cache as cache
 
 from duetector.analyzer.base import Analyzer
+from duetector.analyzer.jaeger.proto.model_pb2 import Span
 from duetector.analyzer.jaeger.proto.query_pb2 import *
 from duetector.analyzer.jaeger.proto.query_pb2_grpc import *
 from duetector.analyzer.models import AnalyzerBrief, Tracking
@@ -69,7 +71,7 @@ class JaegerConnector(OTelInspector):
         start_time_max: Optional[datetime] = None,
         duration_min: Optional[int] = None,
         duration_max: Optional[int] = None,
-        search_depth: int = 0,
+        search_depth: int = 20,
     ) -> List[Tracking]:
         service_name = self.generate_service_name(collector_id)
         operation_name = self.generate_span_name(tracer_name)
@@ -77,6 +79,10 @@ class JaegerConnector(OTelInspector):
             start_time_min = self._datetime_to_protobuf_timestamp(start_time_min)
         if start_time_max:
             start_time_max = self._datetime_to_protobuf_timestamp(start_time_max)
+
+        # 1 <= search_depth <= 1500
+        if search_depth < 1 or search_depth > 1500:
+            raise AnalysQueryError("Jaeger search_depth must be between 1 and 1500.")
 
         request = FindTracesRequest(
             query=TraceQueryParameters(
@@ -92,7 +98,12 @@ class JaegerConnector(OTelInspector):
         )
 
         async with self.channel_initializer() as channel:
-            pass
+            stub = QueryServiceStub(channel)
+            response = stub.FindTraces(request)
+            ret = []
+            async for chunk in response:
+                ret.extend([Tracking.from_jaeger_span(tracer_name, span) for span in chunk.spans])
+            return ret
 
 
 class JaegerAnalyzer(Analyzer):
@@ -247,9 +258,9 @@ def init_analyzer(config):
 if __name__ == "__main__":
 
     async def run() -> None:
-        async with JaegerAnalyzer().channel() as channel:
-            stub = QueryServiceStub(channel)
-            response = await stub.GetServices(GetServicesRequest())
-            print(response)
+        Analyzer = JaegerAnalyzer()
+        await Analyzer.connector.query_trace(
+            collector_id="demo-service", tracer_name="tcp_v4_connect"
+        )
 
     asyncio.run(run())

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from duetector.collectors.models import Tracking as CTracking
 
@@ -19,7 +19,9 @@ class OTelInspector:
         return service_name.replace(cls.service_prefix + cls.service_sep, "")
 
     @classmethod
-    def generate_span_name(cls, t: CTracking) -> str:
+    def generate_span_name(cls, t: Union[CTracking, str]) -> str:
+        if isinstance(t, str):
+            return t
         return t.tracer
 
     @classmethod

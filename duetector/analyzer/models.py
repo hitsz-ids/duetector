@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, Optional, Set
 
 import pydantic
+
+from duetector.analyzer.jaeger.proto import model_pb2 as JModel
+from duetector.analyzer.jaeger.proto.model_pb2 import Span as JSpan
 
 
 class Tracking(pydantic.BaseModel):
@@ -53,6 +56,35 @@ class Tracking(pydantic.BaseModel):
     """
     Extended fields, will be stored in ``extended`` field as a dict
     """
+
+    @classmethod
+    def normalize_field(cls, field, data):
+        if field == "timestamp":
+            field = "dt"
+            data = datetime.fromtimestamp(data)
+        return field, data
+
+    @classmethod
+    def from_jaeger_span(cls, tracer_name, span: JSpan) -> "Tracking":
+        value_type_to_field_attr = {
+            JModel.STRING: "v_str",
+            JModel.BOOL: "v_bool",
+            JModel.INT64: "v_int64",
+            JModel.FLOAT64: "v_float64",
+            JModel.BINARY: "v_binary",
+        }
+
+        t = Tracking(tracer=tracer_name)
+        for msg in span.tags:
+            field = msg.key
+            data = getattr(msg, value_type_to_field_attr[msg.v_type])
+            field, data = Tracking.normalize_field(field, data)
+            if field in Tracking.model_fields:
+                setattr(t, field, data)
+            else:
+                t.extended[field] = data
+
+        return t
 
 
 class Brief(pydantic.BaseModel):

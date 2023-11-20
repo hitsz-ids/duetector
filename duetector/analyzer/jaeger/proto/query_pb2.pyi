@@ -1,4 +1,4 @@
-import model_pb2 as model__pb2
+import model_pb2 as _model_pb2
 from google.api import annotations_pb2 as _annotations_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf import duration_pb2 as _duration_pb2
