@@ -7,6 +7,7 @@ import grpc
 from google.protobuf.duration_pb2 import Duration
 from google.protobuf.timestamp_pb2 import Timestamp
 
+from duetector.analyzer.jaeger.proto import model_pb2
 from duetector.exceptions import AnalysQueryError
 from duetector.utils import get_grpc_cred_from_path
 
@@ -19,7 +20,7 @@ from duetector.analyzer.base import Analyzer
 from duetector.analyzer.jaeger.proto.model_pb2 import Span
 from duetector.analyzer.jaeger.proto.query_pb2 import *
 from duetector.analyzer.jaeger.proto.query_pb2_grpc import *
-from duetector.analyzer.models import AnalyzerBrief, Tracking
+from duetector.analyzer.models import AnalyzerBrief, Brief, Tracking
 from duetector.extension.analyzer import hookimpl
 from duetector.otel import OTelInspector
 
@@ -62,10 +63,44 @@ class JaegerConnector(OTelInspector):
         ts.FromDatetime(dt)
         return ts
 
+    def _protobuf_timestamp_to_datetime(self, ts: Timestamp) -> datetime:
+        return ts.ToDatetime()
+
+    def get_find_tracers_request(
+        self,
+        collector_id: str,
+        tracer_name: str,
+        tags: Optional[Dict[str, Any]] = None,
+        start_time_min: Optional[datetime] = None,
+        start_time_max: Optional[datetime] = None,
+        duration_min: Optional[int] = None,
+        duration_max: Optional[int] = None,
+        search_depth: int = 20,
+    ) -> FindTracesRequest:
+        if search_depth < 1 or search_depth > 1500:
+            raise AnalysQueryError("Jaeger search_depth must be between 1 and 1500.")
+
+        return FindTracesRequest(
+            query=TraceQueryParameters(
+                service_name=self.generate_service_name(collector_id),
+                operation_name=self.generate_span_name(tracer_name),
+                tags=tags,
+                start_time_min=self._datetime_to_protobuf_timestamp(start_time_min)
+                if start_time_min
+                else None,
+                start_time_max=self._datetime_to_protobuf_timestamp(start_time_max)
+                if start_time_max
+                else None,
+                duration_min=Duration(seconds=duration_min) if duration_min else None,
+                duration_max=Duration(seconds=duration_max) if duration_max else None,
+                search_depth=search_depth,
+            )
+        )
+
     async def query_trace(
         self,
-        collector_id,
-        tracer_name,
+        collector_id: str,
+        tracer_name: str,
         tags: Optional[Dict[str, Any]] = None,
         start_time_min: Optional[datetime] = None,
         start_time_max: Optional[datetime] = None,
@@ -73,30 +108,16 @@ class JaegerConnector(OTelInspector):
         duration_max: Optional[int] = None,
         search_depth: int = 20,
     ) -> List[Tracking]:
-        service_name = self.generate_service_name(collector_id)
-        operation_name = self.generate_span_name(tracer_name)
-        if start_time_min:
-            start_time_min = self._datetime_to_protobuf_timestamp(start_time_min)
-        if start_time_max:
-            start_time_max = self._datetime_to_protobuf_timestamp(start_time_max)
-
-        # 1 <= search_depth <= 1500
-        if search_depth < 1 or search_depth > 1500:
-            raise AnalysQueryError("Jaeger search_depth must be between 1 and 1500.")
-
-        request = FindTracesRequest(
-            query=TraceQueryParameters(
-                service_name=service_name,
-                operation_name=operation_name,
-                tags=tags,
-                start_time_min=start_time_min,
-                start_time_max=start_time_max,
-                duration_min=Duration(seconds=duration_min) if duration_min else None,
-                duration_max=Duration(seconds=duration_max) if duration_max else None,
-                search_depth=search_depth,
-            )
+        request = self.get_find_tracers_request(
+            collector_id=collector_id,
+            tracer_name=tracer_name,
+            tags=tags,
+            start_time_min=start_time_min,
+            start_time_max=start_time_max,
+            duration_min=duration_min,
+            duration_max=duration_max,
+            search_depth=search_depth,
         )
-
         async with self.channel_initializer() as channel:
             stub = QueryServiceStub(channel)
             response = stub.FindTraces(request)
@@ -104,6 +125,48 @@ class JaegerConnector(OTelInspector):
             async for chunk in response:
                 ret.extend([Tracking.from_jaeger_span(tracer_name, span) for span in chunk.spans])
             return ret
+
+    def inspect_span(self, span: Span) -> Dict[str, Any]:
+        value_type_to_field_attr = {
+            model_pb2.STRING: "str",
+            model_pb2.BOOL: "bool",
+            model_pb2.INT64: "int",
+            model_pb2.FLOAT64: "float",
+            model_pb2.BINARY: "bytes",
+        }
+
+        return {msg.key: value_type_to_field_attr[msg.v_type] for msg in span.tags}
+
+    async def brief_tracer(
+        self,
+        collector_id: str,
+        tracer_name: str,
+        start_time_min: Optional[datetime] = None,
+        start_time_max: Optional[datetime] = None,
+        inspect_type=True,
+    ) -> Brief:
+        request = self.get_find_tracers_request(
+            collector_id=collector_id,
+            tracer_name=tracer_name,
+            start_time_min=start_time_min,
+            start_time_max=start_time_max,
+            search_depth=1500,
+        )
+        async with self.channel_initializer() as channel:
+            stub = QueryServiceStub(channel)
+            response = stub.FindTraces(request)
+            async for chunk in response:
+                start_span, *_, last_span = [span for span in chunk.spans]
+
+        return Brief(
+            tracer=tracer_name,
+            collector_id=collector_id,
+            start=self._protobuf_timestamp_to_datetime(start_span.start_time),
+            end=self._protobuf_timestamp_to_datetime(last_span.end_time),
+            fields={msg.key: None for msg in start_span.tags}
+            if not inspect_type
+            else self.inspect_span(start_span),
+        )
 
 
 class JaegerAnalyzer(Analyzer):
@@ -222,7 +285,7 @@ class JaegerAnalyzer(Analyzer):
         end_datetime: Optional[datetime] = None,
         with_details: bool = True,
         distinct: bool = False,
-        inspect_type: bool = False,
+        inspect_type: bool = True,
     ) -> AnalyzerBrief:
         """
         Get a brief of this analyzer.
@@ -243,7 +306,26 @@ class JaegerAnalyzer(Analyzer):
         Returns:
             AnalyzerBrief: A brief of this analyzer.
         """
-        raise NotImplementedError
+        tracers = [t for t in tracers if t in self.get_all_tracers()]
+        collector_ids = [c for c in collector_ids if c in self.get_all_collector_ids()]
+
+        briefs: List[Brief] = [
+            await self.connector.brief_tracer(
+                collector_id=collector_id,
+                tracer_name=tracer,
+                start_time_min=start_datetime,
+                start_time_max=end_datetime,
+                inspect_type=inspect_type,
+            )
+            for tracer in tracers
+            for collector_id in collector_ids
+        ]
+
+        return AnalyzerBrief(
+            tracers=set(tracers),
+            collector_ids=set(collector_ids),
+            briefs={f"{brief.tracer}@{brief.collector_id}": brief for brief in briefs},
+        )
 
     async def analyze(self):
         # TODO: Not design yet.
