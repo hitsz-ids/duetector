@@ -74,14 +74,14 @@ class DBAnalyzer(Analyzer):
         # Init as a submodel
         self.sm: SessionManager = SessionManager(self.config._config_dict)
 
-    def query(
+    async def query(
         self,
         tracers: Optional[List[str]] = None,
         collector_ids: Optional[List[str]] = None,
         start_datetime: Optional[datetime] = None,
         end_datetime: Optional[datetime] = None,
         start: int = 0,
-        limit: int = 0,
+        limit: int = 20,
         columns: Optional[List[str]] = None,
         where: Optional[Dict[str, Any]] = None,
         distinct: bool = False,
@@ -243,7 +243,7 @@ class DBAnalyzer(Analyzer):
 
         return Tracking(tracer=tracer, **{k: v for k, v in zip(columns, row)})
 
-    def brief(
+    async def brief(
         self,
         tracers: Optional[List[str]] = None,
         collector_ids: Optional[List[str]] = None,

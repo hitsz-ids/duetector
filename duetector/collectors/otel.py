@@ -22,9 +22,12 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExport
 from duetector.collectors.base import Collector
 from duetector.collectors.models import Tracking
 from duetector.extension.collector import hookimpl
+from duetector.log import logger
+from duetector.otel import OTelInspector
+from duetector.utils import Singleton, get_grpc_cred_from_path
 
 
-class OTelInitiator:
+class OTelInitiator(metaclass=Singleton):
     """
     Host the OpenTelemetry SDK and initialize the provider and exporter.
 
@@ -79,8 +82,10 @@ class OTelInitiator:
         provider_kwargs: Optional[Dict[str, Any]] = None,
         exporter="console",
         exporter_kwargs: Optional[Dict[str, Any]] = None,
+        processor_kwargs: Optional[Dict[str, Any]] = None,
     ) -> None:
         if self._initialized:
+            logger.info("Already initiated. Skip...")
             return
 
         if not resource_kwargs:
@@ -95,7 +100,11 @@ class OTelInitiator:
 
         if not exporter_kwargs:
             exporter_kwargs = {}
-        processor = BatchSpanProcessor(self.exporter_cls[exporter](**exporter_kwargs))
+        if processor_kwargs:
+            processor_kwargs = {}
+        processor = BatchSpanProcessor(
+            self.exporter_cls[exporter](**exporter_kwargs), **processor_kwargs
+        )
 
         provider.add_span_processor(processor)
         trace.set_tracer_provider(provider)
@@ -108,7 +117,7 @@ class OTelInitiator:
             self.provider = None
 
 
-class OTelCollector(Collector):
+class OTelCollector(Collector, OTelInspector):
     """
     A collector using OpenTelemetry SDK.
 
@@ -121,11 +130,21 @@ class OTelCollector(Collector):
 
     """
 
+    service_prefix = "duetector"
+    service_sep = "-"
+
     default_config = {
         **Collector.default_config,
         "disabled": True,
         "exporter": "console",
         "exporter_kwargs": {},
+        "grpc_exporter_kwargs": {
+            "secure": False,
+            "root_certificates_path": "",
+            "private_key_path": "",
+            "certificate_chain_path": "",
+        },
+        "processor_kwargs": {},
     }
 
     @property
@@ -138,24 +157,51 @@ class OTelCollector(Collector):
 
     @property
     def exporter_kwargs(self) -> Dict[str, Any]:
-        return self.config.exporter_kwargs
+        return self.config.exporter_kwargs._config_dict
+
+    @property
+    def processor_kwargs(self) -> Dict[str, Any]:
+        return self.config.processor_kwargs._config_dict
 
     @property
     def service_name(self) -> str:
-        return f"duetector-{self.id}"
+        return self.generate_service_name(self.id)
+
+    @property
+    def grpc_exporter_kwargs(self) -> Dict[str, Any]:
+        kwargs = self.config.grpc_exporter_kwargs._config_dict
+        wrapped_kwargs = {}
+        if kwargs.get("secure"):
+            creds = get_grpc_cred_from_path(
+                root_certificates_path=kwargs.get("root_certificates_path"),
+                private_key_path=kwargs.get("private_key_path"),
+                certificate_chain_path=kwargs.get("certificate_chain_path"),
+            )
+            wrapped_kwargs = {
+                "insecure": False,
+                "credentials": creds,
+            }
+
+        return wrapped_kwargs
 
     def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
+
+        if "grpc" in self.exporter:
+            logger.info("Merge grpc kwargs into exporter_kwargs")
+            self.exporter_kwargs.update(self.grpc_exporter_kwargs)
+
         self.otel = OTelInitiator()
         self.otel.initialize(
             service_name=self.service_name,
             exporter=self.exporter,
-            exporter_kwargs=self.exporter_kwargs._config_dict,
+            exporter_kwargs=self.exporter_kwargs,
+            processor_kwargs=self.processor_kwargs,
         )
 
     def _emit(self, t: Tracking):
         tracer = trace.get_tracer(self.id)
-        with tracer.start_as_current_span(t.span_name(self)) as span:
+        with tracer.start_as_current_span(self.generate_span_name(t)) as span:
             t.set_span(self, span)
 
     def summary(self) -> Dict:

@@ -12,3 +12,7 @@ class ConfigError(Exception):
 
 class ConfigFileNotFoundError(ConfigError):
     pass
+
+
+class AnalysQueryError(ValueError):
+    pass

@@ -15,6 +15,7 @@ Avaliable Analyzer
    :maxdepth: 2
 
    DB Analyzer <db>
+   Jaeger Analyzer <jaeger>
 
 Data Models
 -----------------------------------------------

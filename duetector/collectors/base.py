@@ -5,6 +5,7 @@ from typing import Any, Deque, Dict, Iterable, NamedTuple, Optional, Union
 
 from duetector.config import Config, Configuable
 from duetector.extension.collector import hookimpl
+from duetector.log import logger
 
 from .models import Tracking
 
@@ -75,7 +76,9 @@ class Collector(Configuable):
 
         if self.disabled:
             return
-        self._backend.submit(self._emit, Tracking.from_namedtuple(tracer, data))
+        if not tracer:
+            logger.warning("Empty tracer, skip emit")
+        return self._backend.submit(self._emit, Tracking.from_namedtuple(tracer, data))
 
     def _emit(self, t: Tracking):
         """

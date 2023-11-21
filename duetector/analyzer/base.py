@@ -51,14 +51,14 @@ class Analyzer(Configuable):
         """
         raise NotImplementedError
 
-    def query(
+    async def query(
         self,
         tracers: Optional[List[str]] = None,
         collector_ids: Optional[List[str]] = None,
         start_datetime: Optional[datetime] = None,
         end_datetime: Optional[datetime] = None,
         start: int = 0,
-        limit: int = 0,
+        limit: int = 20,
         columns: Optional[List[str]] = None,
         where: Optional[Dict[str, Any]] = None,
         distinct: bool = False,
@@ -66,7 +66,11 @@ class Analyzer(Configuable):
         order_by_desc: Optional[List[str]] = None,
     ) -> List[Tracking]:
         """
-        Query all tracking records from database.
+        Query all tracking records from backend.
+
+        Note:
+            Some storage implementations do not guarantee the correct implementation of all parameters.
+            Some parameters may be ignored.
 
         Args:
             tracers (Optional[List[str]], optional): Tracer's name. Defaults to None, all tracers will be queried.
@@ -74,7 +78,7 @@ class Analyzer(Configuable):
             start_datetime (Optional[datetime], optional): Start time. Defaults to None.
             end_datetime (Optional[datetime], optional): End time. Defaults to None.
             start (int, optional): Start index. Defaults to 0.
-            limit (int, optional): Limit of records. Defaults to 20. ``0`` means no limit.
+            limit (int, optional): Limit of records, depends on backend implementations. Defaults to 20. ``0`` means no limit.
             columns (Optional[List[str]], optional): Columns to query. Defaults to None, all columns will be queried.
             where (Optional[Dict[str, Any]], optional): Where clause. Defaults to None.
             distinct (bool, optional): Distinct. Defaults to False.
@@ -85,7 +89,7 @@ class Analyzer(Configuable):
         """
         raise NotImplementedError
 
-    def brief(
+    async def brief(
         self,
         tracers: Optional[List[str]] = None,
         collector_ids: Optional[List[str]] = None,
@@ -116,6 +120,6 @@ class Analyzer(Configuable):
         """
         raise NotImplementedError
 
-    def analyze(self):
+    async def analyze(self):
         # TODO: Not design yet.
         pass

@@ -25,16 +25,26 @@ Comment style is [Google Python Style Guide](https://google.github.io/styleguide
 pip install -e .[test]
 ```
 
-## Unittest
+## Unit-test
 
 We use pytest to write unit tests, and use pytest-cov to generate coverage reports
 
 ```bash
-pytest -v # Run unit-test
+pytest -v tests/standalone/ # Run unit-test
 pytest --cov=duetector # Generate coverage reports
 ```
 
 Run unit-test before PR, **ensure that new features are covered by unit tests**
+
+## Intergration-test
+
+In order not to be affected by the global variables of unit tests, integration tests need to be performed separately.
+
+Requirement: docker
+
+```
+pytest -vv tests/integration/jaeger
+```
 
 ## Generating config
 
