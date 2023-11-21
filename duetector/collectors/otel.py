@@ -85,7 +85,7 @@ class OTelInitiator(metaclass=Singleton):
         processor_kwargs: Optional[Dict[str, Any]] = None,
     ) -> None:
         if self._initialized:
-            logger.info("Alre")
+            logger.info("Already initiated. Skip...")
             return
 
         if not resource_kwargs:
@@ -188,6 +188,7 @@ class OTelCollector(Collector, OTelInspector):
         super().__init__(config, *args, **kwargs)
 
         if "grpc" in self.exporter:
+            logger.info("Merge grpc kwargs into exporter_kwargs")
             self.exporter_kwargs.update(self.grpc_exporter_kwargs)
 
         self.otel = OTelInitiator()

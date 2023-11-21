@@ -22,16 +22,22 @@ from duetector.analyzer.jaeger.proto.query_pb2 import *
 from duetector.analyzer.jaeger.proto.query_pb2_grpc import *
 from duetector.analyzer.models import AnalyzerBrief, Brief, Tracking
 from duetector.extension.analyzer import hookimpl
+from duetector.log import logger
 from duetector.otel import OTelInspector
 
 ChannelInitializer = Callable[[], grpc.aio.Channel]
 
 
 class JaegerConnector(OTelInspector):
+    """
+    Providing query method for jaeger backend
+    """
+
     def __init__(self, channel_initializer: ChannelInitializer):
         self.channel_initializer: ChannelInitializer = channel_initializer
 
     async def inspect_all_collector_ids(self) -> List[str]:
+        logger.info("Querying all collector ids...")
         async with self.channel_initializer() as channel:
             stub = QueryServiceStub(channel)
             response = await stub.GetServices(GetServicesRequest())
@@ -42,6 +48,7 @@ class JaegerConnector(OTelInspector):
             ]
 
     async def get_operation(self, service: str, span_kind: Optional[str] = None) -> List[str]:
+        logger.info(f"Querying operations of {service}...")
         async with self.channel_initializer() as channel:
             stub = QueryServiceStub(channel)
             response = await stub.GetOperations(
@@ -50,6 +57,7 @@ class JaegerConnector(OTelInspector):
             return [operation.name for operation in response.operations]
 
     async def inspect_all_tracers(self) -> List[str]:
+        logger.info("Querying all tracers...")
         ret = []
         for collector_id in await self.inspect_all_collector_ids():
             service = self.generate_service_name(collector_id)
@@ -78,6 +86,10 @@ class JaegerConnector(OTelInspector):
         duration_max: Optional[int] = None,
         search_depth: int = 20,
     ) -> FindTracesRequest:
+        if not collector_id:
+            raise AnalysQueryError(f"collector_id is required, current:{collector_id}")
+        if not tracer_name:
+            raise AnalysQueryError(f"tracer_name is required, current:{tracer_name}")
         if search_depth < 1 or search_depth > 1500:
             raise AnalysQueryError("Jaeger search_depth must be between 1 and 1500.")
 
@@ -109,6 +121,10 @@ class JaegerConnector(OTelInspector):
         duration_max: Optional[int] = None,
         search_depth: int = 20,
     ) -> List[Tracking]:
+        if not collector_id:
+            raise AnalysQueryError(f"collector_id is required, current:{collector_id}")
+        if not tracer_name:
+            raise AnalysQueryError(f"tracer_name is required, current:{tracer_name}")
         request = self.get_find_tracers_request(
             collector_id=collector_id,
             tracer_name=tracer_name,
@@ -146,6 +162,10 @@ class JaegerConnector(OTelInspector):
         start_time_max: Optional[datetime] = None,
         inspect_type=True,
     ) -> Optional[Brief]:
+        if not collector_id:
+            raise AnalysQueryError(f"collector_id is required, current:{collector_id}")
+        if not tracer_name:
+            raise AnalysQueryError(f"tracer_name is required, current:{tracer_name}")
         request = self.get_find_tracers_request(
             collector_id=collector_id,
             tracer_name=tracer_name,
@@ -276,6 +296,17 @@ class JaegerAnalyzer(Analyzer):
         Returns:
             List[duetector.analyzer.models.Tracking]: List of tracking records.
         """
+        not_support_params = {
+            "start": start,
+            "columns": columns,
+            "distinct": distinct,
+            "order_by_asc": order_by_asc,
+            "order_by_desc": order_by_desc,
+        }
+        for k, v in not_support_params:
+            if v:
+                logger.warning("Not support params: %s=%s", k, v)
+
         if not collector_ids:
             collector_ids = await self.get_all_collector_ids()
         if not tracers:
@@ -300,7 +331,7 @@ class JaegerAnalyzer(Analyzer):
         collector_ids: Optional[List[str]] = None,
         start_datetime: Optional[datetime] = None,
         end_datetime: Optional[datetime] = None,
-        with_details: bool = True,
+        with_details: bool = False,
         distinct: bool = False,
         inspect_type: bool = True,
     ) -> AnalyzerBrief:
@@ -323,6 +354,14 @@ class JaegerAnalyzer(Analyzer):
         Returns:
             AnalyzerBrief: A brief of this analyzer.
         """
+        not_support_params = {
+            "with_details": with_details,
+            "distinct": distinct,
+        }
+        for k, v in not_support_params.items():
+            if v:
+                logger.warning("Not support params: %s=%s", k, v)
+
         if tracers:
             tracers = [t for t in tracers if t in await self.get_all_tracers()]
         else:
