@@ -7,6 +7,7 @@ import pytest
 
 import docker
 from duetector.analyzer.jaeger.analyzer import JaegerAnalyzer
+from duetector.collectors.models import Tracking
 from duetector.collectors.otel import OTelCollector
 
 
@@ -77,7 +78,7 @@ def jaeger_container(docker_client: docker.DockerClient, service_id, data_t):
                 if response.status_code == 200:
                     break
             except:
-                time.sleep(0.1)
+                time.sleep(0.5)
 
         # Generate testing data
         config = {
@@ -88,6 +89,11 @@ def jaeger_container(docker_client: docker.DockerClient, service_id, data_t):
                 "exporter_kwargs": {
                     "endpoint": f"127.0.0.1:{otel_grpc_port}",
                     "insecure": True,
+                },
+                "processor_kwargs": {
+                    "max_queue_size": 1,
+                    "schedule_delay_millis": 100.0,
+                    "max_export_batch_size": 1,
                 },
             }
         }
@@ -112,14 +118,38 @@ def jaeger_analyzer(jaeger_container):
     yield JaegerAnalyzer(config)
 
 
-async def test_jaeger_analyzer(jaeger_analyzer: JaegerAnalyzer):
+async def test_jaeger_channel(jaeger_analyzer: JaegerAnalyzer, service_id):
     from duetector.analyzer.jaeger.proto.query_pb2 import GetServicesRequest
     from duetector.analyzer.jaeger.proto.query_pb2_grpc import QueryServiceStub
 
     async with jaeger_analyzer.channel_initializer() as channel:
         stub = QueryServiceStub(channel)
         response = await stub.GetServices(GetServicesRequest())
-        print(response)
+        assert f"duetector-{service_id}" in response.services
+
+
+async def test_jaeger_connector(jaeger_analyzer: JaegerAnalyzer, service_id):
+    connector = jaeger_analyzer.connector
+    assert service_id in await connector.inspect_all_collector_ids()
+    assert "dummy" in await connector.inspect_all_tracers()
+    assert await connector.query_trace(collector_id=service_id, tracer_name="dummy")
+
+    brief = await connector.brief(collector_id=service_id, tracer_name="dummy")
+    assert "dummy" == brief.tracer
+    assert service_id == brief.collector_id
+    assert brief.start == brief.end
+    assert brief.count == 1
+    assert brief.fields.keys()
+    assert any(brief.fields.values())
+
+    brief = await connector.brief(collector_id=service_id, tracer_name="dummy", inspect_type=False)
+    assert brief.fields.keys()
+    assert not any(brief.fields.values())
+
+
+async def test_jaeger_analyzer(jaeger_analyzer: JaegerAnalyzer):
+    assert await jaeger_analyzer.query()
+    assert await jaeger_analyzer.brief()
 
 
 if __name__ == "__main__":

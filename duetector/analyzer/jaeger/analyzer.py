@@ -50,13 +50,14 @@ class JaegerConnector(OTelInspector):
             return [operation.name for operation in response.operations]
 
     async def inspect_all_tracers(self) -> List[str]:
-        return [
-            await self.get_tracer_name(operation)
-            for operation in await self.get_operation(
-                service for service in self.inspect_all_collector_ids()
-            )
-            if self.get_tracer_name(operation)
-        ]
+        ret = []
+        for collector_id in await self.inspect_all_collector_ids():
+            service = self.generate_service_name(collector_id)
+            for operation in await self.get_operation(service):
+                tracer_name = self.get_tracer_name(operation)
+                if tracer_name and tracer_name not in ret:
+                    ret.append(tracer_name)
+        return ret
 
     def _datetime_to_protobuf_timestamp(self, dt: datetime) -> Timestamp:
         ts = Timestamp()
@@ -137,14 +138,14 @@ class JaegerConnector(OTelInspector):
 
         return {msg.key: value_type_to_field_attr[msg.v_type] for msg in span.tags}
 
-    async def brief_tracer(
+    async def brief(
         self,
         collector_id: str,
         tracer_name: str,
         start_time_min: Optional[datetime] = None,
         start_time_max: Optional[datetime] = None,
         inspect_type=True,
-    ) -> Brief:
+    ) -> Optional[Brief]:
         request = self.get_find_tracers_request(
             collector_id=collector_id,
             tracer_name=tracer_name,
@@ -152,20 +153,31 @@ class JaegerConnector(OTelInspector):
             start_time_max=start_time_max,
             search_depth=1500,
         )
+        start_span = last_span = None
+        count = 0
         async with self.channel_initializer() as channel:
             stub = QueryServiceStub(channel)
             response = stub.FindTraces(request)
             async for chunk in response:
-                start_span, *_, last_span = [span for span in chunk.spans]
+                if not chunk.spans:
+                    break
+                spans = [span for span in chunk.spans]
+                count += len(spans)
+                start_span = spans[0]
+                last_span = spans[-1]
+
+        if not (start_span and last_span):
+            return None
 
         return Brief(
             tracer=tracer_name,
             collector_id=collector_id,
             start=self._protobuf_timestamp_to_datetime(start_span.start_time),
-            end=self._protobuf_timestamp_to_datetime(last_span.end_time),
+            end=self._protobuf_timestamp_to_datetime(last_span.start_time),
             fields={msg.key: None for msg in start_span.tags}
             if not inspect_type
             else self.inspect_span(start_span),
+            count=count,
         )
 
 
@@ -213,7 +225,7 @@ class JaegerAnalyzer(Analyzer):
     def connector(self):
         return JaegerConnector(self.channel_initializer)
 
-    def get_all_tracers(self) -> List[str]:
+    async def get_all_tracers(self) -> List[str]:
         """
         Get all tracers from storage.
 
@@ -221,16 +233,16 @@ class JaegerAnalyzer(Analyzer):
             List[str]: List of tracer's name.
         """
 
-        return self.connector.inspect_all_tracers()
+        return await self.connector.inspect_all_tracers()
 
-    def get_all_collector_ids(self) -> List[str]:
+    async def get_all_collector_ids(self) -> List[str]:
         """
         Get all collector id from storage.
 
         Returns:
             List[str]: List of collector id.
         """
-        return self.connector.inspect_all_collector_ids()
+        return await self.connector.inspect_all_collector_ids()
 
     async def query(
         self,
@@ -264,6 +276,11 @@ class JaegerAnalyzer(Analyzer):
         Returns:
             List[duetector.analyzer.models.Tracking]: List of tracking records.
         """
+        if not collector_ids:
+            collector_ids = await self.get_all_collector_ids()
+        if not tracers:
+            tracers = await self.get_all_tracers()
+
         return [
             await self.connector.query_trace(
                 collector_id=collector_id,
@@ -306,11 +323,17 @@ class JaegerAnalyzer(Analyzer):
         Returns:
             AnalyzerBrief: A brief of this analyzer.
         """
-        tracers = [t for t in tracers if t in self.get_all_tracers()]
-        collector_ids = [c for c in collector_ids if c in self.get_all_collector_ids()]
+        if tracers:
+            tracers = [t for t in tracers if t in await self.get_all_tracers()]
+        else:
+            tracers = await self.get_all_tracers()
+        if collector_ids:
+            collector_ids = [c for c in collector_ids if c in await self.get_all_collector_ids()]
+        else:
+            collector_ids = await self.get_all_collector_ids()
 
-        briefs: List[Brief] = [
-            await self.connector.brief_tracer(
+        briefs: List[Optional[Brief]] = [
+            await self.connector.brief(
                 collector_id=collector_id,
                 tracer_name=tracer,
                 start_time_min=start_datetime,
@@ -324,7 +347,7 @@ class JaegerAnalyzer(Analyzer):
         return AnalyzerBrief(
             tracers=set(tracers),
             collector_ids=set(collector_ids),
-            briefs={f"{brief.tracer}@{brief.collector_id}": brief for brief in briefs},
+            briefs={f"{brief.tracer}@{brief.collector_id}": brief for brief in briefs if brief},
         )
 
     async def analyze(self):

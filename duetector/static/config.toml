@@ -79,6 +79,8 @@ root_certificates_path = ""
 private_key_path = ""
 certificate_chain_path = ""
 
+[collector.otelcollector.processor_kwargs]
+
 [collector.dbcollector]
 disabled = false
 statis_id = ""

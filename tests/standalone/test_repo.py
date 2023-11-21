@@ -8,10 +8,12 @@ from duetector.tools.config_generator import ConfigGenerator
 
 _HERE = Path(__file__).parent.absolute()
 
+import duetector
+
 
 def test_repo_config_uptodate(tmpdir):
     # Check default config in repo is up to date
-    CONFIG_IN_REPO = _HERE / ".." / "duetector/static/config.toml"
+    CONFIG_IN_REPO = Path(duetector.__path__[0]).resolve() / "static/config.toml"
     GENERATED_CONFIG = tmpdir.join("g-default-config.toml")
     config_generator = ConfigGenerator(load=False, load_env=False)
     config_generator.generate(GENERATED_CONFIG)

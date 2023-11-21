@@ -78,7 +78,7 @@ class Collector(Configuable):
             return
         if not tracer:
             logger.warning("Empty tracer, skip emit")
-        self._backend.submit(self._emit, Tracking.from_namedtuple(tracer, data))
+        return self._backend.submit(self._emit, Tracking.from_namedtuple(tracer, data))
 
     def _emit(self, t: Tracking):
         """

@@ -22,6 +22,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExport
 from duetector.collectors.base import Collector
 from duetector.collectors.models import Tracking
 from duetector.extension.collector import hookimpl
+from duetector.log import logger
 from duetector.otel import OTelInspector
 from duetector.utils import Singleton, get_grpc_cred_from_path
 
@@ -81,8 +82,10 @@ class OTelInitiator(metaclass=Singleton):
         provider_kwargs: Optional[Dict[str, Any]] = None,
         exporter="console",
         exporter_kwargs: Optional[Dict[str, Any]] = None,
+        processor_kwargs: Optional[Dict[str, Any]] = None,
     ) -> None:
         if self._initialized:
+            logger.info("Alre")
             return
 
         if not resource_kwargs:
@@ -97,7 +100,11 @@ class OTelInitiator(metaclass=Singleton):
 
         if not exporter_kwargs:
             exporter_kwargs = {}
-        processor = BatchSpanProcessor(self.exporter_cls[exporter](**exporter_kwargs))
+        if processor_kwargs:
+            processor_kwargs = {}
+        processor = BatchSpanProcessor(
+            self.exporter_cls[exporter](**exporter_kwargs), **processor_kwargs
+        )
 
         provider.add_span_processor(processor)
         trace.set_tracer_provider(provider)
@@ -137,6 +144,7 @@ class OTelCollector(Collector, OTelInspector):
             "private_key_path": "",
             "certificate_chain_path": "",
         },
+        "processor_kwargs": {},
     }
 
     @property
@@ -150,6 +158,10 @@ class OTelCollector(Collector, OTelInspector):
     @property
     def exporter_kwargs(self) -> Dict[str, Any]:
         return self.config.exporter_kwargs._config_dict
+
+    @property
+    def processor_kwargs(self) -> Dict[str, Any]:
+        return self.config.processor_kwargs._config_dict
 
     @property
     def service_name(self) -> str:
@@ -183,6 +195,7 @@ class OTelCollector(Collector, OTelInspector):
             service_name=self.service_name,
             exporter=self.exporter,
             exporter_kwargs=self.exporter_kwargs,
+            processor_kwargs=self.processor_kwargs,
         )
 
     def _emit(self, t: Tracking):
