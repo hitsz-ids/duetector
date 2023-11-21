@@ -303,7 +303,7 @@ class JaegerAnalyzer(Analyzer):
             "order_by_asc": order_by_asc,
             "order_by_desc": order_by_desc,
         }
-        for k, v in not_support_params:
+        for k, v in not_support_params.items():
             if v:
                 logger.warning("Not support params: %s=%s", k, v)
 
