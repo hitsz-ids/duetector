@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from collections import namedtuple
-from typing import Any
+from typing import Any, Dict
 
 from pydantic import BaseModel
 
@@ -15,7 +15,7 @@ class Message(BaseModel):
     proto: str
     version: str = VERSION
     type: str
-    payload: dict[str, Any] = {}
+    payload: Dict[str, Any] = {}
 
     @classmethod
     def from_host(cls, *args, **kwargs):
@@ -51,7 +51,7 @@ class InitMessage(Message):
     proto: str = "duetector"
     version: str = "0.1.0"
     type: str = "init"
-    payload: dict[str, Any] = {}
+    payload: Dict[str, Any] = {}
 
     @classmethod
     def from_host(cls, host, tracer) -> InitMessage:
@@ -72,7 +72,7 @@ class EventMessage(Message):
     proto: str = "duetector"
     version: str = "0.1.0"
     type: str = "event"
-    payload: dict[str, Any] = {}
+    payload: Dict[str, Any] = {}
 
     @classmethod
     def from_host(cls, *args, **kwargs) -> EventMessage:
@@ -90,7 +90,7 @@ class StopMessage(Message):
     proto: str = "duetector"
     version: str = "0.1.0"
     type: str = "stop"
-    payload: dict[str, Any] = {}
+    payload: Dict[str, Any] = {}
 
     @classmethod
     def from_host(cls, *args, **kwargs) -> StopMessage:

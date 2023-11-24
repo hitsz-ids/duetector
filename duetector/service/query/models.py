@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -9,21 +7,21 @@ from duetector.analyzer.models import AnalyzerBrief, Tracking
 
 
 class AvaliableAnalyzers(BaseModel):
-    analyzers: list[str]
+    analyzers: List[str]
 
 
 class QueryBody(BaseModel):
     collector_id: str
-    tracers: list[str] | None = None
-    start_datetime: datetime | None = None
-    end_datetime: datetime | None = None
+    tracers: Optional[List[str]] = None
+    start_datetime: Optional[datetime] = None
+    end_datetime: Optional[datetime] = None
     start: int = 0
     limit: int = 0
-    columns: list[str] | None = None
-    where: dict[str, Any] = None
+    columns: Optional[List[str]] = None
+    where: Optional[Dict[str, Any]] = None
     distinct: bool = False
-    order_by_asc: list[str] | None = None
-    order_by_desc: list[str] | None = None
+    order_by_asc: Optional[List[str]] = None
+    order_by_desc: Optional[List[str]] = None
 
     model_config = {
         "json_schema_extra": {
@@ -47,7 +45,7 @@ class QueryBody(BaseModel):
 
 
 class QueryResult(BaseModel):
-    trackings: list[Tracking]
+    trackings: List[Tracking]
     count: int
 
 
