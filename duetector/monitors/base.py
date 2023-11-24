@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from duetector.collectors.base import Collector
 from duetector.config import Configuable
@@ -17,16 +19,16 @@ class Monitor(Configuable):
     record host and tracer, provide a way to poll data
     """
 
-    tracers: List[Tracer]
+    tracers: list[Tracer]
     """
     A list of tracers, should be initialized by ``TracerManager``
     """
 
-    filters: List[Filter]
+    filters: list[Filter]
     """
     A list of filters, should be initialized by ``FilterManager``
     """
-    collectors: List[Collector]
+    collectors: list[Collector]
     """
     A list of collectors, should be initialized by ``CollectorManager``
     """
@@ -58,7 +60,7 @@ class Monitor(Configuable):
     A backend implementation.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config=config)
         self._backend = self._backend_imp(**self.backend_args._config_dict)
         self.poller = Poller(self.config._config_dict)
@@ -89,7 +91,7 @@ class Monitor(Configuable):
         """
         raise NotImplementedError
 
-    def summary(self) -> Dict:
+    def summary(self) -> dict:
         """
         Get a summary of all collectors.
         """

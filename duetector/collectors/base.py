@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import platform
-from collections import deque
+from collections import deque, namedtuple
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Deque, Dict, Iterable, NamedTuple, Optional, Union
+from typing import Any
 
 from duetector.config import Config, Configuable
 from duetector.extension.collector import hookimpl
@@ -34,7 +36,7 @@ class Collector(Configuable):
     Default backend implementation for ``Collector``
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         self._backend = self._backend_imp(**self.backend_args._config_dict)
 
@@ -69,7 +71,7 @@ class Collector(Configuable):
 
         return self.config.backend_args
 
-    def emit(self, tracer, data: NamedTuple):
+    def emit(self, tracer, data: namedtuple):
         """
         Wrapper for ``self._emit``, submit to backend executor
         """
@@ -86,7 +88,7 @@ class Collector(Configuable):
         """
         raise NotImplementedError
 
-    def summary(self) -> Dict:
+    def summary(self) -> dict:
         """
         Get summary of current collector, should be implemented by subclasses
         """
@@ -123,15 +125,15 @@ class DequeCollector(Collector):
         """
         return self.config.maxlen
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
-        self._trackings: Dict[str, Deque[Tracking]] = {}
+        self._trackings: dict[str, deque[Tracking]] = {}
 
     def _emit(self, t: Tracking):
         self._trackings.setdefault(t.tracer, deque(maxlen=self.maxlen))
         self._trackings[t.tracer].append(t)
 
-    def summary(self) -> Dict:
+    def summary(self) -> dict:
         return {
             tracer: {
                 "count": len(trackings),

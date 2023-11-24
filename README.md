@@ -48,26 +48,26 @@ Join our [slack channel](https://join.slack.com/t/hitsz-ids/shared_invite/zt-239
 ## Feature
 
 - Plug-in system support, see [examples](./examples/README.md) for more details
-  - [X] Custom `Tracer` and `TracerManager`
-  - [X] Custom `Filters` and `FilterManager`
-  - [X] Custom `Collector` and `CollectorManager`
-  - [X] Custom `Analyzer` and `AnalyzerManager`
+  - [x] Custom `Tracer` and `TracerManager`
+  - [x] Custom `Filters` and `FilterManager`
+  - [x] Custom `Collector` and `CollectorManager`
+  - [x] Custom `Analyzer` and `AnalyzerManager`
 - Configuration Management
-  - [X] Configuration using a single configuration file
-  - [X] Generate Plugin Configuration
+  - [x] Configuration using a single configuration file
+  - [x] Generate Plugin Configuration
   - [ ] Support for dynamically loading configurations
 - `Tracer` Support
-  - [X] eBPF-based tracer
-  - [X] Shell command tracer
-  - [X] Subprocess tracer
+  - [x] eBPF-based tracer
+  - [x] Shell command tracer
+  - [x] Subprocess tracer
 - `Filter` Support
-  - [X] Pattern matching, based on regular expressions
+  - [x] Pattern matching, based on regular expressions
 - Data Collection and Analysis
-  - [X] `Analyzer` Support SQL database
-  - [X] `Collector` Support SQL database and *OpenTelemetry(Experimental)*
+  - [x] `Analyzer` Support SQL database
+  - [x] `Collector` Support SQL database and *OpenTelemetry(Experimental)*
 - User Interface
-  - [X] CLI Tools
-  - [X] PIP Service
+  - [x] CLI Tools
+  - [x] PIP Service
   - [ ] Control Panel
 - Enhancements
   - [ ] `RunC` containers identification
@@ -228,8 +228,11 @@ This project is initiated by **Institute of Data Security, Harbin Institute of T
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+
 <!-- prettier-ignore-start -->
+
 <!-- markdownlint-disable -->
+
 <table>
   <tbody>
     <tr>
@@ -244,6 +247,7 @@ This project is initiated by **Institute of Data Security, Harbin Institute of T
 </table>
 
 <!-- markdownlint-restore -->
+
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->

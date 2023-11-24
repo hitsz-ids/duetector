@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import pluggy
 
@@ -14,7 +16,7 @@ hookspec = pluggy.HookspecMarker(PROJECT_NAME)
 
 
 @hookspec
-def init_analyzer(config) -> Optional[Analyzer]:
+def init_analyzer(config) -> Analyzer | None:
     """
     Initialize analyzer from config
     None means the analyzer is not available
@@ -34,7 +36,7 @@ class AnalyzerManager(Manager):
     Config scope for ``AnalyzerManager``.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
         self.pm = pluggy.PluginManager(PROJECT_NAME)
@@ -43,7 +45,7 @@ class AnalyzerManager(Manager):
             self.pm.load_setuptools_entrypoints(PROJECT_NAME)
         self.register(duetector.analyzer.register)
 
-    def init(self, analyzer_type=Analyzer, ignore_disabled=True, *args, **kwargs) -> List[Analyzer]:
+    def init(self, analyzer_type=Analyzer, ignore_disabled=True, *args, **kwargs) -> list[Analyzer]:
         """
         Initialize all analyzers from config.
 

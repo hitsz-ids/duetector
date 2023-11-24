@@ -4,7 +4,7 @@ If there is any trouble, [raise an Issue](https://github.com/hitsz-ids/duetector
 
 Known Issues:
 
-<5.8 not support `BPF_RINGBUF_OUTPUT`, we suggest to use 5.8+(5.15+) kernel.
+\<5.8 not support `BPF_RINGBUF_OUTPUT`, we suggest to use 5.8+(5.15+) kernel.
 
 Tested on:
 

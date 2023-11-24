@@ -40,38 +40,38 @@ duetector🔍是一个基于可扩展的的数据使用探测器，它可以在L
 
 ## 目录
 
-- [主要特性](#主要特性)
-- [安装](#安装)
-- [快速开始](#快速开始)
-- [API文档与配置文档](#API文档与配置文档)
-- [维护者](#维护者)
+- [主要特性](#%E4%B8%BB%E8%A6%81%E7%89%B9%E6%80%A7)
+- [安装](#%E5%AE%89%E8%A3%85)
+- [快速开始](#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
+- [API文档与配置文档](#API%E6%96%87%E6%A1%A3%E4%B8%8E%E9%85%8D%E7%BD%AE%E6%96%87%E6%A1%A3)
+- [维护者](#%E7%BB%B4%E6%8A%A4%E8%80%85)
 - [Contributors](#Contributors)
-- [如何贡献](#如何贡献)
-- [许可证](#许可证)
+- [如何贡献](#%E5%A6%82%E4%BD%95%E8%B4%A1%E7%8C%AE)
+- [许可证](#%E8%AE%B8%E5%8F%AF%E8%AF%81)
 
 ## 主要特性
 
 - 插件化系统，在[例子](./examples/)获取更多细节
-  - [X] 支持自定义`Tracer`和`TracerManager`
-  - [X] 支持自定义`Filters`和`FilterManager`
-  - [X] 支持自定义`Collector`和`CollectorManager`
-  - [X] 支持自定义`Analyzer`和`AnalyzerManager`
+  - [x] 支持自定义`Tracer`和`TracerManager`
+  - [x] 支持自定义`Filters`和`FilterManager`
+  - [x] 支持自定义`Collector`和`CollectorManager`
+  - [x] 支持自定义`Analyzer`和`AnalyzerManager`
 - 配置管理
-  - [X] 使用单一配置文件配置
-  - [X] 支持生成插件配置
+  - [x] 使用单一配置文件配置
+  - [x] 支持生成插件配置
   - [ ] 支持动态加载配置
 - `Tracer`支持
-  - [X] 基于eBPF的tracer
-  - [X] 基于shell命令的tracer
-  - [X] 基于子进程的tracer
+  - [x] 基于eBPF的tracer
+  - [x] 基于shell命令的tracer
+  - [x] 基于子进程的tracer
 - `Filter`支持
-  - [X] 支持正则的模式匹配
+  - [x] 支持正则的模式匹配
 - 遥测数据传输与分析
-  - [X] `Analyzer`支持SQL数据库
-  - [X] `Collector`支持SQL数据库和*Opentelemetry（实验性）*
+  - [x] `Analyzer`支持SQL数据库
+  - [x] `Collector`支持SQL数据库和*Opentelemetry（实验性）*
 - 用户接口
-  - [X] 命令行工具
-  - [X] PIP服务
+  - [x] 命令行工具
+  - [x] PIP服务
   - [ ] 控制平面
 - 增强功能
   - [ ] `RunC`容器云原生支持
@@ -232,8 +232,11 @@ Commands:
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+
 <!-- prettier-ignore-start -->
+
 <!-- markdownlint-disable -->
+
 <table>
   <tbody>
     <tr>
@@ -248,10 +251,10 @@ Commands:
 </table>
 
 <!-- markdownlint-restore -->
+
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-
 
 ## 如何贡献
 

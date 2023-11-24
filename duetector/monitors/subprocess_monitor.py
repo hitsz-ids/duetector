@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import subprocess
 import threading
-from collections import Counter
+from collections import Counter, namedtuple
 from io import DEFAULT_BUFFER_SIZE
 from select import select
-from typing import IO, Any, Callable, Dict, List, NamedTuple, Optional
+from typing import IO, Any, Callable
 
 import psutil
 
@@ -33,8 +35,8 @@ class SubprocessHost:
         kill_timeout=5,
         restart_times=0,
     ) -> None:
-        self.tracers: Dict[SubprocessTracer, subprocess.Popen] = {}
-        self.callbacks: Dict[SubprocessTracer, Callable[[NamedTuple], None]] = {}
+        self.tracers: dict[SubprocessTracer, subprocess.Popen] = {}
+        self.callbacks: dict[SubprocessTracer, Callable[[namedtuple], None]] = {}
         self.timeout = timeout
         self.backend = backend
         self.bufsize = bufsize
@@ -237,7 +239,7 @@ class SubprocessMonitor(Monitor):
         """
         return float(self.config.pool_size)
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config=config, *args, **kwargs)
         if self.disabled:
             logger.info("SubprocessMonitor disabled")
@@ -246,9 +248,9 @@ class SubprocessMonitor(Monitor):
             self.collectors = []
             return
 
-        self.tracers: List[SubprocessTracer] = TracerManager(config).init(tracer_type=SubprocessTracer)  # type: ignore
-        self.filters: List[Callable] = FilterManager(config).init()
-        self.collectors: List[Collector] = CollectorManager(config).init()
+        self.tracers: list[SubprocessTracer] = TracerManager(config).init(tracer_type=SubprocessTracer)  # type: ignore
+        self.filters: list[Callable] = FilterManager(config).init()
+        self.collectors: list[Collector] = CollectorManager(config).init()
 
         self.host = SubprocessHost(
             timeout=self.timeout,

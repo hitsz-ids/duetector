@@ -1,13 +1,13 @@
 ### 画图
 
-+ 每个函数一个大模块
+- 每个函数一个大模块
 
-+ 体现出大体的逻辑
+- 体现出大体的逻辑
 
-  + 每一个小模块解释系统调用的各个参数情况，之后类似的可以直接代过
-  + 对于`mmap`,`brk`用于申请内存的情况，或者`futex`等无关数据部分的调用做下简短说明就好
+  - 每一个小模块解释系统调用的各个参数情况，之后类似的可以直接代过
+  - 对于`mmap`,`brk`用于申请内存的情况，或者`futex`等无关数据部分的调用做下简短说明就好
 
----
+______________________________________________________________________
 
 ### 输出部分
 
@@ -15,7 +15,7 @@
 
 #### 1. train_data
 
-> ``` python
+> ```python
 > # 下载mnist手写数据集
 > train_data = torchvision.datasets.MNIST(
 >     root='./data/',  # 保存或提取的位置  会放在当前文件夹中
@@ -120,56 +120,51 @@
 > 11257 <... futex resumed>)              = 0
 > 11293 <... futex resumed>)              = 1
 > ```
->
-
-
 
 #### 2. test_data
 
->``` python
->test_data = torchvision.datasets.MNIST(
+> ```python
+> test_data = torchvision.datasets.MNIST(
 >    root='./data/',
 >    train=False  # 表明是测试集
->)
->```
+> )
+> ```
 >
->```
->11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
->11257 stat("./data/MNIST/processed", 0x7ffc239123c0) = -1 ENOENT (No such file or directory)
->11257 stat("./data/MNIST/raw/train-images-idx3-ubyte", {st_mode=S_IFREG|0664, st_size=47040016, ...}) = 0
->11257 stat("./data/MNIST/raw/train-labels-idx1-ubyte", {st_mode=S_IFREG|0664, st_size=60008, ...}) = 0
->11257 stat("./data/MNIST/raw/t10k-images-idx3-ubyte", {st_mode=S_IFREG|0664, st_size=7840016, ...}) = 0
->11257 stat("./data/MNIST/raw/t10k-labels-idx1-ubyte", {st_mode=S_IFREG|0664, st_size=10008, ...}) = 0
->11257 openat(AT_FDCWD, "./data/MNIST/raw/t10k-images-idx3-ubyte", O_RDONLY|O_CLOEXEC) = 5
->11257 fstat(5, {st_mode=S_IFREG|0664, st_size=7840016, ...}) = 0
->11257 ioctl(5, TCGETS, 0x7ffc239120c0)  = -1 ENOTTY (Inappropriate ioctl for device)
->11257 lseek(5, 0, SEEK_CUR)             = 0
->11257 lseek(5, 0, SEEK_CUR)             = 0
->11257 fstat(5, {st_mode=S_IFREG|0664, st_size=7840016, ...}) = 0
->11257 mmap(NULL, 7843840, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa10a84000
->11257 read(5,  <unfinished ...>
->11293 futex(0x5580904cd034, FUTEX_WAIT_PRIVATE, 8, NULL <unfinished ...>
->11257 <... read resumed>"\0\0\10\3\0\0'\20\0\0\0\34\0\0\0\34\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 7840017) = 7840016
->11257 read(5, "", 1)                    = 0
->11257 close(5)                          = 0
->11257 mmap(NULL, 7843840, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa10309000
->11257 munmap(0x7ffa10a84000, 7843840)   = 0
->11257 openat(AT_FDCWD, "./data/MNIST/raw/t10k-labels-idx1-ubyte", O_RDONLY|O_CLOEXEC) = 5
->11257 fstat(5, {st_mode=S_IFREG|0664, st_size=10008, ...}) = 0
->11257 ioctl(5, TCGETS, 0x7ffc239120c0)  = -1 ENOTTY (Inappropriate ioctl for device)
->11257 lseek(5, 0, SEEK_CUR)             = 0
->11257 lseek(5, 0, SEEK_CUR)             = 0
->11257 fstat(5, {st_mode=S_IFREG|0664, st_size=10008, ...}) = 0
->11257 read(5, "\0\0\10\1\0\0'\20\7\2\1\0\4\1\4\t\5\t\0\6\t\0\1\5\t\7\3\4\t\6\6\5"..., 10009) = 10008
->11257 read(5, "", 1)                    = 0
->11257 close(5)                          = 0
->```
-
-
+> ```
+> 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
+> 11257 stat("./data/MNIST/processed", 0x7ffc239123c0) = -1 ENOENT (No such file or directory)
+> 11257 stat("./data/MNIST/raw/train-images-idx3-ubyte", {st_mode=S_IFREG|0664, st_size=47040016, ...}) = 0
+> 11257 stat("./data/MNIST/raw/train-labels-idx1-ubyte", {st_mode=S_IFREG|0664, st_size=60008, ...}) = 0
+> 11257 stat("./data/MNIST/raw/t10k-images-idx3-ubyte", {st_mode=S_IFREG|0664, st_size=7840016, ...}) = 0
+> 11257 stat("./data/MNIST/raw/t10k-labels-idx1-ubyte", {st_mode=S_IFREG|0664, st_size=10008, ...}) = 0
+> 11257 openat(AT_FDCWD, "./data/MNIST/raw/t10k-images-idx3-ubyte", O_RDONLY|O_CLOEXEC) = 5
+> 11257 fstat(5, {st_mode=S_IFREG|0664, st_size=7840016, ...}) = 0
+> 11257 ioctl(5, TCGETS, 0x7ffc239120c0)  = -1 ENOTTY (Inappropriate ioctl for device)
+> 11257 lseek(5, 0, SEEK_CUR)             = 0
+> 11257 lseek(5, 0, SEEK_CUR)             = 0
+> 11257 fstat(5, {st_mode=S_IFREG|0664, st_size=7840016, ...}) = 0
+> 11257 mmap(NULL, 7843840, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa10a84000
+> 11257 read(5,  <unfinished ...>
+> 11293 futex(0x5580904cd034, FUTEX_WAIT_PRIVATE, 8, NULL <unfinished ...>
+> 11257 <... read resumed>"\0\0\10\3\0\0'\20\0\0\0\34\0\0\0\34\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 7840017) = 7840016
+> 11257 read(5, "", 1)                    = 0
+> 11257 close(5)                          = 0
+> 11257 mmap(NULL, 7843840, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa10309000
+> 11257 munmap(0x7ffa10a84000, 7843840)   = 0
+> 11257 openat(AT_FDCWD, "./data/MNIST/raw/t10k-labels-idx1-ubyte", O_RDONLY|O_CLOEXEC) = 5
+> 11257 fstat(5, {st_mode=S_IFREG|0664, st_size=10008, ...}) = 0
+> 11257 ioctl(5, TCGETS, 0x7ffc239120c0)  = -1 ENOTTY (Inappropriate ioctl for device)
+> 11257 lseek(5, 0, SEEK_CUR)             = 0
+> 11257 lseek(5, 0, SEEK_CUR)             = 0
+> 11257 fstat(5, {st_mode=S_IFREG|0664, st_size=10008, ...}) = 0
+> 11257 read(5, "\0\0\10\1\0\0'\20\7\2\1\0\4\1\4\t\5\t\0\6\t\0\1\5\t\7\3\4\t\6\6\5"..., 10009) = 10008
+> 11257 read(5, "", 1)                    = 0
+> 11257 close(5)                          = 0
+> ```
 
 #### 3. train_loader
 
-> ``` python
+> ```python
 > train_loader = Data.DataLoader(
 >     dataset=train_data,
 >     batch_size=BATCH_SIZE,
@@ -184,174 +179,134 @@
 > 11257 close(4)                          = 0
 > ```
 
-
-
-
-
 #### 4. test_x
 
->```python
->test_x = torch.unsqueeze(test_data.train_data, dim=1).type(torch.FloatTensor)[:2000] / 255
+> ```python
+> test_x = torch.unsqueeze(test_data.train_data, dim=1).type(torch.FloatTensor)[:2000] / 255
 >
->```
+> ```
 >
->```
->11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
->11257 getsockname(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
->11257 getpeername(5, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
->11257 close(5)                          = 0
->11257 stat("/home/tsdsnk/Downloads/home/tsdsnk/software/envs/python39/lib/python3.9/site-packages/torchvision/datasets/mnist.py", {st_mode=S_IFREG|0664, st_size=21205, ...}) = 0
->11257 openat(AT_FDCWD, "/home/tsdsnk/Downloads/home/tsdsnk/software/envs/python39/lib/python3.9/site-packages/torchvision/datasets/mnist.py", O_RDONLY|O_CLOEXEC) = 5
->11257 fstat(5, {st_mode=S_IFREG|0664, st_size=21205, ...}) = 0
->11257 ioctl(5, TCGETS, 0x7ffc23911670)  = -1 ENOTTY (Inappropriate ioctl for device)
->11257 lseek(5, 0, SEEK_CUR)             = 0
->11257 read(5, "import codecs\nimport os\nimport o"..., 4096) = 4096
->11257 read(5, " label_file = f\"{'train' if self"..., 8192) = 8192
->11257 read(5, "_label_file(self.labels_file)\n\n "..., 8192) = 8192
->11257 read(5, "\n    return parsed.view(*s)\n\n\nde"..., 8192) = 725
->11257 read(5, "", 8192)                 = 0
->11257 close(5)                          = 0
->11257 write(2, "/home/tsdsnk/Downloads/home/tsds"..., 218) = 218
->11257 mmap(NULL, 31363072, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa06217000
->11257 futex(0x5580904cd034, FUTEX_WAKE_PRIVATE, 2147483647) = 1
->11293 <... futex resumed>)              = 0
->11293 futex(0x5580907ffdb4, FUTEX_WAKE_PRIVATE, 2147483647 <unfinished ...>
->11257 brk(0x558090eaf000)               = 0x558090eaf000
->11257 futex(0x5580904cd034, FUTEX_WAIT_PRIVATE, 16, NULL <unfinished ...>
->11293 <... futex resumed>)              = 0
->11293 futex(0x5580904cd034, FUTEX_WAKE_PRIVATE, 2147483647) = 1
->11257 <... futex resumed>)              = 0
->11257 futex(0x5580907ffdb4, FUTEX_WAIT_PRIVATE, 16, NULL <unfinished ...>
->11293 futex(0x5580907ffdb4, FUTEX_WAKE_PRIVATE, 2147483647 <unfinished ...>
->11257 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
->11293 <... futex resumed>)              = 0
->11257 munmap(0x7ffa06217000, 31363072 <unfinished ...>
->11293 futex(0x5580904cd034, FUTEX_WAIT_PRIVATE, 24, NULL <unfinished ...>
->11257 <... munmap resumed>)             = 0
->```
-
-
-
-
+> ```
+> 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
+> 11257 getsockname(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
+> 11257 getpeername(5, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
+> 11257 close(5)                          = 0
+> 11257 stat("/home/tsdsnk/Downloads/home/tsdsnk/software/envs/python39/lib/python3.9/site-packages/torchvision/datasets/mnist.py", {st_mode=S_IFREG|0664, st_size=21205, ...}) = 0
+> 11257 openat(AT_FDCWD, "/home/tsdsnk/Downloads/home/tsdsnk/software/envs/python39/lib/python3.9/site-packages/torchvision/datasets/mnist.py", O_RDONLY|O_CLOEXEC) = 5
+> 11257 fstat(5, {st_mode=S_IFREG|0664, st_size=21205, ...}) = 0
+> 11257 ioctl(5, TCGETS, 0x7ffc23911670)  = -1 ENOTTY (Inappropriate ioctl for device)
+> 11257 lseek(5, 0, SEEK_CUR)             = 0
+> 11257 read(5, "import codecs\nimport os\nimport o"..., 4096) = 4096
+> 11257 read(5, " label_file = f\"{'train' if self"..., 8192) = 8192
+> 11257 read(5, "_label_file(self.labels_file)\n\n "..., 8192) = 8192
+> 11257 read(5, "\n    return parsed.view(*s)\n\n\nde"..., 8192) = 725
+> 11257 read(5, "", 8192)                 = 0
+> 11257 close(5)                          = 0
+> 11257 write(2, "/home/tsdsnk/Downloads/home/tsds"..., 218) = 218
+> 11257 mmap(NULL, 31363072, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa06217000
+> 11257 futex(0x5580904cd034, FUTEX_WAKE_PRIVATE, 2147483647) = 1
+> 11293 <... futex resumed>)              = 0
+> 11293 futex(0x5580907ffdb4, FUTEX_WAKE_PRIVATE, 2147483647 <unfinished ...>
+> 11257 brk(0x558090eaf000)               = 0x558090eaf000
+> 11257 futex(0x5580904cd034, FUTEX_WAIT_PRIVATE, 16, NULL <unfinished ...>
+> 11293 <... futex resumed>)              = 0
+> 11293 futex(0x5580904cd034, FUTEX_WAKE_PRIVATE, 2147483647) = 1
+> 11257 <... futex resumed>)              = 0
+> 11257 futex(0x5580907ffdb4, FUTEX_WAIT_PRIVATE, 16, NULL <unfinished ...>
+> 11293 futex(0x5580907ffdb4, FUTEX_WAKE_PRIVATE, 2147483647 <unfinished ...>
+> 11257 <... futex resumed>)              = -1 EAGAIN (Resource temporarily unavailable)
+> 11293 <... futex resumed>)              = 0
+> 11257 munmap(0x7ffa06217000, 31363072 <unfinished ...>
+> 11293 futex(0x5580904cd034, FUTEX_WAIT_PRIVATE, 24, NULL <unfinished ...>
+> 11257 <... munmap resumed>)             = 0
+> ```
 
 #### 5. test_y
 
->```python
->test_y = test_data.test_labels[:2000]
->```
+> ```python
+> test_y = test_data.test_labels[:2000]
+> ```
 >
->
->
->```
->11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
->11257 getsockname(4, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
->11257 getpeername(4, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
->11257 close(4)                          = 0
->11257 write(2, "/home/tsdsnk/Downloads/home/tsds"..., 226) = 226
->```
-
-
-
-
+> ```
+> 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
+> 11257 getsockname(4, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
+> 11257 getpeername(4, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
+> 11257 close(4)                          = 0
+> 11257 write(2, "/home/tsdsnk/Downloads/home/tsds"..., 226) = 226
+> ```
 
 #### 6. cnn
 
->``` python
->cnn = CNN()
->```
+> ```python
+> cnn = CNN()
+> ```
 >
->
->
->```
->11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
->11257 getsockname(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
->11257 getpeername(5, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
->11257 close(5)                          = 0
->11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa12580000
->```
-
-
-
-
+> ```
+> 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
+> 11257 getsockname(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
+> 11257 getpeername(5, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
+> 11257 close(5)                          = 0
+> 11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa12580000
+> ```
 
 #### 7. optimizer
 
->``` python
->optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)
->```
+> ```python
+> optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)
+> ```
 >
->
->
->```
->11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
->11257 getsockname(4, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
->11257 getpeername(4, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
->11257 close(4)                          = 0
->```
-
-
-
-
+> ```
+> 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
+> 11257 getsockname(4, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
+> 11257 getpeername(4, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
+> 11257 close(4)                          = 0
+> ```
 
 #### 8. loss_func
 
->```python
->loss_func = nn.CrossEntropyLoss()  # 目标标签是one-hotted
->```
+> ```python
+> loss_func = nn.CrossEntropyLoss()  # 目标标签是one-hotted
+> ```
 >
->
->
->```
->11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
->11257 getsockname(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
->11257 getpeername(5, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
->11257 close(5)                          = 0
->```
-
-
-
-
+> ```
+> 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
+> 11257 getsockname(5, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
+> 11257 getpeername(5, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
+> 11257 close(5)                          = 0
+> ```
 
 #### 9. batch_x, batch_y
 
->``` python
->for step, (b_x, b_y) in enumerate(train_loader):
->```
+> ```python
+> for step, (b_x, b_y) in enumerate(train_loader):
+> ```
 >
->
->
->```
->11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
->11257 getsockname(4, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
->11257 getpeername(4, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
->11257 close(4)                          = 0
->11257 brk(0x558090f40000)               = 0x558090f40000
->11257 futex(0x5580904cd034, FUTEX_WAKE_PRIVATE, 2147483647) = 1
->11293 <... futex resumed>)              = 0
->11293 futex(0x5580907ffdb4, FUTEX_WAKE_PRIVATE, 2147483647) = 0
->11257 brk(0x558090fb5000)               = 0x558090fb5000
->11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
->11293 futex(0x5580904cd034, FUTEX_WAIT_PRIVATE, 32, NULL <unfinished ...>
->11257 <... mmap resumed>)               = 0x7ffa12540000
->11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa11fc0000
->11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa11f80000
->11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa11f40000
->11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa111bf000
->11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa1117f000
->11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa1113f000
->```
-
-
-
-
+> ```
+> 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
+> 11257 getsockname(4, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("0.0.0.0")}, [16]) = 0
+> 11257 getpeername(4, 0x7ffc23912670, [16]) = -1 ENOTCONN (Transport endpoint is not connected)
+> 11257 close(4)                          = 0
+> 11257 brk(0x558090f40000)               = 0x558090f40000
+> 11257 futex(0x5580904cd034, FUTEX_WAKE_PRIVATE, 2147483647) = 1
+> 11293 <... futex resumed>)              = 0
+> 11293 futex(0x5580907ffdb4, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+> 11257 brk(0x558090fb5000)               = 0x558090fb5000
+> 11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+> 11293 futex(0x5580904cd034, FUTEX_WAIT_PRIVATE, 32, NULL <unfinished ...>
+> 11257 <... mmap resumed>)               = 0x7ffa12540000
+> 11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa11fc0000
+> 11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa11f80000
+> 11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa11f40000
+> 11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa111bf000
+> 11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa1117f000
+> 11257 mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa1113f000
+> ```
 
 #### 10. output
 
-> ``` python
+> ```python
 > output = cnn(b_x)
 > ```
->
->
 >
 > ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
@@ -504,20 +459,12 @@
 > 11293 <... mprotect resumed>)           = 0
 > 11257 futex(0x5580907ffdb4, FUTEX_WAKE_PRIVATE, 2147483647) = 0
 > ```
->
->
-
-
-
-
 
 #### 11. loss
 
-> ``` python
+> ```python
 > loss = loss_func(output, b_y)
 > ```
->
->
 >
 > ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
@@ -526,17 +473,11 @@
 > 11257 close(4)                          = 0
 > ```
 
-
-
-
-
 #### 12. zero_grad
 
-> ``` python
+> ```python
 > optimizer.zero_grad()
 > ```
->
->
 >
 > ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
@@ -545,17 +486,11 @@
 > 11257 close(5)                          = 0
 > ```
 
-
-
-
-
 #### 13. backward
 
-> ``` python
+> ```python
 > loss.backward()
 > ```
->
->
 >
 > ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP <unfinished ...>
@@ -673,17 +608,11 @@
 > 11257 futex(0x5580907ffdb4, FUTEX_WAKE_PRIVATE, 2147483647) = 0
 > ```
 
-
-
-
-
 #### 14. step
 
-> ``` python
+> ```python
 > optimizer.step()
 > ```
->
->
 >
 > ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 4
@@ -703,15 +632,11 @@
 > 11257 munmap(0x7ffa12540000, 262144)    = 0
 > ```
 
-
-
 #### 15. save
 
-> ``` python
+> ```python
 > torch.save(cnn.state_dict(), 'cnn2.pkl')
 > ```
->
->
 >
 > ```
 > 11257 socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, IPPROTO_IP) = 5
@@ -724,10 +649,6 @@
 > 11257 writev(4, [{iov_base="PK\7\10\361\347\22\342\0\310\0\0\0\310\0\0PK\3\4\0\0\10\10\0\0\0\0\0\0\0\0"..., iov_len=256}, {iov_base="\237\3631<\24n\230\274\307\202\247<Rz\201;\212T\306< G\227\274\4{\300<\340@\217<"..., iov_len=62720}], 2) = 62976
 > 11257 write(4, "PK\7\01012\302\370\0\365\0\0\0\365\0\0PK\3\4\0\0\10\10\0\0\0\0\0\0\0\0"..., 767 <unfinished ...>
 > ```
-
-
-
-
 
 #### 16. python函数结束后的部分
 
@@ -788,5 +709,3 @@
 > 11293 +++ exited with 0 +++
 > 11257 +++ exited with 0 +++
 > ```
->
->

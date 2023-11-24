@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any
 
 import pluggy
 
@@ -28,7 +30,7 @@ class Manager(Configuable):
     Default config for ``Manager``
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
         # Allow disable extensions when instantiate
@@ -65,7 +67,7 @@ class Manager(Configuable):
         """
         return self.config.disabled
 
-    def init(self, *args, **kwargs) -> List[Any]:
+    def init(self, *args, **kwargs) -> list[Any]:
         """
         Initialize manager.
         """

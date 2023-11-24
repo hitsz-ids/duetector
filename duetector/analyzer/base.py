@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from duetector.analyzer.models import AnalyzerBrief, Tracking
 from duetector.config import Configuable
@@ -33,7 +35,7 @@ class Analyzer(Configuable):
         """
         return self.__class__.__name__.lower()
 
-    def get_all_tracers(self) -> List[str]:
+    def get_all_tracers(self) -> list[str]:
         """
         Get all tracers from storage.
 
@@ -42,7 +44,7 @@ class Analyzer(Configuable):
         """
         raise NotImplementedError
 
-    def get_all_collector_ids(self) -> List[str]:
+    def get_all_collector_ids(self) -> list[str]:
         """
         Get all collector id from storage.
 
@@ -53,18 +55,18 @@ class Analyzer(Configuable):
 
     async def query(
         self,
-        tracers: Optional[List[str]] = None,
-        collector_ids: Optional[List[str]] = None,
-        start_datetime: Optional[datetime] = None,
-        end_datetime: Optional[datetime] = None,
+        tracers: list[str] | None = None,
+        collector_ids: list[str] | None = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
         start: int = 0,
         limit: int = 20,
-        columns: Optional[List[str]] = None,
-        where: Optional[Dict[str, Any]] = None,
+        columns: list[str] | None = None,
+        where: dict[str, Any] | None = None,
         distinct: bool = False,
-        order_by_asc: Optional[List[str]] = None,
-        order_by_desc: Optional[List[str]] = None,
-    ) -> List[Tracking]:
+        order_by_asc: list[str] | None = None,
+        order_by_desc: list[str] | None = None,
+    ) -> list[Tracking]:
         """
         Query all tracking records from backend.
 
@@ -91,10 +93,10 @@ class Analyzer(Configuable):
 
     async def brief(
         self,
-        tracers: Optional[List[str]] = None,
-        collector_ids: Optional[List[str]] = None,
-        start_datetime: Optional[datetime] = None,
-        end_datetime: Optional[datetime] = None,
+        tracers: list[str] | None = None,
+        collector_ids: list[str] | None = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
         with_details: bool = True,
         distinct: bool = False,
         inspect_type: bool = False,

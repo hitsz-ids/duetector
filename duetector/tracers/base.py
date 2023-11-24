@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections import namedtuple
 from threading import Lock
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Any, Callable
 
 from duetector.config import Config, Configuable
 from duetector.exceptions import TracerError, TreacerDisabledError
@@ -19,12 +21,12 @@ class Tracer(Configuable):
     Default scope for config is ``Tracer.__class__.__name__``.
     """
 
-    name: Optional[str]
+    name: str | None
     """
     Name for this tracer. Will be used for collecting data.
     """
 
-    data_t: NamedTuple
+    data_t: namedtuple
     """
     Data type for this tracer.
     """
@@ -68,7 +70,7 @@ class Tracer(Configuable):
         """
         raise NotImplementedError("get_poller not implemented")
 
-    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+    def set_callback(self, host, callback: Callable[[namedtuple], None]):
         """
         Set a callback function to host.
         """
@@ -97,17 +99,17 @@ class BccTracer(Tracer):
     Default config for this tracer.
     """
 
-    attach_type: Optional[str] = None
+    attach_type: str | None = None
     """
     Attatch type for ``bcc.BPF``, called as ``BPF.attatch_{attach_type}``,
     """
 
-    attatch_args: Dict[str, str] = {}
+    attatch_args: dict[str, str] = {}
     """
     Args for attatch function.
     """
 
-    many_attatchs: List[Tuple[str, Dict[str, str]]] = []
+    many_attatchs: list[tuple[str, dict[str, str]]] = []
     """
     List of attatch function name and args.
     ``attatch_type``, ``attatch_args`` will merge to this list.
@@ -118,7 +120,7 @@ class BccTracer(Tracer):
     Poll function name in ``bcc.BPF``
     """
 
-    poll_args: Dict[str, str] = {}
+    poll_args: dict[str, str] = {}
     """
     Args for poll function.
     Remenber to set ``timeout`` for poll function in ``poll_args`` if needed,
@@ -129,7 +131,7 @@ class BccTracer(Tracer):
     bpf program
     """
 
-    def _convert_data(self, data) -> NamedTuple:
+    def _convert_data(self, data) -> namedtuple:
         """
         Convert raw data to ``data_t``.
         """
@@ -219,7 +221,7 @@ class BccTracer(Tracer):
             raise TracerError(f"{self.poll_fn} function not found in BPF")
         return poller
 
-    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+    def set_callback(self, host, callback: Callable[[namedtuple], None]):
         """
         Set callback function to host.
 
@@ -244,7 +246,7 @@ class ShellTracer(Tracer):
                         Cache means the same output will not be converted and emited again.
     """
 
-    comm: List[str]
+    comm: list[str]
     """
     shell command
     """
@@ -253,7 +255,7 @@ class ShellTracer(Tracer):
     data type for this tracer
     """
 
-    _cache: Optional[Any] = None
+    _cache: Any = None
     """
     cache for this tracer
     """
@@ -262,7 +264,7 @@ class ShellTracer(Tracer):
     Default config for this tracer.
     """
 
-    def __init__(self, config: Optional[Union[Config, Dict[str, Any]]] = None, *args, **kwargs):
+    def __init__(self, config: Config | dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         self.mutex = Lock()
 
@@ -305,7 +307,7 @@ class ShellTracer(Tracer):
         """
         return host.get_poller(self)
 
-    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+    def set_callback(self, host, callback: Callable[[namedtuple], None]):
         """
         Set callback function to host.
         """
@@ -320,7 +322,7 @@ class SubprocessTracer(Tracer):
     Default config for this tracer.
     """
 
-    comm: List[str]
+    comm: list[str]
     """
     shell command
     """
@@ -330,7 +332,7 @@ class SubprocessTracer(Tracer):
     If preserve env for this command
     """
 
-    def __init__(self, config: Optional[Union[Config, Dict[str, Any]]] = None, *args, **kwargs):
+    def __init__(self, config: Config | dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
     def attach(self, host):
@@ -351,7 +353,7 @@ class SubprocessTracer(Tracer):
         """
         return host.get_poller(self)
 
-    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+    def set_callback(self, host, callback: Callable[[namedtuple], None]):
         """
         Set callback function to host.
         """

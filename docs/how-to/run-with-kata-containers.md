@@ -28,7 +28,7 @@ cd kata-containers/tools/packaging/kernel
 ```
 
 2. Change `tools/packaging/kernel/configs/fragments/x86_64/.config` to meet [kernel_config requirements](../kernel_config.md), given an full example [here](./etc/kata-linux-6.1.38-100.config)
-3. Build the kernel
+1. Build the kernel
 
 ```bash
 ./build-kernel.sh -v 6.1.38 build

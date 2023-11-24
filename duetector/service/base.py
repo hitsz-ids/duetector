@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any
 
 try:
     from functools import cache
@@ -16,7 +18,7 @@ class Controller(Configuable):
 
     default_config = {}
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
 

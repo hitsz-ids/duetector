@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any
 
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.proto.grpc import (
@@ -78,11 +80,11 @@ class OTelInitiator(metaclass=Singleton):
     def initialize(
         self,
         service_name="unknown-service",
-        resource_kwargs: Optional[Dict[str, Any]] = None,
-        provider_kwargs: Optional[Dict[str, Any]] = None,
+        resource_kwargs: dict[str, Any] | None = None,
+        provider_kwargs: dict[str, Any] | None = None,
         exporter="console",
-        exporter_kwargs: Optional[Dict[str, Any]] = None,
-        processor_kwargs: Optional[Dict[str, Any]] = None,
+        exporter_kwargs: dict[str, Any] | None = None,
+        processor_kwargs: dict[str, Any] | None = None,
     ) -> None:
         if self._initialized:
             logger.info("Already initiated. Skip...")
@@ -152,15 +154,15 @@ class OTelCollector(Collector, OTelInspector):
         return self.config.exporter
 
     @property
-    def endpoint(self) -> Optional[str]:
+    def endpoint(self) -> str | None:
         return self.config.endpoint
 
     @property
-    def exporter_kwargs(self) -> Dict[str, Any]:
+    def exporter_kwargs(self) -> dict[str, Any]:
         return self.config.exporter_kwargs._config_dict
 
     @property
-    def processor_kwargs(self) -> Dict[str, Any]:
+    def processor_kwargs(self) -> dict[str, Any]:
         return self.config.processor_kwargs._config_dict
 
     @property
@@ -168,7 +170,7 @@ class OTelCollector(Collector, OTelInspector):
         return self.generate_service_name(self.id)
 
     @property
-    def grpc_exporter_kwargs(self) -> Dict[str, Any]:
+    def grpc_exporter_kwargs(self) -> dict[str, Any]:
         kwargs = self.config.grpc_exporter_kwargs._config_dict
         wrapped_kwargs = {}
         if kwargs.get("secure"):
@@ -184,7 +186,7 @@ class OTelCollector(Collector, OTelInspector):
 
         return wrapped_kwargs
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
         if "grpc" in self.exporter:
@@ -204,7 +206,7 @@ class OTelCollector(Collector, OTelInspector):
         with tracer.start_as_current_span(self.generate_span_name(t)) as span:
             t.set_span(self, span)
 
-    def summary(self) -> Dict:
+    def summary(self) -> dict:
         return {}
 
     def shutdown(self):

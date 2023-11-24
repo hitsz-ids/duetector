@@ -39,8 +39,8 @@ There are three language have its own CO-RE implementation:
 
 ### 1.4 Requirements of CO-RE
 
-| Feature               | Kernel version | Commit                                                                                             |
-| --------------------- | -------------- | -------------------------------------------------------------------------------------------------- |
+| Feature               | Kernel version | Commit                                                                                              |
+| --------------------- | -------------- | --------------------------------------------------------------------------------------------------- |
 | BPF Type Format (BTF) | 4.18           | [`69b693f0aefa`](https://github.com/torvalds/linux/commit/69b693f0aefa0ed521e8bd02260523b5ae446ad7) |
 
 > Note:
@@ -77,6 +77,7 @@ Furthermore, `SubprocessMonitor` also support non-BPF program, as long as it can
 type: `init`
 
 payload:
+
 - `poll_time`: unit: seconds
 - `kill_timeout`: unit, seconds
 - `config`: object, config of tracer
@@ -86,6 +87,7 @@ payload:
 type: `init`
 
 payload:
+
 - `name`: string, name of tracer
 - `version`: string, version of tracer
 
@@ -140,7 +142,7 @@ After we intro OpenTelemetry in [#25](https://github.com/hitsz-ids/duetector/iss
 
 #### When Host Process Crashes
 
-In this case, subprocess becomes an orphan process. It will be adopted by `init` process and continue to run. Subprocess will no longer receive `Event` message from host. No message is received within twice or more `poll time``, subprocess can be assumed that the host process has crashed. Subprocess will send a `stopped` message to host and exit.
+In this case, subprocess becomes an orphan process. It will be adopted by `init` process and continue to run. Subprocess will no longer receive `Event` message from host. No message is received within twice or more ``` poll time``, subprocess can be assumed that the host process has crashed. Subprocess will send a  ```stopped\` message to host and exit.
 
 #### When Subprocess Crashes
 
@@ -153,8 +155,8 @@ Host can be configured to restart subprocess when subprocess crashes for a certa
 ### 5.1 Migration from BccTracer
 
 1. Reimplement `Tracer` in C/Rust/Go
-2. Commit code to [/CORE](../../CORE/)
-3. Implement `SubprocessTracer` in `duetector`
+1. Commit code to [/CORE](../../CORE/)
+1. Implement `SubprocessTracer` in `duetector`
 
 Note:
 
