@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 from contextlib import contextmanager
 from datetime import datetime
 from threading import Lock
-from typing import Any, Generator
+from typing import Any, Dict, Generator, List, Optional
 
 import sqlalchemy  # type: ignore
 from sqlalchemy.orm import (  # type: ignore
@@ -30,16 +28,16 @@ class TrackingMixin:
         autoincrement=True,
     )
 
-    pid: Mapped[int | None]
-    uid: Mapped[int | None]
-    gid: Mapped[int | None]
-    dt: Mapped[datetime | None]
+    pid: Mapped[Optional[int]]
+    uid: Mapped[Optional[int]]
+    gid: Mapped[Optional[int]]
+    dt: Mapped[Optional[datetime]]
 
-    comm: Mapped[str | None]
-    cwd: Mapped[str | None]
-    fname: Mapped[str | None]
+    comm: Mapped[Optional[str]]
+    cwd: Mapped[Optional[str]]
+    fname: Mapped[Optional[str]]
 
-    extended: Mapped[dict[str, Any]] = mapped_column(type_=JSON, default={})
+    extended: Mapped[Dict[str, Any]] = mapped_column(type_=JSON, default={})
 
     def __repr__(self):
         return f"<Tracking [{self.pid} {self.comm}] {self.dt}>"
@@ -66,7 +64,7 @@ class TrackingInterface:
     def inspect_fields(
         cls,
         value_as_type: bool = False,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         raise NotImplementedError
 
 
@@ -121,11 +119,11 @@ class SessionManager(Configuable):
 
         return f"<[SessionManager {safe_url}]{self.table_prefix}*>"
 
-    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
+    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
-        self._engine: sqlalchemy.engine.Engine | None = None
-        self._sessionmaker: sessionmaker | None = None
-        self._tracking_models: dict[str, type] = {}
+        self._engine: Optional[sqlalchemy.engine.Engine] = None
+        self._sessionmaker: Optional[sessionmaker] = None
+        self._tracking_models: Dict[str, type] = {}
         self.mutex = Lock()
 
     @property
@@ -141,7 +139,7 @@ class SessionManager(Configuable):
         return self.config.table_prefix
 
     @property
-    def engine_config(self) -> dict[str, Any]:
+    def engine_config(self) -> Dict[str, Any]:
         """
         Config for sqlalchemy.create_engine
         """
@@ -255,7 +253,7 @@ class SessionManager(Configuable):
                 def inspect_fields(
                     cls,
                     value_as_type: bool = False,
-                ) -> dict[str, Any]:
+                ) -> Dict[str, Any]:
                     return {
                         c.name: c.type.python_type if value_as_type else c.type.python_type.__name__
                         for c in cls.__table__.columns
@@ -269,10 +267,12 @@ class SessionManager(Configuable):
                 raise
             return self._tracking_models[tracer]
 
-    def get_all_models(self) -> dict[str, type]:
+    def get_all_models(self) -> Dict[str, type]:
         return self._tracking_models
 
-    def inspect_all_tables(self, tracer: str | None = None, collector_id: str | None = None) -> str:
+    def inspect_all_tables(
+        self, tracer: Optional[str] = None, collector_id: Optional[str] = None
+    ) -> str:
         def _filter(t):
             if tracer and self.table_name_to_tracer(t) != tracer:
                 return False
@@ -286,10 +286,10 @@ class SessionManager(Configuable):
             if t.startswith(self.table_prefix) and _filter(t)
         ]
 
-    def inspect_all_tracers(self) -> list[str]:
+    def inspect_all_tracers(self) -> List[str]:
         return list(set(self.table_name_to_tracer(t) for t in self.inspect_all_tables()))
 
-    def inspect_all_collector_ids(self) -> list[str]:
+    def inspect_all_collector_ids(self) -> List[str]:
         return list(set(self.table_name_to_collector_id(t) for t in self.inspect_all_tables()))
 
     def _init_tracking_model(self, tracking_model: type) -> type:
