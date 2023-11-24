@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import pluggy
 
@@ -14,7 +16,7 @@ hookspec = pluggy.HookspecMarker(PROJECT_NAME)
 
 
 @hookspec
-def init_filter(config) -> Optional[Filter]:
+def init_filter(config) -> Filter | None:
     """
     Initialize filter from config
     None means the filter is not available
@@ -34,7 +36,7 @@ class FilterManager(Manager):
     Config scope for ``FilterManager``.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
         self.pm = pluggy.PluginManager(PROJECT_NAME)
@@ -43,7 +45,7 @@ class FilterManager(Manager):
             self.pm.load_setuptools_entrypoints(PROJECT_NAME)
         self.register(duetector.filters.register)
 
-    def init(self, ignore_disabled=True, *args, **kwargs) -> List[Filter]:
+    def init(self, ignore_disabled=True, *args, **kwargs) -> list[Filter]:
         """
         Initialize all filters from config.
 

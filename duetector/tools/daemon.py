@@ -3,12 +3,13 @@
 #    Copyright (c) 2023 Wh1isper
 #    Licensed under the BSD 3-Clause License
 
+from __future__ import annotations
 
 import os
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Dict
 
 import psutil
 
@@ -40,13 +41,13 @@ class Daemon:
 
     def __init__(
         self,
-        workdir: Union[str, Path],
+        workdir: str | Path,
         application: str = "daemon",
-        cmd: Optional[List[str]] = None,
-        env_dict: Optional[Dict[str, str]] = None,
+        cmd: list[str] = None,
+        env_dict: dict[str, str] | None = None,
         rotate_log: bool = True,
     ):
-        self.cmd: List[str] = cmd or []
+        self.cmd: list[str] = cmd or []
         self.workdir: Path = Path(workdir).expanduser().resolve()
         self.workdir.mkdir(parents=True, exist_ok=True)
 

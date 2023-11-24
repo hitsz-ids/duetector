@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import pluggy
 
@@ -14,7 +16,7 @@ hookspec = pluggy.HookspecMarker(PROJECT_NAME)
 
 
 @hookspec
-def init_collector(config) -> Optional[Collector]:
+def init_collector(config) -> Collector | None:
     """
     Initialize collector from config.
 
@@ -36,7 +38,7 @@ class CollectorManager(Manager):
     Config scope for ``CollectorManager``.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
         self.pm = pluggy.PluginManager(PROJECT_NAME)
@@ -45,7 +47,7 @@ class CollectorManager(Manager):
             self.pm.load_setuptools_entrypoints(PROJECT_NAME)
         self.register(duetector.collectors.register)
 
-    def init(self, ignore_disabled=True, *args, **kwargs) -> List[Collector]:
+    def init(self, ignore_disabled=True, *args, **kwargs) -> list[Collector]:
         """
         Initialize all collectors from config.
 

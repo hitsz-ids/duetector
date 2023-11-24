@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import subprocess
+from collections import namedtuple
 from datetime import datetime
-from typing import Any, Callable, Dict, List, NamedTuple, Optional
+from typing import Any, Callable
 
 try:
     from functools import cache
@@ -24,8 +27,8 @@ class ShTracerHost:
     """
 
     def __init__(self, backend, timeout=5):
-        self.tracers: Dict[ShellTracer, List[str]] = {}
-        self.callbacks: Dict[ShellTracer, Callable[[NamedTuple], None]] = {}
+        self.tracers: dict[ShellTracer, list[str]] = {}
+        self.callbacks: dict[ShellTracer, Callable[[namedtuple], None]] = {}
         self.timeout = timeout
         self.backend = backend
 
@@ -117,7 +120,7 @@ class ShMonitor(Monitor):
         """
         return int(self.config.timeout)
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config=config, *args, **kwargs)
         if self.disabled:
             logger.info("ShMonitor disabled")
@@ -126,9 +129,9 @@ class ShMonitor(Monitor):
             self.collectors = []
             return
 
-        self.tracers: List[ShellTracer] = TracerManager(config).init(tracer_type=ShellTracer)  # type: ignore
-        self.filters: List[Callable] = FilterManager(config).init()
-        self.collectors: List[Collector] = CollectorManager(config).init()
+        self.tracers: list[ShellTracer] = TracerManager(config).init(tracer_type=ShellTracer)  # type: ignore
+        self.filters: list[Callable] = FilterManager(config).init()
+        self.collectors: list[Collector] = CollectorManager(config).init()
         self.host = ShTracerHost(self._backend, self.timeout)
         if self.auto_init:
             self.init()

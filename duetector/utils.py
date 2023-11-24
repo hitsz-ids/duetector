@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import os
 import threading
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, Union
 
 try:
     from functools import cache
@@ -52,11 +53,11 @@ def get_boot_time_duration_ns(ns) -> datetime:
 
 @cache
 def get_grpc_cred_from_path(
-    root_certificates_path: Optional[Union[str, Path]],
-    private_key_path: Optional[Union[str, Path]],
-    certificate_chain_path: Optional[Union[str, Path]],
+    root_certificates_path: str | Path | None,
+    private_key_path: str | Path | None,
+    certificate_chain_path: str | Path | None,
 ) -> grpc.ChannelCredentials:
-    def _read_content(path: Optional[Union[str, Path]]) -> Optional[bytes]:
+    def _read_content(path: str | Path | None) -> bytes | None:
         if not path:
             return None
         if isinstance(path, str):

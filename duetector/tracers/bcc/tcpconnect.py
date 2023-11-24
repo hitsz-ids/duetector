@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Callable, NamedTuple
+from typing import Callable
 
 from duetector.extension.tracer import hookimpl
 from duetector.tracers.base import BccTracer
@@ -107,14 +107,14 @@ class TcpconnectTracer(BccTracer):
     }
     """
 
-    def _convert_data(self, data) -> NamedTuple:
+    def _convert_data(self, data) -> namedtuple:
         data = super()._convert_data(data)
         return data._replace(
             saddr=inet_ntoa(data.saddr).decode("utf-8"),
             daddr=inet_ntoa(data.daddr).decode("utf-8"),
         )  # type: ignore
 
-    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+    def set_callback(self, host, callback: Callable[[namedtuple], None]):
         def _(ctx, data, size):
             event = host["buffer"].event(data)
             return callback(self._convert_data(event))  # type: ignore
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     tracer = TcpconnectTracer()
     tracer.attach(b)
 
-    def print_callback(data: NamedTuple):
+    def print_callback(data: namedtuple):
         print(f"[{data.comm} ({data.pid}) {data.uid} {data.gid}] TCP_CONNECT SADDR:{data.saddr} DADDR: {data.daddr} DPORT:{data.dport}")  # type: ignore
 
     tracer.set_callback(b, print_callback)

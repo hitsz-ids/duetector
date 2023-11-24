@@ -4,7 +4,7 @@
 
 Key Components and Features:
 
-- \[\] Control Server: Control plane, providing API for administrator to manage duetector.
+- [ ] Control Server: Control plane, providing API for administrator to manage duetector.
 
 - [x] Query Server: PIP Server, providing API for PDP to get data usage information.
 

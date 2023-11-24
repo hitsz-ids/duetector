@@ -1,5 +1,6 @@
-from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Callable, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any, Callable
 
 from duetector.collectors.base import Collector
 from duetector.log import logger
@@ -40,7 +41,7 @@ class BccMonitor(Monitor):
         """
         return self.config.auto_init
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config=config)
         if self.disabled:
             logger.info("BccMonitor disabled")
@@ -49,11 +50,11 @@ class BccMonitor(Monitor):
             self.collectors = []
             return
 
-        self.tracers: List[BccTracer] = TracerManager(config).init(tracer_type=BccTracer)  # type: ignore
-        self.filters: List[Callable] = FilterManager(config).init()
-        self.collectors: List[Collector] = CollectorManager(config).init()
+        self.tracers: list[BccTracer] = TracerManager(config).init(tracer_type=BccTracer)  # type: ignore
+        self.filters: list[Callable] = FilterManager(config).init()
+        self.collectors: list[Collector] = CollectorManager(config).init()
 
-        self.bpf_tracers: Dict[Any, BccTracer] = {}
+        self.bpf_tracers: dict[Any, BccTracer] = {}
         if self.auto_init:
             self.init()
 

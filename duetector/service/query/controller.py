@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import Any
 
 from duetector.analyzer.base import Analyzer
 from duetector.managers.analyzer import AnalyzerManager
@@ -8,13 +10,13 @@ from duetector.service.query.models import QueryBody
 
 
 class AnalyzerController(Controller):
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
         # TODO: Make this configurable, may intro a manager for analyzer
         self._avaliable_analyzers = AnalyzerManager(config).init()
 
-        self._analyzers: Dict[str, Analyzer] = {
+        self._analyzers: dict[str, Analyzer] = {
             analyzer.config_scope: analyzer for analyzer in self._avaliable_analyzers
         }
 
@@ -23,7 +25,7 @@ class AnalyzerController(Controller):
         return analyzer(analyzer_config)
 
     @property
-    def avaliable_analyzer_names(self) -> List[str]:
+    def avaliable_analyzer_names(self) -> list[str]:
         return [a.config_scope for a in self._avaliable_analyzers]
 
     def get_analyzer(self, analyzer_name: str) -> Analyzer:
@@ -51,7 +53,7 @@ class AnalyzerController(Controller):
             raise NotFoundError(analyzer_name)
         return a
 
-    def wrap_query_param(self, query_param: QueryBody) -> Dict[str, Any]:
+    def wrap_query_param(self, query_param: QueryBody) -> dict[str, Any]:
         model = query_param.model_dump()
 
         model["collector_ids"] = [model.pop("collector_id")]

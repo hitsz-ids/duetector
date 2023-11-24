@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import threading
-from typing import Any, Dict, Optional
+from typing import Any
 
 from duetector.config import Configuable
 from duetector.log import logger
@@ -28,12 +30,12 @@ class Poller(Configuable):
 
     def __init__(
         self,
-        config: Optional[Dict[str, Any]] = None,
+        config: dict[str, Any] | None = None,
         *args,
         **kwargs,
     ):
         super().__init__(config=config, *args, **kwargs)
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
         self.shutdown_event = threading.Event()
 
     @property

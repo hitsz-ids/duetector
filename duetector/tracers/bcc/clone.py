@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Callable, NamedTuple
+from typing import Callable
 
 from duetector.extension.tracer import hookimpl
 from duetector.tracers.base import BccTracer
@@ -58,7 +58,7 @@ class CloneTracer(BccTracer):
     }
     """
 
-    def set_callback(self, host, callback: Callable[[NamedTuple], None]):
+    def set_callback(self, host, callback: Callable[[namedtuple], None]):
         def _(ctx, data, size):
             event = host["buffer"].event(data)
             return callback(self._convert_data(event))  # type: ignore
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     tracer.attach(b)
     start = 0
 
-    def print_callback(data: NamedTuple):
+    def print_callback(data: namedtuple):
         global start
         if start == 0:
             print(f"[{data.comm} ({data.pid})  {data.gid} {data.uid}] 0 ")

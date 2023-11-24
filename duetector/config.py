@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import copy
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 import tomli
 import tomli_w
@@ -24,10 +26,10 @@ class Config:
     Access config by ``config.key`` and get all config by ``config._config_dict``.
     """
 
-    def __init__(self, config_dict: Optional[Dict[str, Any]] = None):
+    def __init__(self, config_dict: dict[str, Any] | None = None):
         if not config_dict:
             config_dict = {}
-        self._config_dict: Dict[str, Any] = config_dict
+        self._config_dict: dict[str, Any] = config_dict
 
     def __repr__(self) -> str:
         return str(self._config_dict)
@@ -62,7 +64,7 @@ class ConfigLoader:
 
     def __init__(
         self,
-        path: Optional[Union[str, Path]] = None,
+        path: str | Path | None = None,
         load_env: bool = True,
         dump_when_load=True,
         config_dump_dir=None,
@@ -82,7 +84,7 @@ class ConfigLoader:
     def __repr__(self) -> str:
         return f"ConfigLoader(path={self.config_path}, dump_when_load={self.dump_when_load}, load_env={self.load_env}, config_dump_dir={self.config_dump_dir})"
 
-    def _init_default_modules(self, config_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def _init_default_modules(self, config_dict: dict[str, Any]) -> dict[str, Any]:
         config_dict.setdefault("tracer", {})
         config_dict.setdefault("collector", {})
         config_dict.setdefault("filter", {})
@@ -94,7 +96,7 @@ class ConfigLoader:
         self.config_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(DEFAULT_CONFIG, self.config_path)
 
-    def normalize_config(self, config_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def normalize_config(self, config_dict: dict[str, Any]) -> dict[str, Any]:
         """
         Make sure all config keys are lower case.
         """
@@ -107,7 +109,7 @@ class ConfigLoader:
 
         return config_dict
 
-    def load_config(self) -> Dict[str, Any]:
+    def load_config(self) -> dict[str, Any]:
         """
         Load config from config file and environment variables.
         """
@@ -136,7 +138,7 @@ class ConfigLoader:
             logger.error(f"Error loading config: {e}")
             raise e
 
-    def load_env_config(self, config_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def load_env_config(self, config_dict: dict[str, Any]) -> dict[str, Any]:
         """
         Load config from environment variables.
 
@@ -158,7 +160,7 @@ class ConfigLoader:
             last[spec] = v
         return config_dict
 
-    def dump_config(self, config_dict: Dict[str, Any], path: Union[str, Path]):
+    def dump_config(self, config_dict: dict[str, Any], path: str | Path):
         """
         Dump config to a file.
         """
@@ -182,9 +184,9 @@ class Configuable:
     """
 
     default_config = {}
-    config_scope: Optional[str] = None
+    config_scope: str | None = None
 
-    def __init__(self, config: Optional[Union[Config, Dict[str, Any]]] = None, *args, **kwargs):
+    def __init__(self, config: Config | dict[str, Any] | None = None, *args, **kwargs):
         if not config:
             config = {}
         elif isinstance(config, Config):

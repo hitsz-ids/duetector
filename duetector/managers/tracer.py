@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import sys
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Any
 
 import pluggy
 
@@ -15,7 +17,7 @@ hookspec = pluggy.HookspecMarker(PROJECT_NAME)
 
 
 @hookspec
-def init_tracer(config) -> Optional[Tracer]:
+def init_tracer(config) -> Tracer | None:
     """
     Initialize tracer from config
     None means the tracer is not available
@@ -70,12 +72,10 @@ class TracerTemplate(Configuable):
         """
         return self.config.disabled
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
-    def _get_wrap_tracer(
-        self, tracer_type: Union[str, type], tracer_name: str, kwargs: Config
-    ) -> Tracer:
+    def _get_wrap_tracer(self, tracer_type: str | type, tracer_name: str, kwargs: Config) -> Tracer:
         """
         Get a wrapper class for tracer type.
         """
@@ -92,7 +92,7 @@ class TracerTemplate(Configuable):
 
         return WrapTracer(tracer_config)
 
-    def init(self) -> List[Tracer]:
+    def init(self) -> list[Tracer]:
         """
         Initialize all tracers from config.
         """
@@ -125,7 +125,7 @@ class TracerManager(Manager):
     Config scope for ``TracerManager``.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
         self.pm = pluggy.PluginManager(PROJECT_NAME)
@@ -143,7 +143,7 @@ class TracerManager(Manager):
         include_template=True,
         *args,
         **kwargs,
-    ) -> List[Tracer]:
+    ) -> list[Tracer]:
         """
         Initialize all tracers from config.
 
