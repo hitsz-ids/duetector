@@ -1,6 +1,6 @@
-* duetector version:
-* Python version:
-* Operating System:
+- duetector version:
+- Python version:
+- Operating System:
 
 ### Description
 

@@ -1,10 +1,7 @@
 # 训练+测试
 
 
-import os
-
 import cv2
-import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.utils.data as Data
@@ -31,7 +28,9 @@ test_data = torchvision.datasets.MNIST(root="./data/", train=False)  # 表明是
 # 批训练 50个samples， 1  channel，28x28 (50,1,28,28)
 # Torch中的DataLoader是用来包装数据的工具，它能帮我们有效迭代数据，这样就可以进行批训练
 train_loader = Data.DataLoader(
-    dataset=train_data, batch_size=BATCH_SIZE, shuffle=True  # 是否打乱数据，一般都打乱
+    dataset=train_data,
+    batch_size=BATCH_SIZE,
+    shuffle=True,  # 是否打乱数据，一般都打乱
 )
 
 # 进行测试

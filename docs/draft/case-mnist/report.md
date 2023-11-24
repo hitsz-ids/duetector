@@ -24,10 +24,11 @@
 ```
 
 这段代码使用了PyTorch中的torchvision.datasets.MNIST类来加载MNIST手写数字数据集对数据进行的处理：
+
 1. `root='./data/'`: 指定了数据集保存或提取的位置，这里设置为'./data/'，表示数据集将保存在当前文件夹中。
-2. 用train=？参数将数据分为mnist的训练集和测试集。
-3. `transform=torchvision.transforms.ToTensor()`: 将图像数据转换为Tensor格式。`ToTensor()`是一个变换函数，它将PIL.Image格式或NumPy数组格式的图像转换为Tensor格式。
-4. `download=DOWNLOAD_MNIST`: 判断是否需要下载数据集。
+1. 用train=？参数将数据分为mnist的训练集和测试集。
+1. `transform=torchvision.transforms.ToTensor()`: 将图像数据转换为Tensor格式。`ToTensor()`是一个变换函数，它将PIL.Image格式或NumPy数组格式的图像转换为Tensor格式。
+1. `download=DOWNLOAD_MNIST`: 判断是否需要下载数据集。
 
 接下来对训练集和测试集进行预处理，创建了一个用于训练数据的DataLoader对象，并对测试数据进行了预处理，使其适合模型输入。同时，获取了对应的测试标签。
 
@@ -50,16 +51,17 @@ test_y = test_data.test_labels[:2000]
 ```
 
 这段代码对数据进行了以下处理：
+
 1. `train_loader = Data.DataLoader(dataset=train_data, batch_size=BATCH_SIZE, shuffle=True)`: 创建了一个训练数据的DataLoader对象，用于批量读取数据。其中：
    - `dataset=train_data`：指定了数据集，即之前加载的训练数据集`train_data`。
    - `batch_size=BATCH_SIZE`：指定了每个批次的样本数量。
    - `shuffle=True`：对数据进行打乱以增加随机性。
-2. `test_x = torch.unsqueeze(test_data.train_data, dim=1).type(torch.FloatTensor)[:2000] / 255`：
+1. `test_x = torch.unsqueeze(test_data.train_data, dim=1).type(torch.FloatTensor)[:2000] / 255`：
    - `torch.unsqueeze(test_data.train_data, dim=1)`: 使用`torch.unsqueeze()`函数将原本的测试数据的维度从(2000, 28, 28)扩展为(2000, 1, 28, 28)。这个操作在维度1上增加了一个维度，用于表示通道数。
    - `.type(torch.FloatTensor)`: 将数据类型转换为`torch.FloatTensor`，即浮点型。
    - `[:2000]`: 截取前2000个样本。
    - `/ 255`: 将像素值从原始的0到255的范围归一化到0到1的范围。
-3. `test_y = test_data.test_labels[:2000]`：这行代码获取了测试数据集中前2000个样本的标签。
+1. `test_y = test_data.test_labels[:2000]`：这行代码获取了测试数据集中前2000个样本的标签。
 
 定义神经网络的结构
 
@@ -151,19 +153,19 @@ loss_func = nn.CrossEntropyLoss()  # 目标标签是one-hotted
 ```
 
 1. `for epoch in range(EPOCH):`: 外层循环控制训练的轮数（epoch）。
-2. `for step, (b_x, b_y) in enumerate(train_loader):`: 内层循环遍历训练数据集。
+1. `for step, (b_x, b_y) in enumerate(train_loader):`: 内层循环遍历训练数据集。
    - `b_x, b_y`: 表示每个小批次（batch）的输入数据和对应的标签。
-3. `output = cnn(b_x)`: 将输入数据 `b_x` 输入到CNN模型 `cnn` 中进行计算，得到预测输出 `output`。
-4. `loss = loss_func(output, b_y)`: 根据预测输出 `output` 和真实标签 `b_y` 计算损失值 `loss`。
-5. `optimizer.zero_grad()`: 清除之前计算的梯度信息。
-6. `loss.backward()`: 反向传播计算梯度。
-7. `optimizer.step()`: 根据计算得到的梯度更新模型参数。
-8. `if step % 50 == 0:`: 每隔一定步数（50）打印一次训练信息。
+1. `output = cnn(b_x)`: 将输入数据 `b_x` 输入到CNN模型 `cnn` 中进行计算，得到预测输出 `output`。
+1. `loss = loss_func(output, b_y)`: 根据预测输出 `output` 和真实标签 `b_y` 计算损失值 `loss`。
+1. `optimizer.zero_grad()`: 清除之前计算的梯度信息。
+1. `loss.backward()`: 反向传播计算梯度。
+1. `optimizer.step()`: 根据计算得到的梯度更新模型参数。
+1. `if step % 50 == 0:`: 每隔一定步数（50）打印一次训练信息。
    - `test_output = cnn(test_x)`: 在测试集上运行训练好的模型，得到测试输出 `test_output`。
    - `pred_y = torch.max(test_output, 1)[1].data.numpy()`: 根据测试输出找到最大概率对应的类别，将其转为numpy数组。
    - `accuracy = float((pred_y == test_y.data.numpy()).astype(int).sum()) / float(test_y.size(0))`: 计算准确率。
    - 打印当前轮数、训练损失值和测试准确率。
-9. `torch.save(cnn.state_dict(), 'cnn2.pkl')`: 将训练好的模型参数保存到文件中，文件名为 `cnn2.pkl`。
+1. `torch.save(cnn.state_dict(), 'cnn2.pkl')`: 将训练好的模型参数保存到文件中，文件名为 `cnn2.pkl`。
 
 加载模型并且将之前输入的测试集数据作为输入，检测输出和测试数据集标签的差异。
 

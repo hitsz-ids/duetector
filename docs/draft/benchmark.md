@@ -11,18 +11,17 @@ Baseline testing gives a baseline performance of the system. It is used to evalu
 We using the following indicators to evaluate the performance of the system:
 
 1. CPU usage
-2. Memory usage
-3. Disk usage
-4. Latency
+1. Memory usage
+1. Disk usage
+1. Latency
 
 The reason for choosing these indicators is that they are the most important indicators and most eBPF-releated performance indicators.
 
 ### 1.2 Steps
 
 1. Start `duetector` with specified configuration.
-2. Writing files to the monitored directory at a specified rate.
-3. During the test, record the performance indicators of the system.
-
+1. Writing files to the monitored directory at a specified rate.
+1. During the test, record the performance indicators of the system.
 
 ### 1.3 Benefits
 
@@ -41,12 +40,12 @@ The performance indicators are the same as baseline testing.
 ### 2.2 Steps
 
 1. Start `duetector` with specified configuration.
-2. Start a deep learning task on the same machine, with following characteristics:
+1. Start a deep learning task on the same machine, with following characteristics:
    1. With data pre-processing and post-processing.
-   2. Traing model with GPU if possible.
-   3. Writing model files and check points to the monitored directory at a specified rate.
-   4. Verify the model with test data.
-3. During the test, record the performance indicators of the system.
+   1. Traing model with GPU if possible.
+   1. Writing model files and check points to the monitored directory at a specified rate.
+   1. Verify the model with test data.
+1. During the test, record the performance indicators of the system.
 
 ### 2.3 Benefits
 
@@ -69,13 +68,12 @@ Despite the performance indicators in baseline testing, we also use the followin
 
 1. Start some high-load tasks on the same machine, with following characteristics:
    1. High CPU usage.
-   2. High memory usage.
-   3. High disk usage.
-   4. They can be some deep learning tasks, or some other tasks.
-2. Start `duetector` with specified configuration.
-3. Perform baseline testing and production-simulation testing at the same time.
-4. During the test, record the performance indicators of the system.
-
+   1. High memory usage.
+   1. High disk usage.
+   1. They can be some deep learning tasks, or some other tasks.
+1. Start `duetector` with specified configuration.
+1. Perform baseline testing and production-simulation testing at the same time.
+1. During the test, record the performance indicators of the system.
 
 ### 3.3 Benefits
 

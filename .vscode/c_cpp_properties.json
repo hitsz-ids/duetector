@@ -2,10 +2,7 @@
     "configurations": [
         {
             "name": "Linux",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "/lib/modules/**"
-            ],
+            "includePath": ["${workspaceFolder}/**", "/lib/modules/**"],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",

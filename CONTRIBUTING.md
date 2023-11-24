@@ -79,9 +79,9 @@ Access `http://localhost:8080` for docs.
 ## Contributing a new tracer/filter/collector/analyzer
 
 1. Create a new file in `duetector/tracer`, `duetector/filter`, `duetector/collector` or `duetector/analyzer` directory, with the name `{name}.py`
-2. Implement the new tracer/filter/collector/analyzer
-3. Add the new tracer/filter/collector to `registers` list in `duetector/tracer/register.py`, `duetector/filter/register.py`, `duetector/collector/register.py` or `duetector/analyzer/register.py`
-4. Test the new tracer/filter/collector/analyzer
-5. Generate new static config file with `python duetector/tools/config_generator.py`
+1. Implement the new tracer/filter/collector/analyzer
+1. Add the new tracer/filter/collector to `registers` list in `duetector/tracer/register.py`, `duetector/filter/register.py`, `duetector/collector/register.py` or `duetector/analyzer/register.py`
+1. Test the new tracer/filter/collector/analyzer
+1. Generate new static config file with `python duetector/tools/config_generator.py`
 
 Another way to add a new tracer/filter/collector/analyzer is to use our extension mechanism, see [Extension](./examples/extension). This is not required a change to the duetector codebase and you will mantain the extension by yourself.

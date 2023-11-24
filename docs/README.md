@@ -8,8 +8,6 @@
 - [kernel_config](./kernel_config.md): Kernel config requirements for Duetector
 - [source](./source/README.md): Duetector's sphinx source, see [build docs](#build-docs) for more details.
 
-
-
 ## Build docs
 
 Install docs requirements:

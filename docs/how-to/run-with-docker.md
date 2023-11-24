@@ -22,9 +22,9 @@ dataucon/duetector
 
 2. If there is no such file, you need to install headers and mount `/lib/modules` into the container, `/lib/modules` is the directory where kernel modules are installed, and usually `/lib` is a symbol link of `/usr/lib` (which means `/lib` -> `/usr/lib`). First you need to install the headers:
    1. In WSL2, [you need to compile and install headers by yourself](https://github.com/iovisor/bcc/blob/master/INSTALL.md#install-packages), or [directly replace your own compiled kernel](https://learn.microsoft.com/en-us/windows/wsl/wsl-config)
-   2. Debian/Ubuntu: `sudo apt-get install linux-headers-$(uname -r)`
-   3. Arch Linux: `sudo pacman -S linux-headers`
-   4. For other distributions, please refer to [bcc&#39;s install docs](https://github.com/iovisor/bcc/blob/master/INSTALL.md).
+   1. Debian/Ubuntu: `sudo apt-get install linux-headers-$(uname -r)`
+   1. Arch Linux: `sudo pacman -S linux-headers`
+   1. For other distributions, please refer to [bcc's install docs](https://github.com/iovisor/bcc/blob/master/INSTALL.md).
 
 Then mount `/lib/modules` into the container:
 
