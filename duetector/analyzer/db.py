@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import func, select
 
@@ -69,25 +69,25 @@ class DBAnalyzer(Analyzer):
     Default config for ``DBAnalyzer``.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         # Init as a submodel
         self.sm: SessionManager = SessionManager(self.config._config_dict)
 
     async def query(
         self,
-        tracers: Optional[List[str]] = None,
-        collector_ids: Optional[List[str]] = None,
-        start_datetime: Optional[datetime] = None,
-        end_datetime: Optional[datetime] = None,
+        tracers: list[str] | None = None,
+        collector_ids: list[str] | None = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
         start: int = 0,
         limit: int = 20,
-        columns: Optional[List[str]] = None,
-        where: Optional[Dict[str, Any]] = None,
+        columns: list[str] | None = None,
+        where: dict[str, Any] | None = None,
         distinct: bool = False,
-        order_by_asc: Optional[List[str]] = None,
-        order_by_desc: Optional[List[str]] = None,
-    ) -> List[Tracking]:
+        order_by_asc: list[str] | None = None,
+        order_by_desc: list[str] | None = None,
+    ) -> list[Tracking]:
         """
         Query all tracking records from database.
 
@@ -148,7 +148,7 @@ class DBAnalyzer(Analyzer):
 
         return r
 
-    def get_all_tracers(self) -> List[str]:
+    def get_all_tracers(self) -> list[str]:
         """
         Get all tracers from database.
 
@@ -157,7 +157,7 @@ class DBAnalyzer(Analyzer):
         """
         return self.sm.inspect_all_tracers()
 
-    def get_all_collector_ids(self) -> List[str]:
+    def get_all_collector_ids(self) -> list[str]:
         """
         Get all collector id from database.
 
@@ -169,8 +169,8 @@ class DBAnalyzer(Analyzer):
     def _table_brief(
         self,
         table_name: str,
-        start_datetime: Optional[datetime] = None,
-        end_datetime: Optional[datetime] = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
         inspect: bool = True,
         inspect_type: bool = False,
         distinct: bool = False,
@@ -226,7 +226,7 @@ class DBAnalyzer(Analyzer):
                 fields=m.inspect_fields(value_as_type=inspect_type),
             )
 
-    def _convert_row_to_tracking(self, columns: List[str], row: Any, tracer: str) -> Tracking:
+    def _convert_row_to_tracking(self, columns: list[str], row: Any, tracer: str) -> Tracking:
         """
         Convert a row to a tracking record.
 
@@ -245,10 +245,10 @@ class DBAnalyzer(Analyzer):
 
     async def brief(
         self,
-        tracers: Optional[List[str]] = None,
-        collector_ids: Optional[List[str]] = None,
-        start_datetime: Optional[datetime] = None,
-        end_datetime: Optional[datetime] = None,
+        tracers: list[str] | None = None,
+        collector_ids: list[str] | None = None,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
         with_details: bool = True,
         distinct: bool = False,
         inspect_type: bool = False,
@@ -278,7 +278,7 @@ class DBAnalyzer(Analyzer):
         if collector_ids:
             tables = [t for t in tables if self.sm.table_name_to_collector_id(t) in collector_ids]
 
-        briefs: List[Brief] = [
+        briefs: list[Brief] = [
             self._table_brief(
                 t,
                 start_datetime,

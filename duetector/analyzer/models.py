@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Optional, Set
+from typing import Any
 
 import pydantic
 
@@ -22,37 +22,37 @@ class Tracking(pydantic.BaseModel):
     Tracer's name
     """
 
-    pid: Optional[int] = None
+    pid: int | None = None
     """
     Process ID
     """
-    uid: Optional[int] = None
+    uid: int | None = None
     """
     User ID
     """
-    gid: Optional[int] = None
+    gid: int | None = None
     """
     Group ID of user
     """
-    comm: Optional[str] = "Unknown"
+    comm: str | None = "Unknown"
     """
     Command name
     """
-    cwd: Optional[str] = None
+    cwd: str | None = None
     """
     Current working directory of process
     """
-    fname: Optional[str] = None
+    fname: str | None = None
     """
     File name which is being accessed
     """
 
-    dt: Optional[datetime] = None
+    dt: datetime | None = None
     """
     datetime of event
     """
 
-    extended: Dict[str, Any] = {}
+    extended: dict[str, Any] = {}
     """
     Extended fields, will be stored in ``extended`` field as a dict
     """
@@ -94,10 +94,10 @@ class Brief(pydantic.BaseModel):
 
     tracer: str
     collector_id: str
-    start: Optional[datetime] = None
-    end: Optional[datetime] = None
-    count: Optional[int] = None
-    fields: Dict[str, Any] = {}
+    start: datetime | None = None
+    end: datetime | None = None
+    count: int | None = None
+    fields: dict[str, Any] = {}
 
     def __repr__(self):
         fields_repr = ", ".join([f"{k}: {v}" for k, v in self.fields.items()])
@@ -119,17 +119,17 @@ class AnalyzerBrief(pydantic.BaseModel):
     Brief of analyzer.
     """
 
-    tracers: Set[str]
+    tracers: set[str]
     """
     Set of tracers
     """
 
-    collector_ids: Set[str]
+    collector_ids: set[str]
     """
     Set of collector ids
     """
 
-    briefs: Dict[str, Brief]
+    briefs: dict[str, Brief]
 
     def __repr__(self):
         briefs_repr = "\n".join(
