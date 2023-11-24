@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, NamedTuple, Optional
+from typing import Any
 
 import pydantic
 
@@ -22,37 +22,37 @@ class Tracking(pydantic.BaseModel):
     Tracer's name
     """
 
-    pid: Optional[int] = None
+    pid: int | None = None
     """
     Process ID
     """
-    uid: Optional[int] = None
+    uid: int | None = None
     """
     User ID
     """
-    gid: Optional[int] = None
+    gid: int | None = None
     """
     Group ID of user
     """
-    comm: Optional[str] = "Unknown"
+    comm: str | None = "Unknown"
     """
     Command name
     """
-    cwd: Optional[str] = None
+    cwd: str | None = None
     """
     Current working directory of process
     """
-    fname: Optional[str] = None
+    fname: str | None = None
     """
     File name which is being accessed
     """
 
-    dt: Optional[datetime] = None
+    dt: datetime | None = None
     """
     datetime of event
     """
 
-    extended: Dict[str, Any] = {}
+    extended: dict[str, Any] = {}
     """
     Extended fields, will be stored in ``extended`` field as a dict
     """

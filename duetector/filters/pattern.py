@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import os
 import re
 from ast import literal_eval
-from typing import List, NamedTuple, Optional, Set, Union
+from collections import namedtuple
 
 from duetector.extension.filter import hookimpl
 from duetector.filters import Filter
@@ -78,7 +80,7 @@ class PatternFilter(Filter):
         return bool(self.config.enable_customize_exclude)
 
     @staticmethod
-    def _wrap_exclude_list(value: Union[str, List[str]]) -> Set[str]:
+    def _wrap_exclude_list(value: str | list[str]) -> set[str]:
         """
         Wrap exclude list to list if it's not a list
         """
@@ -100,7 +102,7 @@ class PatternFilter(Filter):
         except TypeError:
             return set(str(value).strip())
 
-    def is_exclude(self, data: NamedTuple, enable_customize_exclude=False) -> bool:
+    def is_exclude(self, data: namedtuple, enable_customize_exclude=False) -> bool:
         """
         Customize exclude function, return ``True`` to drop data, return ``False`` to keep data.
         """
@@ -129,7 +131,7 @@ class PatternFilter(Filter):
                     return True
         return False
 
-    def re_exclude(self, field: Optional[str], re_list: Union[str, List[str]]) -> bool:
+    def re_exclude(self, field: str | None, re_list: str | list[str]) -> bool:
         """
         Check if field match any pattern in re_list
         """
@@ -145,7 +147,7 @@ class PatternFilter(Filter):
 
         return any(_cached_search(pattern, field) for pattern in re_list)
 
-    def filter(self, data: NamedTuple) -> Optional[NamedTuple]:
+    def filter(self, data: namedtuple) -> namedtuple | None:
         """
         Filter data, return ``None`` to drop data, return data to keep data.
         """

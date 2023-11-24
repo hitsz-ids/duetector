@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import os
-from typing import NamedTuple, Optional
+from collections import namedtuple
 
 from duetector.config import Configuable
 from duetector.extension.filter import hookimpl
@@ -54,13 +56,13 @@ class Filter(Configuable):
         """
         return self.config.disabled
 
-    def filter(self, data: NamedTuple) -> Optional[NamedTuple]:
+    def filter(self, data: namedtuple) -> namedtuple | None:
         """
         Filter data, return ``None`` to drop data, return data to keep data.
         """
         raise NotImplementedError
 
-    def __call__(self, data: NamedTuple) -> Optional[NamedTuple]:
+    def __call__(self, data: namedtuple) -> namedtuple | None:
         if self.disabled:
             return data
         return self.filter(data)

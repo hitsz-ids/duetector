@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import copy
-from typing import Any, Dict, Optional
+from typing import Any
 
 from sqlalchemy import func, select  # type: ignore
 
@@ -34,7 +36,7 @@ class DBCollector(Collector):
         config_without_db.pop("db", None)
         return f"<[DBCollector {self.sm}] {config_without_db}>"
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None, *args, **kwargs):
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         # Init as a submodel
         self.sm = SessionManager(self.config._config_dict)
@@ -46,7 +48,7 @@ class DBCollector(Collector):
             session.add(tracking)
             session.commit()
 
-    def summary(self) -> Dict:
+    def summary(self) -> dict:
         with self.sm.begin() as session:
             return {
                 tracer: {
