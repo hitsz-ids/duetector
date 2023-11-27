@@ -144,8 +144,10 @@ class Monitor(Configuable):
             c.shutdown()
 
     def _inject_extra_info(self, data: namedtuple) -> namedtuple:
+        patch_kwargs = {}
         for injector in self.injectors:
-            data = injector(data)
+            patch_kwargs.update(injector.get_patch_kwargs(data, patch_kwargs))
+        data = Injector.patch(data, patch_kwargs)
         return data
 
     @cache

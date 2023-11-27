@@ -1,17 +1,11 @@
 from __future__ import annotations
 
-import os
+import copy
 from collections import namedtuple
+from typing import Any
 
 from duetector.config import Configuable
-
-
-class NamespaceMixin:
-    pass
-
-
-class CgroupMixin:
-    pass
+from duetector.injectors.inspector import CgroupInspector, NamespaceInspector
 
 
 class Injector(Configuable):
@@ -20,7 +14,7 @@ class Injector(Configuable):
 
     Default config scope is ``Injector.{class_name}``.
 
-    subclass should override ``inject`` method and ``super`` it.
+    subclass should override ``get_patch_kwargs`` method and ``super`` it.
 
     User should call Injector() directly to Injector data,
     """
@@ -31,6 +25,11 @@ class Injector(Configuable):
     """
     Default config for ``Injector``.
     """
+
+    def __init__(self, config: dict[str, Any] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
+        self.cgroup_inspector = CgroupInspector()
+        self.namespace_inspector = NamespaceInspector()
 
     @property
     def config_scope(self):
@@ -46,11 +45,30 @@ class Injector(Configuable):
         """
         return self.config.disabled
 
+    def get_patch_kwargs(
+        self, data: namedtuple, extra: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        if not extra:
+            extra = {}
+        param = data._asdict()
+        for k, v in extra:
+            param.setdefault(k, v)
+        return {
+            **self.cgroup_inspector.inspect(param),
+            **self.namespace_inspector.inspect(param),
+        }
+
+    @staticmethod
+    def patch(data: namedtuple, patch_kwargs: dict[str, Any]) -> namedtuple:
+        fields = set(data._fields + tuple(patch_kwargs.keys()))
+        new_data_t = namedtuple(data.__class__.__name__, fields)
+        param: dict = data._asdict()
+        for k, v in patch_kwargs:
+            param.setdefault(k, v)
+        return new_data_t(**param)
+
     def inject(self, data: namedtuple) -> namedtuple:
-        """
-        Implement this method to patch ``data``
-        """
-        return data
+        return self.patch(data, self.get_patch_kwargs(data))
 
     def __call__(self, data: namedtuple) -> namedtuple | None:
         if self.disabled:
