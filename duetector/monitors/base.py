@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from collections import namedtuple
 
+from duetector.injectors.base import Injector
+from duetector.managers.collector import CollectorManager
+from duetector.managers.filter import FilterManager
+from duetector.managers.injector import InjectorManager
+
 try:
     from functools import cache
 except ImportError:
@@ -30,7 +35,6 @@ class Monitor(Configuable):
     """
     A list of tracers, should be initialized by ``TracerManager``
     """
-
     filters: list[Filter]
     """
     A list of filters, should be initialized by ``FilterManager``
@@ -38,6 +42,10 @@ class Monitor(Configuable):
     collectors: list[Collector]
     """
     A list of collectors, should be initialized by ``CollectorManager``
+    """
+    injectors: list[Injector]
+    """
+    A list of collectors, should be initialized by ``InjectorManager``
     """
 
     config_scope = "monitor"
@@ -71,6 +79,16 @@ class Monitor(Configuable):
         super().__init__(config=config)
         self._backend = self._backend_imp(**self.backend_args._config_dict)
         self.poller = Poller(self.config._config_dict)
+
+        if self.disabled:
+            self.tracers = []
+            self.filters = []
+            self.collectors = []
+            self.injectors = []
+            return
+        self.filters: list[Filter] = FilterManager(config).init()
+        self.collectors: list[Collector] = CollectorManager(config).init()
+        self.injectors: list[Injector] = InjectorManager(config).init()
 
     @property
     def disabled(self):
@@ -126,18 +144,23 @@ class Monitor(Configuable):
             c.shutdown()
 
     def _inject_extra_info(self, data: namedtuple) -> namedtuple:
+        for injector in self.injectors:
+            data = injector(data)
         return data
 
     @cache
     def _get_callback_fn(self, tracer) -> Callable[[namedtuple], None]:
         def _(data):
-            for filter in self.filters:
-                data = filter(data)
-                if not data:
-                    return
-            data = self._inject_extra_info(data)
-            for collector in self.collectors:
-                collector.emit(tracer, data)
+            try:
+                for filter in self.filters:
+                    data = filter(data)
+                    if not data:
+                        return
+                data = self._inject_extra_info(data)
+                for collector in self.collectors:
+                    collector.emit(tracer, data)
+            except Exception as e:
+                logger.exception(e)
 
         return _
 

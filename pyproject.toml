@@ -16,6 +16,9 @@ dependencies = [
     "SQLAlchemy>=2",
     "click",
     "psutil",
+    # Injector
+    "docker",
+    "kubernetes",
     # OTel
     "opentelemetry-sdk",
     "opentelemetry-api",

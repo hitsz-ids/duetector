@@ -3,9 +3,12 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from duetector.collectors.base import Collector
+from duetector.filters.base import Filter
+from duetector.injectors.base import Injector
 from duetector.log import logger
 from duetector.managers.collector import CollectorManager
 from duetector.managers.filter import FilterManager
+from duetector.managers.injector import InjectorManager
 from duetector.managers.tracer import TracerManager
 from duetector.monitors.base import Monitor
 from duetector.tracers import BccTracer
@@ -45,14 +48,9 @@ class BccMonitor(Monitor):
         super().__init__(config=config)
         if self.disabled:
             logger.info("BccMonitor disabled")
-            self.tracers = []
-            self.filters = []
-            self.collectors = []
             return
 
         self.tracers: list[BccTracer] = TracerManager(config).init(tracer_type=BccTracer)  # type: ignore
-        self.filters: list[Callable] = FilterManager(config).init()
-        self.collectors: list[Collector] = CollectorManager(config).init()
 
         self.bpf_tracers: dict[Any, BccTracer] = {}
         if self.auto_init:

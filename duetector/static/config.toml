@@ -124,6 +124,16 @@ table_prefix = "duetector_tracking"
 [analyzer.dbanalyzer.db.engine]
 url = "sqlite:///duetector-dbcollector.sqlite3"
 
+[injector]
+disabled = false
+include_extension = true
+
+[injector.k8sinjector]
+disabled = false
+
+[injector.dockerinjector]
+disabled = false
+
 [monitor.bcc]
 disabled = false
 auto_init = true

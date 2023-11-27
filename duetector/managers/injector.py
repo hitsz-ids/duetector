@@ -1,0 +1,68 @@
+from __future__ import annotations
+
+import sys
+from typing import Any
+
+import pluggy
+
+import duetector.injectors.register
+from duetector.extension.injector import project_name
+from duetector.injectors.base import Injector
+from duetector.log import logger
+from duetector.managers.base import Manager
+
+PROJECT_NAME = project_name  #: Default project name for pluggy
+hookspec = pluggy.HookspecMarker(PROJECT_NAME)
+
+
+@hookspec
+def init_injector(config) -> Injector | None:
+    """
+    Initialize Injector from config
+    None means the Injector is not available
+    Also the Injector can be disabled by config, Manager will discard disabled Injector
+    """
+
+
+class InjectorManager(Manager):
+    """
+    Manager for all Injectors.
+
+    Injectors are initialized from config, and can be ``disabled`` by config.
+    """
+
+    config_scope = "injector"
+    """
+    Config scope for ``InjectorManager``.
+    """
+
+    def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
+
+        self.pm = pluggy.PluginManager(PROJECT_NAME)
+        self.pm.add_hookspecs(sys.modules[__name__])
+        if self.include_extension:
+            self.pm.load_setuptools_entrypoints(PROJECT_NAME)
+        self.register(duetector.injectors.register)
+
+    def init(self, ignore_disabled=True, *args, **kwargs) -> list[Injector]:
+        """
+        Initialize all Injectors from config.
+
+        Args:
+            ignore_disabled: Ignore disabled Injectors
+        """
+        if self.disabled:
+            logger.info("InjectorManager disabled.")
+            return []
+        objs = []
+        for f in self.pm.hook.init_injector(config=self.config._config_dict):
+            if not f:
+                continue
+            if f.disabled and ignore_disabled:
+                logger.info(f"Injector {f.__class__.__name__} is disabled")
+                continue
+
+            objs.append(f)
+
+        return objs

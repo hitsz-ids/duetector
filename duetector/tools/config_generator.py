@@ -10,6 +10,7 @@ from duetector.log import logger
 from duetector.managers.analyzer import AnalyzerManager
 from duetector.managers.collector import CollectorManager
 from duetector.managers.filter import FilterManager
+from duetector.managers.injector import InjectorManager
 from duetector.managers.tracer import TracerManager
 from duetector.monitors import BccMonitor, ShMonitor, SubprocessMonitor
 from duetector.service.config import ServerConfig
@@ -51,7 +52,7 @@ class ConfigGenerator:
 
 """
 
-    managers = [FilterManager, TracerManager, CollectorManager, AnalyzerManager]
+    managers = [FilterManager, TracerManager, CollectorManager, AnalyzerManager, InjectorManager]
     """
     All managers to inspect.
     """

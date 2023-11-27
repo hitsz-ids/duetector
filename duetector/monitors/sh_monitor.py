@@ -5,6 +5,10 @@ from collections import namedtuple
 from datetime import datetime
 from typing import Any, Callable
 
+from duetector.filters.base import Filter
+from duetector.injectors.base import Injector
+from duetector.managers.injector import InjectorManager
+
 try:
     from functools import cache
 except ImportError:
@@ -124,14 +128,10 @@ class ShMonitor(Monitor):
         super().__init__(config=config, *args, **kwargs)
         if self.disabled:
             logger.info("ShMonitor disabled")
-            self.tracers = []
-            self.filters = []
-            self.collectors = []
             return
 
         self.tracers: list[ShellTracer] = TracerManager(config).init(tracer_type=ShellTracer)  # type: ignore
-        self.filters: list[Callable] = FilterManager(config).init()
-        self.collectors: list[Collector] = CollectorManager(config).init()
+
         self.host = ShTracerHost(self._backend, self.timeout)
         if self.auto_init:
             self.init()
