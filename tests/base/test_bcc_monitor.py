@@ -114,17 +114,7 @@ def test_bcc_monitor(bcc_monitor: MockMonitor):
     bcc_monitor.poll_all()
     bcc_monitor.shutdown()
     assert bcc_monitor.summary()
-    bcc_monitor.summary()["MockMonitor"]["DBCollector"]["bccmocktracer"]["last"] == Tracking(
-        tracer="bccmocktracer",
-        pid=9999,
-        uid=9999,
-        gid=9999,
-        comm="dummy",
-        cwd=None,
-        fname="dummy.file",
-        dt=datetime,
-        extended={"custom": "dummy-xargs"},
-    )
+    assert bcc_monitor.summary()["MockMonitor"]["DBCollector"]["bccmocktracer"]["last"]
 
 
 if __name__ == "__main__":

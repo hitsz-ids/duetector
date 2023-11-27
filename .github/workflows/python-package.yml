@@ -26,7 +26,7 @@ jobs:
           python -m pip install -e .[test]
       - name: Test with pytest
         run: |
-          pytest -vv --cov-append --cov=duetector --cov-report=term-missing tests/standalone
+          pytest -vv --cov-append --cov=duetector --cov-report=term-missing tests/base
       - name: Intergration Test for jaeger
         run: |
           pytest -vv --cov-append --cov=duetector --cov-report=term-missing tests/integration/jaeger/
