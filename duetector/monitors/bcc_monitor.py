@@ -91,21 +91,6 @@ class BccMonitor(Monitor):
         for tracer in err_tracers:
             self.tracers.remove(tracer)
 
-    def _set_callback(self, host, tracer):
-        """
-        Wrap tracer callback with filters and collectors.
-        """
-
-        def _(data):
-            for filter in self.filters:
-                data = filter(data)
-                if not data:
-                    return
-            for collector in self.collectors:
-                collector.emit(tracer, data)
-
-        tracer.set_callback(host, _)
-
     def poll(self, tracer: BccTracer):  # type: ignore
         """
         Implement poll method for bcc tracers.

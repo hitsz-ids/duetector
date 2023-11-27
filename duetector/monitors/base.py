@@ -1,7 +1,14 @@
 from __future__ import annotations
 
+from collections import namedtuple
+
+try:
+    from functools import cache
+except ImportError:
+    from functools import lru_cache as cache
+
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any
+from typing import Any, Callable
 
 from duetector.collectors.base import Collector
 from duetector.config import Configuable
@@ -117,3 +124,25 @@ class Monitor(Configuable):
         self._backend.shutdown()
         for c in self.collectors:
             c.shutdown()
+
+    def _inject_extra_info(self, data: namedtuple) -> namedtuple:
+        return data
+
+    @cache
+    def _get_callback_fn(self, tracer) -> Callable[[namedtuple], None]:
+        def _(data):
+            for filter in self.filters:
+                data = filter(data)
+                if not data:
+                    return
+            data = self._inject_extra_info(data)
+            for collector in self.collectors:
+                collector.emit(tracer, data)
+
+        return _
+
+    def _set_callback(self, host, tracer):
+        """
+        Wrap tracer callback with filters and collectors.
+        """
+        tracer.set_callback(host, self._get_callback_fn(tracer))

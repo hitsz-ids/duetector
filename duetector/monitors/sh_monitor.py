@@ -142,18 +142,6 @@ class ShMonitor(Monitor):
             self._set_callback(self.host, tracer)
             logger.info(f"Tracer {tracer.__class__.__name__} attached")
 
-    def _set_callback(self, host, tracer):
-        def _(data):
-            for filter in self.filters:
-                data = filter(data)
-                if not data:
-                    return
-
-            for collector in self.collectors:
-                collector.emit(tracer, data)
-
-        tracer.set_callback(host, _)
-
     def poll_all(self):
         return self.host.poll_all()
 

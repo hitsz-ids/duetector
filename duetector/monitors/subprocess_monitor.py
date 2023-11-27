@@ -268,18 +268,6 @@ class SubprocessMonitor(Monitor):
             self._set_callback(self.host, tracer)
             logger.info(f"Tracer {tracer.__class__.__name__} attached")
 
-    def _set_callback(self, host, tracer):
-        def _(data):
-            for filter in self.filters:
-                data = filter(data)
-                if not data:
-                    return
-
-            for collector in self.collectors:
-                collector.emit(tracer, data)
-
-        tracer.set_callback(host, _)
-
     def shutdown(self):
         self.host.shutdown()
         super().shutdown()
