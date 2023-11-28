@@ -20,6 +20,7 @@ dependencies = [
     "docker",
     "kubernetes",
     "watchfiles",
+    "apscheduler",
     # OTel
     "opentelemetry-sdk",
     "opentelemetry-api",
