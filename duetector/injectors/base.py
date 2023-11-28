@@ -73,6 +73,9 @@ class Injector(Configuable):
             return data
         return self.inject(data)
 
+    def shutdown(self):
+        pass
+
 
 class ProcInjector(Injector):
     def __init__(self, config: dict[str, Any] = None, *args, **kwargs):
@@ -88,3 +91,7 @@ class ProcInjector(Injector):
             **self.cgroup_inspector.inspect(param),
             **self.namespace_inspector.inspect(param),
         }
+
+    def shutdown(self):
+        self.cgroup_inspector.stop()
+        self.namespace_inspector.stop()

@@ -142,6 +142,8 @@ class Monitor(Configuable):
         self._backend.shutdown()
         for c in self.collectors:
             c.shutdown()
+        for i in self.injectors:
+            i.shutdown()
 
     def _inject_extra_info(self, data: namedtuple) -> namedtuple:
         patch_kwargs = {}
