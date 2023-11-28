@@ -131,16 +131,21 @@ class ProcWatcher(metaclass=Singleton):
         self._cache[pid] = ProcInfo.from_pid(pid)
         return self._cache[pid]
 
-    def remove_cache(self, pid: int, delay=5):
-        def _():
-            logger.debug(f"Remove proc cache for `{pid}`")
-            return self._cache.pop(pid, None)
-
+    def remove_cache(self, pid: int, delay=5) -> None:
         if not delay:
-            _()
+            self._remove_cache(pid)
         else:
-            logger.debug(f"Remove proc cache for `{pid}` after {delay} seconds")
-            self._scheduler.add_job(_, "date", run_date=datetime.now() + timedelta(seconds=delay))
+            logger.debug(f"Schedule remove proc cache for `{pid}` after {delay} seconds")
+            self._scheduler.add_job(
+                self._remove_cache,
+                "date",
+                run_date=datetime.now() + timedelta(seconds=delay),
+                args=[pid],
+            )
+
+    def _remove_cache(self, pid: int) -> ProcInfo | None:
+        logger.debug(f"Remove proc cache for `{pid}`")
+        return self._cache.pop(pid, None)
 
     def stop(self, sig=None, frame=None):
         self.stop_event.set()
