@@ -5,6 +5,7 @@ from typing import Any, Dict, NamedTuple, Optional
 
 import pydantic
 
+from duetector.injectors.inspector import Inspector
 from duetector.log import logger
 from duetector.utils import get_boot_time_duration_ns
 
@@ -125,10 +126,12 @@ class Tracking(pydantic.BaseModel):
             v = getattr(self, k)
             if v is not None:
                 k, v = self.serialize_field(k, v)
+                k = k.replace(Inspector.sep, ".")
                 span.set_attribute(k, v)
         for k, v in self.extended.items():
+            k = k.replace(Inspector.sep, ".")
             span.set_attribute(k, v)
-        span.set_attribute("collector_id", collector.id)
+        span.set_attribute("collector.id", collector.id)
 
 
 if __name__ == "__main__":
