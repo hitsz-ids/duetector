@@ -3,10 +3,13 @@ from __future__ import annotations
 import glob
 import itertools
 import signal
+from datetime import datetime, timedelta
 from threading import Event, Thread
 from typing import Any
 
 import pydantic
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.base import STATE_RUNNING, STATE_STOPPED
 from watchfiles import Change, DefaultFilter, _rust_notify, watch
 
 try:
@@ -19,7 +22,9 @@ from duetector.utils import Singleton
 
 
 class ProcInfo(pydantic.BaseModel):
-    pass
+    @classmethod
+    def from_pid(cls, pid: int) -> "ProcInfo":
+        return ProcInfo()
 
 
 class PidFilter(DefaultFilter):
@@ -42,6 +47,7 @@ class ProcWatcher(metaclass=Singleton):
 
         self._cache: dict[int, ProcInfo] = {}
         self.thread: Thread | None = None
+        self._scheduler = BackgroundScheduler()
 
         self.stop_event = Event()
         self.stop_event.clear()
@@ -88,6 +94,8 @@ class ProcWatcher(metaclass=Singleton):
             target=_,
         )
         self.thread.start()
+        if self._scheduler.state != STATE_RUNNING:
+            self._scheduler.start()
         self._sync()
         logger.info("Proc watcher started.")
 
@@ -109,25 +117,36 @@ class ProcWatcher(metaclass=Singleton):
                     self.remove_cache(pid)
 
     def get(self, pid: int) -> ProcInfo | None:
-        return self._cache.get(pid)
+        proc_info = self._cache.get(pid)
+        if not proc_info:
+            # Try adding it
+            proc_info = self.add_cache(pid)
 
-    def add_cache(self, pid: int):
+        return proc_info
+
+    def add_cache(self, pid: int) -> ProcInfo:
         if pid in self._cache:
-            return
-        # TODO: Cache it
+            return self._cache[pid]
         logger.debug(f"Add proc cache for `{pid}`")
-        pass
+        self._cache[pid] = ProcInfo.from_pid(pid)
+        return self._cache[pid]
 
-    def remove_cache(self, pid: int, delay=1):
-        if not delay:
-            logger.debug(f"Remove proc cache for `{pid}` now")
+    def remove_cache(self, pid: int, delay=5):
+        def _():
+            logger.debug(f"Remove proc cache for `{pid}`")
             return self._cache.pop(pid, None)
-        # TODO: Schedule remove cache after 1 seconds
-        logger.debug(f"Remove proc cache for `{pid}` after {delay} seconds")
+
+        if not delay:
+            _()
+        else:
+            logger.debug(f"Remove proc cache for `{pid}` after {delay} seconds")
+            self._scheduler.add_job(_, "date", run_date=datetime.now() + timedelta(seconds=delay))
 
     def stop(self, sig=None, frame=None):
         self.stop_event.set()
         self._cache.clear()
+        if self._scheduler.state == STATE_STOPPED:
+            self._scheduler.shutdown(wait=False)
         if self.thread:
             logger.info("Waiting proc watcher to stop.")
             self.thread.join(1)
