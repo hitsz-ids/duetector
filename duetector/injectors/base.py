@@ -14,7 +14,7 @@ class Injector(Configuable):
 
     Default config scope is ``Injector.{class_name}``.
 
-    subclass should override ``get_patch_kwargs`` method and ``super`` it.
+    subclass should override ``get_patch_kwargs`` method and ``super`` it for parent's patch kwargs.
 
     User should call Injector() directly to Injector data,
     """
@@ -28,8 +28,6 @@ class Injector(Configuable):
 
     def __init__(self, config: dict[str, Any] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
-        self.cgroup_inspector = CgroupInspector()
-        self.namespace_inspector = NamespaceInspector()
 
     @property
     def config_scope(self):
@@ -48,22 +46,22 @@ class Injector(Configuable):
     def get_patch_kwargs(
         self, data: namedtuple, extra: dict[str, Any] | None = None
     ) -> dict[str, Any]:
+        raise NotImplementedError
+
+    def as_dict(self, data: namedtuple, extra: dict[str, Any] | None = None) -> dict[str, Any]:
         if not extra:
             extra = {}
         param = data._asdict()
-        for k, v in extra:
+        for k, v in extra.items():
             param.setdefault(k, v)
-        return {
-            **self.cgroup_inspector.inspect(param),
-            **self.namespace_inspector.inspect(param),
-        }
+        return param
 
     @staticmethod
     def patch(data: namedtuple, patch_kwargs: dict[str, Any]) -> namedtuple:
         fields = set(data._fields + tuple(patch_kwargs.keys()))
         new_data_t = namedtuple(data.__class__.__name__, fields)
         param: dict = data._asdict()
-        for k, v in patch_kwargs:
+        for k, v in patch_kwargs.items():
             param.setdefault(k, v)
         return new_data_t(**param)
 
@@ -74,3 +72,19 @@ class Injector(Configuable):
         if self.disabled:
             return data
         return self.inject(data)
+
+
+class ProcInjector(Injector):
+    def __init__(self, config: dict[str, Any] = None, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
+        self.cgroup_inspector = CgroupInspector()
+        self.namespace_inspector = NamespaceInspector()
+
+    def get_patch_kwargs(
+        self, data: namedtuple, extra: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        param = self.as_dict(data, extra)
+        return {
+            **self.cgroup_inspector.inspect(param),
+            **self.namespace_inspector.inspect(param),
+        }

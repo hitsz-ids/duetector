@@ -19,6 +19,7 @@ dependencies = [
     # Injector
     "docker",
     "kubernetes",
+    "watchfiles",
     # OTel
     "opentelemetry-sdk",
     "opentelemetry-api",
