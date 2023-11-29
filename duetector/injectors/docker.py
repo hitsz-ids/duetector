@@ -53,11 +53,12 @@ class DockerInjector(ProcInjector, Inspector):
         try:
             container_info = self.client.inspect_container(container_id)
         except Exception as e:
-            pass
-
-        return {
-            "container_id": container_id,
-        }
+            return {"maybe_container_id": container_id}
+        else:
+            # TODO: More info in container_info
+            return {
+                "container_id": container_id,
+            }
 
 
 @hookimpl
