@@ -42,6 +42,12 @@ def test_container(docker_client: docker.DockerClient, command: str):
             p = Path(p)
             if (p / "cmdline").read_text().replace("\x00", " ").strip() == command.strip():
                 pid = p.name
+                try:
+                    (p / "cgroup").read_text().strip().split("\n")
+                except PermissionError as e:
+                    pytest.skip(
+                        "Low privileges for the current user to inspect docker container's process"
+                    )
 
         assert pid
 
