@@ -32,7 +32,7 @@ class ProcInfo(pydantic.BaseModel):
     cwd: Optional[str] = None
     exe: Optional[str] = None
     root: Optional[str] = None
-    cgroup: Optional[List[str]] = None
+    cgroups: Optional[List[str]] = None
     ns: Optional[Dict[str, str]] = None
 
     @classmethod
@@ -41,31 +41,32 @@ class ProcInfo(pydantic.BaseModel):
             proc_root = Path(proc_root)
 
         proc_dir = (proc_root / str(pid)).resolve()
+        kwargs = {}
+        for link in ["cwd", "exe", "root"]:
+            try:
+                # Path.readlink is new in Python 3.9
+                # Use os.readlink for Python 3.8
+                kwargs[link] = os.readlink(proc_dir / link)
+            except PermissionError as e:
+                logger.debug(f"{e}, check if you are running as root.")
+            except FileNotFoundError:
+                break
 
         try:
-            # Path.readlink is new in Python 3.9
-            # Use os.readlink for Python 3.8
-            cwd = os.readlink(proc_dir / "cwd")
-            exe = os.readlink(proc_dir / "exe")
-            root = os.readlink(proc_dir / "root")
-
-            cgroup = (proc_dir / "cgroup").read_text().strip().split("\n")
-            ns = {p.name: os.readlink(p) for p in (proc_dir / "ns").glob("*")}
-
+            kwargs["cgroups"] = (proc_dir / "cgroup").read_text().strip().split("\n")
         except PermissionError as e:
-            logger.warning(f"{e}, check if you are running as root.")
-            return ProcInfo(pid=pid)
+            logger.debug(f"{e}, check if you are running as root.")
         except FileNotFoundError:
-            return ProcInfo(pid=pid)
+            pass
 
-        return ProcInfo(
-            pid=pid,
-            cwd=cwd,
-            exe=exe,
-            root=root,
-            cgroup=cgroup,
-            ns=ns,
-        )
+        try:
+            kwargs["ns"] = {p.name: os.readlink(p) for p in (proc_dir / "ns").glob("*")}
+        except PermissionError as e:
+            logger.debug(f"{e}, check if you are running as root.")
+        except FileNotFoundError:
+            pass
+
+        return ProcInfo(pid=pid, **kwargs)
 
 
 class PidFilter(DefaultFilter):
@@ -300,10 +301,10 @@ class CgroupInspector(Inspector):
             return {}
 
         proc_info = self.proc_watcher.get(pid)
-        if not proc_info or not proc_info.cgroup:
+        if not proc_info or not proc_info.cgroups:
             return {}
 
-        return {"cgropu": proc_info.cgroup}
+        return {"cgroups": proc_info.cgroups}
 
     def stop(self):
         self.proc_watcher.stop()

@@ -1,3 +1,4 @@
+import os
 from collections import namedtuple
 
 import pytest
@@ -22,7 +23,7 @@ def pattern_filter(config):
 
 
 passed = dict(
-    pid=9999,
+    pid=os.getpid(),
     uid=9999,
     gid=9999,
     comm="dummy",

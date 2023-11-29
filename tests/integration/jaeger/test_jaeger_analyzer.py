@@ -1,3 +1,4 @@
+import os
 import socket
 import time
 from collections import namedtuple
@@ -29,7 +30,7 @@ def data_t():
     d = namedtuple("Tracking", ["pid", "uid", "gid", "comm", "fname", "timestamp", "custom"])
 
     yield d(
-        pid=9999,
+        pid=os.getpid(),
         uid=9999,
         gid=9999,
         comm="dummy",
@@ -59,9 +60,10 @@ def jaeger_container(docker_client: docker.DockerClient, service_id, data_t):
     query_port = get_port()
     otel_grpc_port = get_port()
     ui_port = get_port()
+    container = None
     try:
         """
-        docker run --rm --name jaeger \
+        docker run --rm -d \
             -p {random_query_port}:16685 \
             -p {random_otel_port}:4317 \
             jaegertracing/all-in-one:1.50
@@ -70,6 +72,7 @@ def jaeger_container(docker_client: docker.DockerClient, service_id, data_t):
             "jaegertracing/all-in-one:1.50",
             detach=True,
             ports={"16685": query_port, "4317": otel_grpc_port, "16686": ui_port},
+            remove=True,
         )
         # Waiting for the container to start by query ui_port
         while True:
@@ -103,7 +106,8 @@ def jaeger_container(docker_client: docker.DockerClient, service_id, data_t):
 
         yield query_port
     finally:
-        container.stop()
+        if container:
+            container.stop()
 
 
 @pytest.fixture

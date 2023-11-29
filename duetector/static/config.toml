@@ -11,6 +11,7 @@ include_extension = true
 
 [filter.patternfilter]
 disabled = false
+ignore_current_pid = true
 enable_customize_exclude = true
 re_exclude_fname = [
     "/proc",

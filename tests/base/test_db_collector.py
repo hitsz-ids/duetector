@@ -1,3 +1,4 @@
+import os
 from collections import namedtuple
 
 import pytest
@@ -26,7 +27,7 @@ def data_t():
     d = namedtuple("Tracking", ["pid", "uid", "gid", "comm", "fname", "timestamp", "custom"])
 
     yield d(
-        pid=9999,
+        pid=os.getpid(),
         uid=9999,
         gid=9999,
         comm="dummy",
@@ -45,7 +46,7 @@ def test_dbcollector(dbcollector: DBCollector, data_t):
             "first at": datetime,
             "last": Tracking(
                 tracer="dummy",
-                pid=9999,
+                pid=os.getpid(),
                 uid=9999,
                 gid=9999,
                 comm="dummy",

@@ -83,6 +83,8 @@ class ConfigGenerator:
                     self.dynamic_config[m.config_scope],
                     c.default_config,
                 )
+                if hasattr(c, "shutdown"):
+                    c.shutdown()
 
         for m in self.monitors:
             _recursive_load(m.config_scope, self.dynamic_config, m.default_config)

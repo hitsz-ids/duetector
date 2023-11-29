@@ -1,11 +1,9 @@
+import os
 from collections import namedtuple
 from typing import Any, Callable, Dict, NamedTuple, Optional, Type
 
 import pytest
 
-from duetector.collectors.models import Tracking
-from duetector.managers.collector import CollectorManager
-from duetector.managers.filter import FilterManager
 from duetector.managers.tracer import TracerManager
 from duetector.monitors.bcc_monitor import BccMonitor, Monitor
 from duetector.tracers.base import BccTracer, Tracer
@@ -76,8 +74,6 @@ class MockMonitor(Monitor):
         tracer_config = TracerManager(config).config._config_dict
 
         self.tracers = [mock_tracer(tracer_config)]
-        self.filters = FilterManager(config).init()
-        self.collectors = CollectorManager(config).init()
 
         self.bpf_tracers = {}
         self.init()

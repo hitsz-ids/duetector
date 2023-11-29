@@ -32,7 +32,7 @@ def test_proc_info_from_pid():
     assert proc_info.exe
     assert proc_info.root
     assert proc_info.ns
-    assert proc_info.cgroup
+    assert proc_info.cgroups
 
 
 def test_proc_watcher(proc_watcher: ProcWatcher):
