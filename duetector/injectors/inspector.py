@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import glob
 import itertools
+import os
 import signal
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -42,12 +43,14 @@ class ProcInfo(pydantic.BaseModel):
         proc_dir = (proc_root / str(pid)).resolve()
 
         try:
-            cwd = (proc_dir / "cwd").readlink().as_posix()
-            exe = (proc_dir / "exe").readlink().as_posix()
-            root = (proc_dir / "root").readlink().as_posix()
+            # Path.readlink is new in Python 3.9
+            # Use os.readlink for Python 3.8
+            cwd = os.readlink(proc_dir / "cwd")
+            exe = os.readlink(proc_dir / "exe")
+            root = os.readlink(proc_dir / "root")
 
             cgroup = (proc_dir / "cgroup").read_text().strip().split("\n")
-            ns = {p.name: p.readlink().as_posix() for p in (proc_dir / "ns").glob("*")}
+            ns = {p.name: os.readlink(p) for p in (proc_dir / "ns").glob("*")}
 
         except PermissionError as e:
             logger.warning(f"{e}, check if you are running as root.")
