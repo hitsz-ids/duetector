@@ -1,4 +1,5 @@
 import glob
+import time
 from collections import namedtuple
 from pathlib import Path
 
@@ -37,6 +38,11 @@ def test_container(docker_client: docker.DockerClient, command: str):
             detach=True,
             remove=True,
         )
+        container.reload()
+        while container.status != "running":
+            container.reload()
+            time.sleep(0.5)
+
         pid = None
         for p in glob.glob("/proc/[0-9]*"):
             p = Path(p)

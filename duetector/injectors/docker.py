@@ -15,6 +15,7 @@ class DockerInjector(ProcInjector, Inspector):
     def __init__(self, config: dict[str, Any] = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         try:
+            # TODO: Config docker base_url and tls
             self.client = docker.APIClient()
             if not self.client.ping():
                 self.client = None
@@ -42,14 +43,13 @@ class DockerInjector(ProcInjector, Inspector):
             return {}
         container_id = None
         for cg in cgroups:
-            if "docker" in cg:
-                container_id = cg.split(":")[-1].split("/")[-1].lstrip("docker-").split(".")[0]
-                break
+            container_id = cg.split(":")[-1].split("/")[-1].lstrip("docker-").split(".")[0]
+            break
         if not container_id:
             return {}
 
         if not self.client:
-            return {"container_id": container_id}
+            return {"maybe_container_id": container_id}
         try:
             container_info = self.client.inspect_container(container_id)
         except Exception as e:
