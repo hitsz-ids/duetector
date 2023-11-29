@@ -4,8 +4,9 @@ import glob
 import itertools
 import signal
 from datetime import datetime, timedelta
+from pathlib import Path
 from threading import Event, Thread
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 import pydantic
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -22,9 +23,46 @@ from duetector.utils import Singleton
 
 
 class ProcInfo(pydantic.BaseModel):
+    """
+    Process info readed from /proc/{pid}/
+    """
+
+    pid: int
+    cwd: Optional[str] = None
+    exe: Optional[str] = None
+    root: Optional[str] = None
+    cgroup: Optional[List[str]] = None
+    ns: Optional[Dict[str, str]] = None
+
     @classmethod
-    def from_pid(cls, pid: int) -> "ProcInfo":
-        return ProcInfo()
+    def from_pid(cls, pid: int, proc_root: str | Path = "/proc") -> "ProcInfo":
+        if not isinstance(proc_root, Path):
+            proc_root = Path(proc_root)
+
+        proc_dir = (proc_root / str(pid)).resolve()
+
+        try:
+            cwd = (proc_dir / "cwd").readlink().as_posix()
+            exe = (proc_dir / "exe").readlink().as_posix()
+            root = (proc_dir / "root").readlink().as_posix()
+
+            cgroup = (proc_dir / "cgroup").read_text().strip().split("\n")
+            ns = {p.name: p.readlink().as_posix() for p in (proc_dir / "ns").glob("*")}
+
+        except PermissionError as e:
+            logger.warning(f"{e}, check if you are running as root.")
+            return ProcInfo(pid=pid)
+        except FileNotFoundError:
+            return ProcInfo(pid=pid)
+
+        return ProcInfo(
+            pid=pid,
+            cwd=cwd,
+            exe=exe,
+            root=root,
+            cgroup=cgroup,
+            ns=ns,
+        )
 
 
 class PidFilter(DefaultFilter):
@@ -128,7 +166,7 @@ class ProcWatcher(metaclass=Singleton):
         if pid in self._cache:
             return self._cache[pid]
         logger.debug(f"Add proc cache for `{pid}`")
-        self._cache[pid] = ProcInfo.from_pid(pid)
+        self._cache[pid] = ProcInfo.from_pid(pid, self.proc_dir)
         return self._cache[pid]
 
     def remove_cache(self, pid: int, delay=5) -> None:

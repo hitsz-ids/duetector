@@ -156,11 +156,12 @@ class Monitor(Configuable):
     def _get_callback_fn(self, tracer) -> Callable[[namedtuple], None]:
         def _(data):
             try:
+                data = self._inject_extra_info(data)
+
                 for filter in self.filters:
                     data = filter(data)
                     if not data:
                         return
-                data = self._inject_extra_info(data)
                 for collector in self.collectors:
                     collector.emit(tracer, data)
             except Exception as e:
