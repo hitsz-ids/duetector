@@ -223,6 +223,10 @@ class Inspector:
     def with_id(self, key: str | list[str]) -> str:
         return with_prefix(self.sep, self.id, key)
 
+    @cache
+    def with_sep(self, keys: list[str]) -> str:
+        return self.sep.join(keys)
+
     def is_inspected(self, model: dict[str, Any]):
         return self.id in model and model[self.id]
 
@@ -231,6 +235,10 @@ class Inspector:
 
     def _ensure_with_id(self, model: dict[str, Any]) -> dict[str, Any]:
         return {self.with_id(k) if not k.startswith(self.id) else k: v for k, v in model.items()}
+
+    def get(self, model: dict[str, Any], key: str) -> Any | None:
+        key = self.with_id(key)
+        return model.get(key)
 
     def inspect(self, model: dict[str, Any]) -> dict[str, Any]:
         if self.is_inspected(model):
@@ -259,7 +267,19 @@ class NamespaceInspector(Inspector):
         self.proc_watcher = ProcWatcher()
 
     def _inspect(self, model: dict[str, Any]) -> dict[str, Any]:
-        return {}
+        pid = model.get("pid")
+        if not pid:
+            return {}
+
+        proc_info = self.proc_watcher.get(pid)
+        if not proc_info or not proc_info.ns:
+            return {}
+
+        return {k: self.get_ns_id(v) for k, v in proc_info.ns.items()}
+
+    def get_ns_id(self, ns: str) -> int:
+        # pid:[4026531836] -> [4026531836] -> 4026531836
+        return int(ns.split(":")[-1][1:-1])
 
     def stop(self):
         self.proc_watcher.stop()
@@ -275,7 +295,15 @@ class CgroupInspector(Inspector):
         self.proc_watcher = ProcWatcher()
 
     def _inspect(self, model: dict[str, Any]) -> dict[str, Any]:
-        return {}
+        pid = model.get("pid")
+        if not pid:
+            return {}
+
+        proc_info = self.proc_watcher.get(pid)
+        if not proc_info or not proc_info.cgroup:
+            return {}
+
+        return {"cgropu": proc_info.cgroup}
 
     def stop(self):
         self.proc_watcher.stop()

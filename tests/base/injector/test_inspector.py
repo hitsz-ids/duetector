@@ -2,7 +2,12 @@ import os
 
 import pytest
 
-from duetector.injectors.inspector import ProcInfo, ProcWatcher
+from duetector.injectors.inspector import (
+    CgroupInspector,
+    NamespaceInspector,
+    ProcInfo,
+    ProcWatcher,
+)
 
 
 @pytest.fixture(scope="session")
@@ -12,6 +17,11 @@ def proc_watcher():
         yield p
     finally:
         p.stop()
+
+
+@pytest.fixture
+def model():
+    yield {"pid": os.getpid()}
 
 
 def test_proc_info_from_pid():
@@ -27,6 +37,13 @@ def test_proc_info_from_pid():
 
 def test_proc_watcher(proc_watcher: ProcWatcher):
     assert proc_watcher.get(os.getpid())
+
+
+@pytest.mark.parametrize("Inspector", [NamespaceInspector, CgroupInspector])
+def test_ns_inspector(Inspector, model):
+    i = Inspector()
+    extra = i.inspect(model)
+    assert i.is_inspected(extra)
 
 
 if __name__ == "__main__":
