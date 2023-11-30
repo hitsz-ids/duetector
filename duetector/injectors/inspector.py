@@ -142,6 +142,9 @@ class ProcWatcher(metaclass=Singleton):
         logger.info("Proc watcher started.")
 
     def _watch(self):
+        # Inotify does report some but not all events in sysfs and procfs.
+        # We use force polling as a work around
+
         for changes in watch(
             self.proc_dir,
             watch_filter=PidFilter(),

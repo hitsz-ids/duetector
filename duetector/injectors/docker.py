@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import os
 from collections import namedtuple
 from typing import Any
 
 import docker
 from duetector.extension.injector import hookimpl
 from duetector.injectors.base import ProcInjector
-from duetector.injectors.inspector import Inspector
+from duetector.injectors.inspector import Inspector, ProcInfo
 
 
 class DockerInjector(ProcInjector, Inspector):
@@ -41,24 +42,30 @@ class DockerInjector(ProcInjector, Inspector):
         cgroups: list[str] | None = self.cgroup_inspector.get(model, "cgroups")
         if not cgroups:
             return {}
-        container_id = None
+        maybe_container_id = None
         for cg in cgroups:
-            container_id = cg.split(":")[-1].split("/")[-1].lstrip("docker-").split(".")[0]
+            maybe_container_id = cg.split(":")[-1].split("/")[-1].lstrip("docker-").split(".")[0]
             break
-        if not container_id:
+        if not maybe_container_id:
             return {}
 
         if not self.client:
-            return {"maybe_container_id": container_id}
+            return {"maybe_container_id": maybe_container_id}
+
         try:
-            container_info = self.client.inspect_container(container_id)
+            container_info = self.client.inspect_container(maybe_container_id)
         except Exception as e:
-            return {"maybe_container_id": container_id}
-        else:
-            # TODO: More info in container_info
-            return {
-                "container_id": container_id,
-            }
+            if "docker" not in cgroups[0]:
+                return {"maybe_container_id": maybe_container_id}
+            else:
+                return {
+                    "container_id": maybe_container_id,
+                }
+
+        # TODO: More info from container_info
+        return {
+            "container_id": maybe_container_id,
+        }
 
 
 @hookimpl
