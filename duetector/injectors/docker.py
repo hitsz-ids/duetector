@@ -54,7 +54,7 @@ class DockerInjector(ProcInjector, Inspector):
             for cg in cgroups:
                 # FIXME: Need a more compatible way to get container_id
                 maybe_container_id = (
-                    cg.split(":")[-1].split("/")[-1].lstrip("docker-").split(".")[0]
+                    cg.split(":")[-1].split("/")[-1].replace("docker-", "").split(".")[0]
                 )
                 break
 

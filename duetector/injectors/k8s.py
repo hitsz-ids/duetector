@@ -64,7 +64,7 @@ class K8SInjector(ProcInjector, Inspector):
                         maybe_pod_id = "-".join(maybe_pod_id_str_list[i:]).replace("_", "-")
                         break
                 maybe_container_id = (
-                    cg.split(":")[-1].split("/")[-1].lstrip("docker-").split(".")[0]
+                    cg.split(":")[-1].split("/")[-1].replace("docker-", "").split(".")[0]
                 )
                 break
         except IndexError:
