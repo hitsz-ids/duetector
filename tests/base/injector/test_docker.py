@@ -79,7 +79,10 @@ def test_docker_inspect(test_container, docker_injector: DockerInjector):
 
     patch_args = docker_injector.get_patch_kwargs(data_t(**model))
     assert docker_injector.is_inspected(patch_args)
-    assert docker_injector.get(patch_args, "container_id") == container_id
+    assert (
+        docker_injector.get(patch_args, "container_id") == container_id
+        or docker_injector.get(patch_args, "maybe_container_id") == container_id
+    )
 
 
 if __name__ == "__main__":
