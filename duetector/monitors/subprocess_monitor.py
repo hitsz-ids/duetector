@@ -10,9 +10,11 @@ from typing import IO, Any, Callable
 import psutil
 
 from duetector.collectors.base import Collector
+from duetector.injectors.base import Injector
 from duetector.log import logger
 from duetector.managers.collector import CollectorManager
 from duetector.managers.filter import FilterManager
+from duetector.managers.injector import InjectorManager
 from duetector.managers.tracer import TracerManager
 from duetector.monitors.base import Monitor
 from duetector.proto.subprocess import (
@@ -243,14 +245,9 @@ class SubprocessMonitor(Monitor):
         super().__init__(config=config, *args, **kwargs)
         if self.disabled:
             logger.info("SubprocessMonitor disabled")
-            self.tracers = []
-            self.filters = []
-            self.collectors = []
             return
 
         self.tracers: list[SubprocessTracer] = TracerManager(config).init(tracer_type=SubprocessTracer)  # type: ignore
-        self.filters: list[Callable] = FilterManager(config).init()
-        self.collectors: list[Collector] = CollectorManager(config).init()
 
         self.host = SubprocessHost(
             timeout=self.timeout,
@@ -267,18 +264,6 @@ class SubprocessMonitor(Monitor):
             tracer.attach(self.host)
             self._set_callback(self.host, tracer)
             logger.info(f"Tracer {tracer.__class__.__name__} attached")
-
-    def _set_callback(self, host, tracer):
-        def _(data):
-            for filter in self.filters:
-                data = filter(data)
-                if not data:
-                    return
-
-            for collector in self.collectors:
-                collector.emit(tracer, data)
-
-        tracer.set_callback(host, _)
 
     def shutdown(self):
         self.host.shutdown()

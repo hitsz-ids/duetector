@@ -1,4 +1,5 @@
 import json
+import os
 from collections import namedtuple
 from copy import deepcopy
 
@@ -16,7 +17,7 @@ def data_t():
     d = namedtuple("Tracking", ["pid", "uid", "gid", "comm", "fname", "timestamp", "custom"])
 
     yield d(
-        pid=9999,
+        pid=os.getpid(),
         uid=9999,
         gid=9999,
         comm="dummy",

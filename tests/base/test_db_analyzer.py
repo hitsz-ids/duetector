@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 
 import pytest
@@ -11,7 +12,7 @@ now = datetime.now()
 
 tracking_kwargs = dict(
     tracer="db_analyzer_tests",
-    pid=9999,
+    pid=os.getpid(),
     uid=9999,
     gid=9999,
     comm="dummy",

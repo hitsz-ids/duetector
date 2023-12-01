@@ -30,7 +30,7 @@ pip install -e .[test]
 We use pytest to write unit tests, and use pytest-cov to generate coverage reports
 
 ```bash
-pytest -v tests/standalone/ # Run unit-test
+pytest -v tests/base/ # Run unit-test
 pytest --cov=duetector # Generate coverage reports
 ```
 

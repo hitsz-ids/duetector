@@ -1,11 +1,9 @@
+import os
 from collections import namedtuple
 from typing import Any, Callable, Dict, NamedTuple, Optional, Type
 
 import pytest
 
-from duetector.collectors.models import Tracking
-from duetector.managers.collector import CollectorManager
-from duetector.managers.filter import FilterManager
 from duetector.managers.tracer import TracerManager
 from duetector.monitors.bcc_monitor import BccMonitor, Monitor
 from duetector.tracers.base import BccTracer, Tracer
@@ -76,8 +74,6 @@ class MockMonitor(Monitor):
         tracer_config = TracerManager(config).config._config_dict
 
         self.tracers = [mock_tracer(tracer_config)]
-        self.filters = FilterManager(config).init()
-        self.collectors = CollectorManager(config).init()
 
         self.bpf_tracers = {}
         self.init()
@@ -114,17 +110,7 @@ def test_bcc_monitor(bcc_monitor: MockMonitor):
     bcc_monitor.poll_all()
     bcc_monitor.shutdown()
     assert bcc_monitor.summary()
-    bcc_monitor.summary()["MockMonitor"]["DBCollector"]["bccmocktracer"]["last"] == Tracking(
-        tracer="bccmocktracer",
-        pid=9999,
-        uid=9999,
-        gid=9999,
-        comm="dummy",
-        cwd=None,
-        fname="dummy.file",
-        dt=datetime,
-        extended={"custom": "dummy-xargs"},
-    )
+    assert bcc_monitor.summary()["MockMonitor"]["DBCollector"]["bccmocktracer"]["last"]
 
 
 if __name__ == "__main__":

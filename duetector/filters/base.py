@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import os
 from collections import namedtuple
 
 from duetector.config import Configuable
-from duetector.extension.filter import hookimpl
 
 
 class Filter(Configuable):
@@ -22,17 +20,18 @@ class Filter(Configuable):
         .. code-block:: python
 
                 from duetector.filters import Filter
-                from duetector.collectors.models import Tracking
+                from collections import namedtuple
 
                 class MyFilter(Filter):
-                    def filter(self, data: Tracking) -> Optional[Tracking]:
+                    def filter(self, data: namedtuple) -> namedtuple | None:
                         if data.fname == "/etc/passwd":
                             return None
                         return data
 
                 f = MyFilter()
-                f(Tracking(fname="/etc/passwd"))  # None
-                f(Tracking(fname="/etc/shadow"))  # Tracking(fname="/etc/shadow")
+                data_t = namedtuple("Tracking", "fname")
+                f(data_t(fname="/etc/passwd"))  # None
+                f(data_t(fname="/etc/shadow"))  # Tracking(fname="/etc/shadow")
     """
 
     default_config = {

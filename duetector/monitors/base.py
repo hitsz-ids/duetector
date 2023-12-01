@@ -1,7 +1,19 @@
 from __future__ import annotations
 
+from collections import namedtuple
+
+from duetector.injectors.base import Injector
+from duetector.managers.collector import CollectorManager
+from duetector.managers.filter import FilterManager
+from duetector.managers.injector import InjectorManager
+
+try:
+    from functools import cache
+except ImportError:
+    from functools import lru_cache as cache
+
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any
+from typing import Any, Callable
 
 from duetector.collectors.base import Collector
 from duetector.config import Configuable
@@ -23,7 +35,6 @@ class Monitor(Configuable):
     """
     A list of tracers, should be initialized by ``TracerManager``
     """
-
     filters: list[Filter]
     """
     A list of filters, should be initialized by ``FilterManager``
@@ -31,6 +42,10 @@ class Monitor(Configuable):
     collectors: list[Collector]
     """
     A list of collectors, should be initialized by ``CollectorManager``
+    """
+    injectors: list[Injector]
+    """
+    A list of collectors, should be initialized by ``InjectorManager``
     """
 
     config_scope = "monitor"
@@ -64,6 +79,16 @@ class Monitor(Configuable):
         super().__init__(config=config)
         self._backend = self._backend_imp(**self.backend_args._config_dict)
         self.poller = Poller(self.config._config_dict)
+
+        if self.disabled:
+            self.tracers = []
+            self.filters = []
+            self.collectors = []
+            self.injectors = []
+            return
+        self.filters: list[Filter] = FilterManager(config).init()
+        self.collectors: list[Collector] = CollectorManager(config).init()
+        self.injectors: list[Injector] = InjectorManager(config).init()
 
     @property
     def disabled(self):
@@ -117,3 +142,35 @@ class Monitor(Configuable):
         self._backend.shutdown()
         for c in self.collectors:
             c.shutdown()
+        for i in self.injectors:
+            i.shutdown()
+
+    def _inject_extra_info(self, data: namedtuple) -> namedtuple:
+        patch_kwargs = {}
+        for injector in self.injectors:
+            patch_kwargs.update(injector.get_patch_kwargs(data, patch_kwargs))
+        data = Injector.patch(data, patch_kwargs)
+        return data
+
+    @cache
+    def _get_callback_fn(self, tracer) -> Callable[[namedtuple], None]:
+        def _(data):
+            try:
+                data = self._inject_extra_info(data)
+
+                for filter in self.filters:
+                    data = filter(data)
+                    if not data:
+                        return
+                for collector in self.collectors:
+                    collector.emit(tracer, data)
+            except Exception as e:
+                logger.exception(e)
+
+        return _
+
+    def _set_callback(self, host, tracer):
+        """
+        Wrap tracer callback with filters and collectors.
+        """
+        tracer.set_callback(host, self._get_callback_fn(tracer))

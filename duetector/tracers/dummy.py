@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from collections import namedtuple
 from typing import Callable
 
@@ -41,7 +42,7 @@ class DummyTracer(BccTracer):
     @classmethod
     def get_dummy_data(cls):
         return cls.data_t(
-            pid=9999,
+            pid=os.getpid(),
             uid=9999,
             gid=9999,
             comm="dummy",

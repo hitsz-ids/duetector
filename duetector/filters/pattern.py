@@ -45,6 +45,7 @@ class PatternFilter(Filter):
 
     default_config = {
         **Filter.default_config,
+        "ignore_current_pid": True,
         "enable_customize_exclude": True,
         "re_exclude_fname": [
             "/proc",
@@ -78,6 +79,10 @@ class PatternFilter(Filter):
         If enable customize exclude
         """
         return bool(self.config.enable_customize_exclude)
+
+    @property
+    def ignore_current_pid(self) -> bool:
+        return bool(self.config.ignore_current_pid)
 
     @staticmethod
     def _wrap_exclude_list(value: str | list[str]) -> set[str]:
@@ -152,7 +157,7 @@ class PatternFilter(Filter):
         Filter data, return ``None`` to drop data, return data to keep data.
         """
 
-        if getattr(data, "pid", None) == os.getpid():
+        if self.ignore_current_pid and getattr(data, "pid", None) == os.getpid():
             return
 
         if self.is_exclude(data, enable_customize_exclude=self.enable_customize_exclude):
