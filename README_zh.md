@@ -240,7 +240,7 @@ Commands:
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/wunder957"><img src="https://avatars.githubusercontent.com/u/141890183?v=4?s=100" width="100px;" alt="wunder957"/><br /><sub><b>wunder957</b></sub></a><br /><a href="#code-wunder957" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/wh1isper"><img src="https://avatars.githubusercontent.com/u/43375501?v=4?s=100" width="100px;" alt="wh1isper"/><br /><sub><b>wh1isper</b></sub></a><br /><a href="#code-wh1isper" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/WYXsb"><img src="https://avatars.githubusercontent.com/u/62527555?v=4?s=100" width="100px;" alt="MayDown"/><br /><sub><b>MayDown</b></sub></a><br /><a href="#code-WYXsb" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tsdsnk"><img src="https://avatars.githubusercontent.com/u/93241244?v=4?s=100" width="100px;" alt="tsdsnk"/><br /><sub><b>tsdsnk</b></sub></a><br /><a href="#doc-tsdsnk" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/zhemulin"><img src="https://avatars.githubusercontent.com/u/89471919?v=4?s=100" width="100px;" alt="zhemulin"/><br /><sub><b>zhemulin</b></sub></a><br /><a href="#doc-zhemulin" title="Documentation">📖</a></td>
