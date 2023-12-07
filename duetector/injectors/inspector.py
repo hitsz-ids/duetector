@@ -5,6 +5,7 @@ import itertools
 import os
 import signal
 from datetime import datetime, timedelta
+from functools import cached_property
 from pathlib import Path
 from threading import Event, Thread
 from typing import Any, Dict, List, Optional
@@ -218,8 +219,7 @@ class Inspector:
     prefix = "inspector"
     name = None
 
-    @property
-    @cache
+    @cached_property
     def id(self) -> str:
         return with_prefix(self.sep, self.prefix, self.name or self.__class__.__name__)
 
@@ -262,8 +262,7 @@ class Inspector:
 
 
 class NamespaceInspector(Inspector):
-    @property
-    @cache
+    @cached_property
     def name(self) -> str:
         return self.sep.join(["proc", "namespace"])
 
@@ -290,8 +289,7 @@ class NamespaceInspector(Inspector):
 
 
 class CgroupInspector(Inspector):
-    @property
-    @cache
+    @cached_property
     def name(self) -> str:
         return self.sep.join(["proc", "cgroup"])
 
