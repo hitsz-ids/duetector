@@ -9,23 +9,17 @@ import grpc
 from google.protobuf.duration_pb2 import Duration
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from duetector.analyzer.jaeger.proto import model_pb2
-from duetector.exceptions import AnalysQueryError
-from duetector.utils import get_grpc_cred_from_path
-
-try:
-    from functools import cache
-except ImportError:
-    from functools import lru_cache as cache
-
 from duetector.analyzer.base import Analyzer
+from duetector.analyzer.jaeger.proto import model_pb2
 from duetector.analyzer.jaeger.proto.model_pb2 import Span
 from duetector.analyzer.jaeger.proto.query_pb2 import *
 from duetector.analyzer.jaeger.proto.query_pb2_grpc import *
 from duetector.analyzer.models import AnalyzerBrief, Brief, Tracking
+from duetector.exceptions import AnalysQueryError
 from duetector.extension.analyzer import hookimpl
 from duetector.log import logger
 from duetector.otel import OTelInspector
+from duetector.utils import get_grpc_cred_from_path
 
 ChannelInitializer = Callable[[], grpc.aio.Channel]
 
@@ -217,8 +211,7 @@ class JaegerAnalyzer(Analyzer):
     def __init__(self, config: dict[str, Any] | None = None, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
 
-    @property
-    @cache
+    @functools.cached_property
     def channel_initializer(self) -> ChannelInitializer:
         """
         Example:
@@ -242,8 +235,7 @@ class JaegerAnalyzer(Analyzer):
 
         return functools.partial(target_func, **kwargs)
 
-    @property
-    @cache
+    @functools.cached_property
     def connector(self):
         return JaegerConnector(self.channel_initializer)
 
