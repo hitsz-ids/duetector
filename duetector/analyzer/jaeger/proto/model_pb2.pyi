@@ -186,6 +186,7 @@ class Trace(_message.Message):
             process_id: _Optional[str] = ...,
             process: _Optional[_Union[Process, _Mapping]] = ...,
         ) -> None: ...
+
     PROCESS_MAP_FIELD_NUMBER: _ClassVar[int]
     SPANS_FIELD_NUMBER: _ClassVar[int]
     WARNINGS_FIELD_NUMBER: _ClassVar[int]

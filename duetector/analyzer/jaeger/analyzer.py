@@ -94,12 +94,12 @@ class JaegerConnector(OTelInspector):
                 service_name=self.generate_service_name(collector_id),
                 operation_name=self.generate_span_name(tracer_name),
                 tags=tags,
-                start_time_min=self._datetime_to_protobuf_timestamp(start_time_min)
-                if start_time_min
-                else None,
-                start_time_max=self._datetime_to_protobuf_timestamp(start_time_max)
-                if start_time_max
-                else None,
+                start_time_min=(
+                    self._datetime_to_protobuf_timestamp(start_time_min) if start_time_min else None
+                ),
+                start_time_max=(
+                    self._datetime_to_protobuf_timestamp(start_time_max) if start_time_max else None
+                ),
                 duration_min=Duration(seconds=duration_min) if duration_min else None,
                 duration_max=Duration(seconds=duration_max) if duration_max else None,
                 search_depth=search_depth,
@@ -190,9 +190,11 @@ class JaegerConnector(OTelInspector):
             collector_id=collector_id,
             start=self._protobuf_timestamp_to_datetime(start_span.start_time),
             end=self._protobuf_timestamp_to_datetime(last_span.start_time),
-            fields={msg.key: None for msg in start_span.tags}
-            if not inspect_type
-            else self.inspect_span(start_span),
+            fields=(
+                {msg.key: None for msg in start_span.tags}
+                if not inspect_type
+                else self.inspect_span(start_span)
+            ),
             count=count,
         )
 
