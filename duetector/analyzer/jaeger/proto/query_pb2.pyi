@@ -141,6 +141,7 @@ class TraceQueryParameters(_message.Message):
         key: str
         value: str
         def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+
     DURATION_MAX_FIELD_NUMBER: _ClassVar[int]
     DURATION_MIN_FIELD_NUMBER: _ClassVar[int]
     OPERATION_NAME_FIELD_NUMBER: _ClassVar[int]

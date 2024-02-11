@@ -873,41 +873,41 @@ _GETDEPENDENCIESRESPONSE = _descriptor.Descriptor(
     serialized_end=1675,
 )
 
-_GETTRACEREQUEST.fields_by_name[
-    "start_time"
-].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
-_GETTRACEREQUEST.fields_by_name[
-    "end_time"
-].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_GETTRACEREQUEST.fields_by_name["start_time"].message_type = (
+    google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+)
+_GETTRACEREQUEST.fields_by_name["end_time"].message_type = (
+    google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+)
 _SPANSRESPONSECHUNK.fields_by_name["spans"].message_type = model__pb2._SPAN
-_ARCHIVETRACEREQUEST.fields_by_name[
-    "start_time"
-].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
-_ARCHIVETRACEREQUEST.fields_by_name[
-    "end_time"
-].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_ARCHIVETRACEREQUEST.fields_by_name["start_time"].message_type = (
+    google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+)
+_ARCHIVETRACEREQUEST.fields_by_name["end_time"].message_type = (
+    google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+)
 _TRACEQUERYPARAMETERS_TAGSENTRY.containing_type = _TRACEQUERYPARAMETERS
 _TRACEQUERYPARAMETERS.fields_by_name["tags"].message_type = _TRACEQUERYPARAMETERS_TAGSENTRY
-_TRACEQUERYPARAMETERS.fields_by_name[
-    "start_time_min"
-].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
-_TRACEQUERYPARAMETERS.fields_by_name[
-    "start_time_max"
-].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
-_TRACEQUERYPARAMETERS.fields_by_name[
-    "duration_min"
-].message_type = google_dot_protobuf_dot_duration__pb2._DURATION
-_TRACEQUERYPARAMETERS.fields_by_name[
-    "duration_max"
-].message_type = google_dot_protobuf_dot_duration__pb2._DURATION
+_TRACEQUERYPARAMETERS.fields_by_name["start_time_min"].message_type = (
+    google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+)
+_TRACEQUERYPARAMETERS.fields_by_name["start_time_max"].message_type = (
+    google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+)
+_TRACEQUERYPARAMETERS.fields_by_name["duration_min"].message_type = (
+    google_dot_protobuf_dot_duration__pb2._DURATION
+)
+_TRACEQUERYPARAMETERS.fields_by_name["duration_max"].message_type = (
+    google_dot_protobuf_dot_duration__pb2._DURATION
+)
 _FINDTRACESREQUEST.fields_by_name["query"].message_type = _TRACEQUERYPARAMETERS
 _GETOPERATIONSRESPONSE.fields_by_name["operations"].message_type = _OPERATION
-_GETDEPENDENCIESREQUEST.fields_by_name[
-    "start_time"
-].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
-_GETDEPENDENCIESREQUEST.fields_by_name[
-    "end_time"
-].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_GETDEPENDENCIESREQUEST.fields_by_name["start_time"].message_type = (
+    google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+)
+_GETDEPENDENCIESREQUEST.fields_by_name["end_time"].message_type = (
+    google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+)
 _GETDEPENDENCIESRESPONSE.fields_by_name["dependencies"].message_type = model__pb2._DEPENDENCYLINK
 DESCRIPTOR.message_types_by_name["GetTraceRequest"] = _GETTRACEREQUEST
 DESCRIPTOR.message_types_by_name["SpansResponseChunk"] = _SPANSRESPONSECHUNK
@@ -929,7 +929,7 @@ GetTraceRequest = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _GETTRACEREQUEST,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.GetTraceRequest)
     },
 )
@@ -940,7 +940,7 @@ SpansResponseChunk = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _SPANSRESPONSECHUNK,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.SpansResponseChunk)
     },
 )
@@ -951,7 +951,7 @@ ArchiveTraceRequest = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _ARCHIVETRACEREQUEST,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.ArchiveTraceRequest)
     },
 )
@@ -962,7 +962,7 @@ ArchiveTraceResponse = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _ARCHIVETRACERESPONSE,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.ArchiveTraceResponse)
     },
 )
@@ -977,12 +977,12 @@ TraceQueryParameters = _reflection.GeneratedProtocolMessageType(
             (_message.Message,),
             {
                 "DESCRIPTOR": _TRACEQUERYPARAMETERS_TAGSENTRY,
-                "__module__": "query_pb2"
+                "__module__": "query_pb2",
                 # @@protoc_insertion_point(class_scope:jaeger.api_v2.TraceQueryParameters.TagsEntry)
             },
         ),
         "DESCRIPTOR": _TRACEQUERYPARAMETERS,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.TraceQueryParameters)
     },
 )
@@ -994,7 +994,7 @@ FindTracesRequest = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _FINDTRACESREQUEST,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.FindTracesRequest)
     },
 )
@@ -1005,7 +1005,7 @@ GetServicesRequest = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _GETSERVICESREQUEST,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.GetServicesRequest)
     },
 )
@@ -1016,7 +1016,7 @@ GetServicesResponse = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _GETSERVICESRESPONSE,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.GetServicesResponse)
     },
 )
@@ -1027,7 +1027,7 @@ GetOperationsRequest = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _GETOPERATIONSREQUEST,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.GetOperationsRequest)
     },
 )
@@ -1038,7 +1038,7 @@ Operation = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _OPERATION,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.Operation)
     },
 )
@@ -1049,7 +1049,7 @@ GetOperationsResponse = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _GETOPERATIONSRESPONSE,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.GetOperationsResponse)
     },
 )
@@ -1060,7 +1060,7 @@ GetDependenciesRequest = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _GETDEPENDENCIESREQUEST,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.GetDependenciesRequest)
     },
 )
@@ -1071,7 +1071,7 @@ GetDependenciesResponse = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _GETDEPENDENCIESRESPONSE,
-        "__module__": "query_pb2"
+        "__module__": "query_pb2",
         # @@protoc_insertion_point(class_scope:jaeger.api_v2.GetDependenciesResponse)
     },
 )
