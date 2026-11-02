@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     while 1:
         try:
-            (task, pid, cpu, flags, ts, msg) = b.trace_fields()
+            task, pid, cpu, flags, ts, msg = b.trace_fields()
         except ValueError:
             continue
         except KeyboardInterrupt:
